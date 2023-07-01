@@ -4,12 +4,12 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
 } from 'discord.js';
+import { Logger } from '../utils';
 
-type LoggerFunction = (...args: unknown[]) => void;
 export interface CommandProps {
   interaction: ChatInputCommandInteraction;
   client: Client;
-  log: LoggerFunction;
+  logger: Logger;
 }
 
 export type CommandExec = (props: CommandProps) => Awaitable<unknown>;

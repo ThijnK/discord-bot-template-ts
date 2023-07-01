@@ -9,6 +9,8 @@ import {
   EmbedBuilder,
   InteractionReplyOptions,
   SelectMenuOptionBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
 } from 'discord.js';
 import CategoryRoot from '../commands';
 import { chunk, createId, readId } from '../utils';
@@ -32,9 +34,9 @@ const A = Actions;
 // Generate root embed for help paginator
 export function getCategoryRoot(ephemeral?: boolean): InteractionReplyOptions {
   // Map the categories
-  const mappedCategories = CategoryRoot.map(
+  const options = CategoryRoot.map(
     ({ name, description, emoji }) =>
-      new SelectMenuOptionBuilder({
+      new StringSelectMenuOptionBuilder({
         label: name,
         description,
         emoji,
@@ -53,7 +55,7 @@ export function getCategoryRoot(ephemeral?: boolean): InteractionReplyOptions {
     .setCustomId(selectId)
     .setPlaceholder('Command Category')
     .setMaxValues(1)
-    .setOptions(mappedCategories);
+    .setOptions(options);
 
   const component = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
     select

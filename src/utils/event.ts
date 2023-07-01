@@ -1,5 +1,6 @@
 import { Event, EventExec, EventKeys } from '../types';
 import { Client } from 'discord.js';
+import { Logger, log } from './logger';
 
 export function event<T extends EventKeys>(
   id: T,
@@ -14,17 +15,13 @@ export function event<T extends EventKeys>(
 export function registerEvents(client: Client, events: Event<any>[]): void {
   for (const event of events)
     client.on(event.id, async (...args) => {
-      // Create Props
-      const props = {
-        client,
-        log: (...args: unknown[]) => console.log(`[${event.id}]`, ...args),
-      };
+      const logger = new Logger(event.id);
 
       // Catch uncaught errors
       try {
-        await event.exec(props, ...args);
+        await event.exec({ client, logger }, ...args);
       } catch (error) {
-        props.log('Uncaught Error', error);
+        logger.error(error);
       }
     });
 }
