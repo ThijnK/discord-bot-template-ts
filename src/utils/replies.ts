@@ -1,7 +1,7 @@
 import {
   InteractionReplyOptions,
   InteractionEditReplyOptions,
-} from "discord.js";
+} from 'discord.js';
 
 export const Colors = {
   error: 0xf54242,

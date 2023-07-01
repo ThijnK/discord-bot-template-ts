@@ -1,4 +1,4 @@
 export interface Keys {
-  clientToken: string
-  testGuild: string
+  clientToken: string;
+  testGuild: string;
 }

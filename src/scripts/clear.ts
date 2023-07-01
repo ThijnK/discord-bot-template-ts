@@ -1,12 +1,12 @@
-import { config } from "dotenv";
-import { resolve } from "path";
+import { config } from 'dotenv';
+import { resolve } from 'path';
 
-config({ path: resolve(__dirname, "..", "..", ".env") });
+config({ path: resolve(__dirname, '..', '..', '.env') });
 
-import { REST, Routes, APIUser } from "discord.js";
-import keys from "../keys";
+import { REST, Routes, APIUser } from 'discord.js';
+import keys from '../keys';
 
-const rest = new REST({ version: "10" }).setToken(keys.clientToken);
+const rest = new REST({ version: '10' }).setToken(keys.clientToken);
 
 async function main() {
   const currentUser = (await rest.get(Routes.user())) as APIUser;

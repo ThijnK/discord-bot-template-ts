@@ -1,5 +1,5 @@
-import { event } from '../utils'
+import { event } from '../utils';
 
 export default event('ready', ({ log }, client) => {
-  log(`Logged in as ${client.user.tag}`)
-})
+  log(`Logged in as ${client.user.tag}`);
+});
