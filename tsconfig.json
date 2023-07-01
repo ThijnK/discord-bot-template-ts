@@ -16,11 +16,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "baseUrl": "."
   },
   "include": ["**/*.ts", "src"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }
