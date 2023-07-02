@@ -7,8 +7,15 @@ const isDev =
 export const ENV = {
   /** Whether or not the app is running in the development environment */
   DEV: isDev,
-  /** Discord bot token */
-  BOT_TOKEN: (isDev ? process.env.TEST_TOKEN : process.env.BOT_TOKEN) ?? '',
+  /**
+   * Discord bot token.
+   *
+   * If `DEV` is true, the `TEST_TOKEN` environment variable will be used instead (if it exists, otherwise `BOT_TOKEN` will still be used).
+   */
+  BOT_TOKEN:
+    (isDev ? process.env.TEST_TOKEN : process.env.BOT_TOKEN) ??
+    process.env.BOT_TOKEN ??
+    '',
   /** ID of the Discord guild to use for testing */
   TEST_GUILD: process.env.TEST_GUILD ?? '',
 } as const;
