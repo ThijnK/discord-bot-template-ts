@@ -6,6 +6,11 @@ export enum LogType {
   System = 'system',
 }
 
+/**
+ * Get the console text color for a specific log type
+ * @param type The type of log to get the color for
+ * @returns A string to be prepended to the log message
+ */
 const getTextColor = (type: LogType) => {
   switch (type) {
     case 'default':

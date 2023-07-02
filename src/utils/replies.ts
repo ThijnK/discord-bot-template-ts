@@ -1,35 +1,68 @@
 import {
   InteractionReplyOptions,
   InteractionEditReplyOptions,
+  BaseInteraction,
 } from 'discord.js';
+import { COLORS, EMOJIS } from '../constants';
+import { log } from './logger';
 
-export const Colors = {
-  error: 0xf54242,
+interface DeferableInteraction extends BaseInteraction {
+  deferred: boolean;
+  reply: (options: InteractionReplyOptions) => Promise<any>;
+  editReply: (options: InteractionEditReplyOptions) => Promise<any>;
+}
+
+enum ReplyType {
+  Default = 'default',
+  Error = 'error',
+  Warn = 'warn',
+}
+
+/**
+ * Alter the options to match the reply type
+ * @param options The options to alter
+ * @param type The type of reply
+ * @returns The altered options
+ */
+const getOptions = (options: InteractionReplyOptions, type: ReplyType) => {
+  const { content, ephemeral } = options;
+  const emoji = type === ReplyType.Default ? '' : EMOJIS[type];
+
+  return {
+    ...options,
+    content: content ? `${emoji} ${content}` : undefined,
+    // By default, replies are ephemeral
+    ephemeral: ephemeral ?? true,
+  };
 };
 
-export const Reply = {
-  error(msg: string): InteractionReplyOptions {
-    return {
-      ephemeral: true,
-      embeds: [
-        {
-          color: Colors.error,
-          description: msg,
-        },
-      ],
-    };
-  },
+/**
+ * Reply to an interaction
+ * @param interaction The interaction to reply to
+ * @param options The options to reply with
+ * @param type The type of reply
+ */
+export const reply = <T extends DeferableInteraction>(
+  interaction: T,
+  options: InteractionReplyOptions,
+  type: ReplyType = ReplyType.Default
+) => {
+  if (!options.content && !options.embeds && !options.files)
+    return log.error('reply', 'Cannot send an empty message');
+
+  const alteredOptions = getOptions(options, type);
+  if (interaction.deferred) return interaction.editReply(alteredOptions);
+  return interaction.reply(alteredOptions);
 };
 
-export const EditReply = {
-  error(msg: string): InteractionEditReplyOptions {
-    return {
-      embeds: [
-        {
-          color: Colors.error,
-          description: msg,
-        },
-      ],
-    };
-  },
-};
+reply.error = <T extends DeferableInteraction>(
+  interaction: T,
+  options: InteractionReplyOptions = {
+    content: 'Oops. Something went wrong!',
+  }
+) => reply(interaction, options, ReplyType.Error);
+
+reply.warn = <T extends DeferableInteraction>(
+  interaction: T,
+  options: InteractionReplyOptions
+) => reply(interaction, options, ReplyType.Warn);

@@ -13,8 +13,10 @@ const meta = new SlashCommandBuilder()
       .setRequired(false)
   );
 
-export default command(meta, ({ interaction }) => {
+export default command(meta, async ({ interaction }) => {
   const message = interaction.options.getString('message');
+
+  throw new Error('Test error');
 
   return interaction.reply({
     ephemeral: true,

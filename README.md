@@ -1,3 +1,4 @@
 To do
 
-- better command error reply message
+- Fix outaded discordjs stuff (src/pages/help.ts)
+- better commenting

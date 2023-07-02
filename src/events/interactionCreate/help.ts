@@ -1,5 +1,5 @@
 import { getCategoryPage, getCategoryRoot, Namespaces } from '../../pages/help';
-import { createId, EditReply, event, readId, Reply } from '../../utils';
+import { createId, event, readId, reply } from '../../utils';
 
 export default event('interactionCreate', async ({ logger }, interaction) => {
   if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
@@ -28,10 +28,6 @@ export default event('interactionCreate', async ({ logger }, interaction) => {
     }
   } catch (error) {
     logger.error(error);
-
-    if (interaction.deferred)
-      return interaction.editReply(EditReply.error('Something went wrong :('));
-
-    return interaction.reply(Reply.error('Something went wrong :('));
+    reply.error(interaction);
   }
 });

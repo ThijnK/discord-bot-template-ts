@@ -1,6 +1,6 @@
 import commands from '../../commands';
 import { Command } from '../../types';
-import { EditReply, event, Logger, Reply } from '../../utils';
+import { event, Logger, reply } from '../../utils';
 
 const allCommands = commands.map(({ commands }) => commands).flat();
 const allCommandsMap = new Map<string, Command>(
@@ -24,10 +24,6 @@ export default event('interactionCreate', async ({ client }, interaction) => {
     });
   } catch (error) {
     logger.error(error);
-
-    if (interaction.deferred)
-      return interaction.editReply(EditReply.error('Something went wrong :('));
-
-    return interaction.reply(Reply.error('Something went wrong :('));
+    reply.error(interaction, { content: undefined });
   }
 });
