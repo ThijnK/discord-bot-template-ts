@@ -1,12 +1,14 @@
 import { log } from './utils';
 
+const isDev =
+  process.env.NODE_ENV !== 'production' &&
+  process.env.NODE_ENV !== 'PRODUCTION';
+
 export const ENV = {
   /** Whether or not the app is running in the development environment */
-  DEV:
-    process.env.NODE_ENV !== 'production' &&
-    process.env.NODE_ENV !== 'PRODUCTION',
+  DEV: isDev,
   /** Discord bot token */
-  BOT_TOKEN: process.env.BOT_TOKEN ?? '',
+  BOT_TOKEN: (isDev ? process.env.TEST_TOKEN : process.env.BOT_TOKEN) ?? '',
   /** ID of the Discord guild to use for testing */
   TEST_GUILD: process.env.TEST_GUILD ?? '',
 } as const;
