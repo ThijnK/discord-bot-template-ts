@@ -8,21 +8,20 @@ import {
   ButtonStyle,
   EmbedBuilder,
   InteractionReplyOptions,
-  SelectMenuOptionBuilder,
-  StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from 'discord.js';
 import CategoryRoot from '../commands';
 import { chunk, createId, readId } from '../utils';
+import { COLORS } from '../constants';
 
-// Namespaces we will use
+// Namespace identifiers
 export const Namespaces = {
   root: 'help_category_root',
   select: 'help_category_select',
   action: 'help_category_action',
 };
 
-// Actions we will use
+// Action identifiers
 export const Actions = {
   next: '+',
   back: '-',
@@ -31,9 +30,13 @@ export const Actions = {
 const N = Namespaces;
 const A = Actions;
 
-// Generate root embed for help paginator
+/**
+ * Generate new embed for root category page
+ * @param ephemeral Whether the reply should be ephemeral
+ * @returns The generated embed
+ */
 export function getCategoryRoot(ephemeral?: boolean): InteractionReplyOptions {
-  // Map the categories
+  // Add option for each category
   const options = CategoryRoot.map(
     ({ name, description, emoji }) =>
       new StringSelectMenuOptionBuilder({
@@ -44,12 +47,11 @@ export function getCategoryRoot(ephemeral?: boolean): InteractionReplyOptions {
       })
   );
 
-  // Create embed
   const embed = new EmbedBuilder()
     .setTitle('Help Menu')
-    .setDescription('Browse through all commands.');
+    .setDescription('Browse through all commands.')
+    .setColor(COLORS.embed);
 
-  // Create select menu for categories
   const selectId = createId(N.select);
   const select = new SelectMenuBuilder()
     .setCustomId(selectId)
@@ -68,58 +70,56 @@ export function getCategoryRoot(ephemeral?: boolean): InteractionReplyOptions {
   };
 }
 
-// Generate new embed for current category page
+/**
+ * Generate new embed for category page
+ * @param interactionId The interactionId to generate the page for
+ * @returns The generated embed
+ */
 export function getCategoryPage(
   interactionId: string
 ): InteractionReplyOptions {
-  // Extract needed metadata from interactionId
+  // Extract metadata from interactionId
   const [_namespace, categoryName, action, currentOffset] =
     readId(interactionId);
 
-  const categoryChunks = CategoryRoot.map((c) => {
-    // Pre-map all commands as embed fields
-    const commands: APIEmbedField[] = c.commands.map((c) => ({
-      name: c.meta.name,
-      value: c.meta.description,
-    }));
-
-    return {
-      ...c,
-      commands: chunk(commands, 10),
-    };
-  });
-
-  const category = categoryChunks.find(({ name }) => name === categoryName);
+  const category = CategoryRoot.find(({ name }) => name === categoryName);
   if (!category)
     throw new Error(
       'Invalid interactionId; Failed to find corresponding category page!'
     );
 
-  // Get current offset
+  // Create embed fields from commands, chunked into groups of 10
+  const fields: APIEmbedField[][] = chunk(
+    category.commands.map((c) => ({
+      name: `/${c.meta.name}`,
+      value: c.meta.description,
+    })),
+    10
+  );
+
   let offset = parseInt(currentOffset);
-  // if is NaN set offset to 0
   if (isNaN(offset)) offset = 0;
-  // Increment offset according to action
+
+  // Update offset based on action
   if (action === A.next) offset++;
   else if (action === A.back) offset--;
 
   const emoji = category.emoji ? `${category.emoji} ` : '';
-  const defaultDescription = `Browse through ${
-    category.commands.flat().length
-  } commands in ${emoji}${category.name}`;
+  const defaultDescription = `Browse through ${category.commands.length} commands in ${emoji}${category.name}`;
 
   const embed = new EmbedBuilder()
     .setTitle(`${emoji}${category.name} Commands`)
     .setDescription(category.description ?? defaultDescription)
-    .setFields(category.commands[offset])
-    .setFooter({ text: `${offset + 1} / ${category.commands.length}` });
+    .setFields(fields[offset])
+    .setFooter({ text: `Page ${offset + 1} / ${category.commands.length}` })
+    .setColor(COLORS.embed);
 
   // Back button
   const backId = createId(N.action, category.name, A.back, offset);
   const backButton = new ButtonBuilder()
     .setCustomId(backId)
     .setLabel('Back')
-    .setStyle(ButtonStyle.Danger)
+    .setStyle(ButtonStyle.Primary)
     .setDisabled(offset <= 0);
 
   // Return to root
@@ -134,7 +134,7 @@ export function getCategoryPage(
   const nextButton = new ButtonBuilder()
     .setCustomId(nextId)
     .setLabel('Next')
-    .setStyle(ButtonStyle.Success)
+    .setStyle(ButtonStyle.Primary)
     .setDisabled(offset >= 0);
 
   const component = new ActionRowBuilder<ButtonBuilder>().addComponents(
