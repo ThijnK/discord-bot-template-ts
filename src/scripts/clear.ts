@@ -1,19 +1,15 @@
-import { config } from 'dotenv';
-import { resolve } from 'path';
-
-config({ path: resolve(__dirname, '..', '..', '.env') });
-
+import 'dotenv/config';
 import { REST, Routes, APIUser } from 'discord.js';
-import keys from '../keys';
+import { ENV } from '../../env';
 
-const rest = new REST({ version: '10' }).setToken(keys.clientToken);
+const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
 
 async function main() {
   const currentUser = (await rest.get(Routes.user())) as APIUser;
 
   await rest.put(Routes.applicationCommands(currentUser.id), { body: [] });
   await rest.put(
-    Routes.applicationGuildCommands(currentUser.id, keys.testGuild),
+    Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD),
     { body: [] }
   );
 
@@ -21,7 +17,5 @@ async function main() {
 }
 
 main()
-  .then((user) =>
-    console.log(`Successfully cleared commands for ${user.username}!`)
-  )
+  .then((user) => console.log(`Commands cleared for ${user.username}!`))
   .catch(console.error);

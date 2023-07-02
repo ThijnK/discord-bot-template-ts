@@ -1,15 +1,14 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { log, registerEvents } from '../utils';
-import events from '../events';
-import keys from '../keys';
+import { log } from '../utils';
+import { ENV } from '../../env';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
-registerEvents(client, events);
-
-client.login(keys.clientToken).catch((err) => {
+client.login(ENV.BOT_TOKEN).catch((err) => {
   log.error('login', err);
   process.exit(1);
 });
+
+export default client;

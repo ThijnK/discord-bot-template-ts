@@ -1,3 +1,3 @@
 To do
 
-- better commenting
+- splitSend util function

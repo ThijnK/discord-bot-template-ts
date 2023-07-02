@@ -1,5 +1,12 @@
-import { getCategoryPage, getCategoryRoot, Namespaces } from '../../pages/help';
-import { createId, event, readId, reply } from '../../utils';
+import {
+  createId,
+  event,
+  readId,
+  reply,
+  getCategoryPage,
+  getCategoryRoot,
+  Namespaces,
+} from '../../utils';
 
 export default event('interactionCreate', async ({ logger }, interaction) => {
   if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;

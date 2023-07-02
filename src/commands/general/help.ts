@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { command } from '../../utils';
-import { getCategoryRoot } from '../../pages/help';
+import { command, getCategoryRoot } from '../../utils';
 
 const meta = new SlashCommandBuilder()
   .setName('help')

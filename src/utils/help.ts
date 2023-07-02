@@ -11,7 +11,7 @@ import {
   StringSelectMenuOptionBuilder,
 } from 'discord.js';
 import CategoryRoot from '../commands';
-import { chunk, createId, readId } from '../utils';
+import { chunk, createId, readId } from '.';
 import { COLORS } from '../constants';
 
 // Namespace identifiers

@@ -1,6 +1,6 @@
-import { config } from 'dotenv';
-import { resolve } from 'path';
+import 'dotenv/config';
+import client from './client';
+import { registerEvents } from './utils';
+import events from './events';
 
-config({ path: resolve(__dirname, '..', '.env') });
-
-import './client';
+registerEvents(client, events);
