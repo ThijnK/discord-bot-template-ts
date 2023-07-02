@@ -8,7 +8,7 @@ export interface Paginator {
   description: string;
   /** Whether the reply should be ephemeral. */
   ephemeral?: boolean;
-  /** Optional components to include in the reply (max 4). */
+  /** Optional components to include in the reply (max 3). */
   components?: ActionRowBuilder<any>[];
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;

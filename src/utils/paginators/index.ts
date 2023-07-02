@@ -6,6 +6,7 @@ import {
   ButtonStyle,
   EmbedBuilder,
   InteractionReplyOptions,
+  StringSelectMenuBuilder,
 } from 'discord.js';
 import helpPaginators from './help';
 import { Paginator } from '../../types/paginators';
@@ -28,19 +29,14 @@ paginators.forEach((paginator) => {
     );
     process.exit(1);
   }
-  if (paginator.components && paginator.components.length > 4) {
+  if (paginator.components && paginator.components.length > 3) {
     log.error(
       'paginators',
-      `Paginator "${paginator.title}" has more than 4 components`
+      `Paginator "${paginator.title}" has more than 3 components`
     );
     process.exit(1);
   }
 });
-
-export const Actions = {
-  next: '+',
-  back: '-',
-};
 
 /**
  * Generate the embed for a specific page of a paginator
@@ -49,18 +45,19 @@ export const Actions = {
  */
 export function generatePage(interactionId: string): InteractionReplyOptions {
   // Extract metadata from interactionId
-  const [_namespace, paginatorName, action, currentOffset] =
-    parseId(interactionId);
+  const [_namespace, paginatorName, offsetString] = parseId(interactionId);
 
   const paginator = paginators.get(paginatorName);
   if (!paginator) throw new Error(`Paginator "${paginatorName}" not found`);
 
-  let offset = parseInt(currentOffset);
+  let offset = parseInt(offsetString);
+  // Page selected from select menu
+  if (offsetString && offsetString.startsWith('select-')) {
+    let targetPage = parseInt(offsetString.split('-')[1]);
+    if (isNaN(targetPage)) targetPage = 0;
+    offset = targetPage * paginator.pageLength;
+  }
   if (isNaN(offset)) offset = 0;
-
-  // Update offset based on action (if provided)
-  if (action === Actions.next) offset += paginator.pageLength;
-  else if (action === Actions.back) offset -= paginator.pageLength;
 
   const pageCount = Math.ceil(paginator.getLength() / paginator.pageLength);
   const fields = paginator.getPage(offset);
@@ -79,8 +76,7 @@ export function generatePage(interactionId: string): InteractionReplyOptions {
   const backId = createId(
     NAMESPACES.pagination,
     paginatorName,
-    Actions.back,
-    offset
+    offset - paginator.pageLength
   );
   const backButton = new ButtonBuilder()
     .setCustomId(backId)
@@ -92,8 +88,7 @@ export function generatePage(interactionId: string): InteractionReplyOptions {
   const nextId = createId(
     NAMESPACES.pagination,
     paginatorName,
-    Actions.next,
-    offset
+    offset + paginator.pageLength
   );
   const nextButton = new ButtonBuilder()
     .setCustomId(nextId)
@@ -101,14 +96,28 @@ export function generatePage(interactionId: string): InteractionReplyOptions {
     .setStyle(ButtonStyle.Primary)
     .setDisabled(currentPage >= pageCount);
 
-  const component = new ActionRowBuilder<ButtonBuilder>().addComponents(
+  const selectId = createId(NAMESPACES.pagination, paginatorName);
+  const pageSelector = new StringSelectMenuBuilder()
+    .setCustomId(selectId)
+    .setPlaceholder('Select a page...')
+    .setMaxValues(1)
+    .setOptions(
+      Array.from(Array(pageCount).keys()).map((i) => ({
+        label: `Page ${i + 1}`,
+        value: i.toString(),
+      }))
+    );
+
+  const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
     backButton,
     nextButton
   );
+  const selectMenu =
+    new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(pageSelector);
 
   return {
     embeds: [embed],
-    components: [component, ...(paginator.components ?? [])],
+    components: [buttons, selectMenu, ...(paginator.components ?? [])],
     // Ephemeral by default
     ephemeral: paginator.ephemeral ?? true,
   };

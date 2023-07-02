@@ -17,5 +17,6 @@ export default command(meta, async ({ interaction }) => {
   return await interaction.reply({
     embeds: [embed],
     components: [helpSelectComponent],
+    ephemeral: true,
   });
 });

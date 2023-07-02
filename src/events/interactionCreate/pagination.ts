@@ -1,14 +1,22 @@
-import { event, generatePage, parseId, reply } from '../../utils';
+import { createId, event, generatePage, parseId, reply } from '../../utils';
 import { NAMESPACES } from '../../constants';
 
 export default event('interactionCreate', async ({ logger }, interaction) => {
-  if (!interaction.isButton()) return;
-  const [namespace] = parseId(interaction.customId);
+  if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
+  const [namespace, paginatorName] = parseId(interaction.customId);
   if (namespace !== NAMESPACES.pagination) return;
 
   try {
     await interaction.deferUpdate();
-    return await interaction.editReply(generatePage(interaction.customId));
+    let interactionId = interaction.customId;
+    if (interaction.isStringSelectMenu())
+      interactionId = createId(
+        namespace,
+        paginatorName,
+        `select-${interaction.values[0]}`
+      );
+
+    return await interaction.editReply(generatePage(interactionId));
   } catch (error) {
     logger.error(error);
     reply.error(interaction);
