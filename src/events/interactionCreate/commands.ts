@@ -15,7 +15,8 @@ export default event('interactionCreate', async ({ client }, interaction) => {
   try {
     const command = allCommandsMap.get(interaction.commandName);
 
-    if (!command) throw new Error(`Command not found`);
+    if (!command)
+      throw new Error(`Command "${interaction.commandName}" not found`);
 
     await command.exec({
       client,

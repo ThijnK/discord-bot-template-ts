@@ -11,6 +11,7 @@ export const ENV = {
   TEST_GUILD: process.env.TEST_GUILD ?? '',
 } as const;
 
+// Check to make sure no environment variables are missing
 for (const [key, value] of Object.entries(ENV)) {
   if (!value) {
     log.error('env', `Missing environment variable: ${key}`);

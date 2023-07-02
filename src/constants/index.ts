@@ -1,3 +1,5 @@
+export * from './namespaces';
+
 export const COLORS = {
   error: '#f54242',
   warn: '#f5a742',
