@@ -31,7 +31,7 @@ const N = Namespaces;
 const A = Actions;
 
 /** Select menu options for root category page */
-const options = categories.map(
+const options = categories?.map(
   ({ name, description, emoji }) =>
     new StringSelectMenuOptionBuilder({
       label: name,
@@ -43,7 +43,8 @@ const options = categories.map(
 
 /** Fields for each category page */
 const categoryPages = new Map<string, CommandCategoryPage>();
-categories.forEach((category) => {
+// For some reason, the question mark is necessary for the deploy command to work, even though the type here is never undefined
+categories?.forEach((category) => {
   const fields = category.commands.map((c) => ({
     name: `/${c.meta.name}`,
     value: c.meta.description,

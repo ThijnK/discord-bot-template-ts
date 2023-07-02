@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { REST, Routes, APIUser } from 'discord.js';
 import commands from '../commands';
 import { ENV } from '../../env';
+import { log } from '../utils';
 
 const body = commands
   .map(({ commands }) => commands.map(({ meta }) => meta))
@@ -12,10 +13,9 @@ const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
 async function main() {
   const currentUser = (await rest.get(Routes.user())) as APIUser;
 
-  const endpoint =
-    process.env.NODE_ENV === 'production'
-      ? Routes.applicationCommands(currentUser.id)
-      : Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD);
+  const endpoint = ENV.DEV
+    ? Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD)
+    : Routes.applicationCommands(currentUser.id);
 
   await rest.put(endpoint, { body });
 
@@ -25,11 +25,11 @@ async function main() {
 main()
   .then((user) => {
     const tag = `${user.username}#${user.discriminator}`;
-    const response =
-      process.env.NODE_ENV === 'production'
-        ? `Commands deployed for ${tag}!`
-        : `Commands deployed for ${tag} in guild ${ENV.TEST_GUILD}!`;
-
-    console.log(response);
+    log.system(
+      'deploy',
+      `Commands deployed for \x1b[4m${tag}\x1b[0m\x1b[36m${
+        ENV.DEV ? ` in guild ${ENV.TEST_GUILD}` : ''
+      }!`
+    );
   })
   .catch(console.error);
