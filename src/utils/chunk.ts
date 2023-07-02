@@ -1,14 +1,15 @@
-// Takes an array of items and chunk items into a matrix.
-// Useful for offset based pagination.
+/**
+ * Takes an array of items and chunks items into a matrix with a given chunk size.
+ * Useful for offset based pagination.
+ * @param items Array of items to chunk
+ * @param chunk Chunk size
+ * @returns Jagged array (matrix) of chunks
+ */
 export function chunk<T>(items: T[], chunk: number): T[][] {
-  // Initialize the matrix
   const chunks: T[][] = [];
 
-  // For loop; Loop until i is more than our items available; Increment by the given chunk;
-  // Each iteraction copy push targeted chunk from the passed items to the chunks array
-  for (let i = 0; i < items.length; i += chunk) {
+  for (let i = 0; i < items.length; i += chunk)
     chunks.push(items.slice(i, i + chunk));
-  }
 
   return chunks;
 }

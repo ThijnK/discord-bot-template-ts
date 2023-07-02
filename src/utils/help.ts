@@ -4,15 +4,15 @@ import {
   SelectMenuBuilder,
 } from '@discordjs/builders';
 import {
-  APIEmbedField,
   ButtonStyle,
   EmbedBuilder,
   InteractionReplyOptions,
   StringSelectMenuOptionBuilder,
 } from 'discord.js';
-import CategoryRoot from '../commands';
+import categories from '../commands';
 import { chunk, createId, readId } from '.';
 import { COLORS } from '../constants';
+import { CommandCategoryPage } from '../types';
 
 // Namespace identifiers
 export const Namespaces = {
@@ -30,23 +30,38 @@ export const Actions = {
 const N = Namespaces;
 const A = Actions;
 
+/** Select menu options for root category page */
+const options = categories.map(
+  ({ name, description, emoji }) =>
+    new StringSelectMenuOptionBuilder({
+      label: name,
+      description,
+      emoji,
+      value: name,
+    })
+);
+
+/** Fields for each category page */
+const categoryPages = new Map<string, CommandCategoryPage>();
+categories.forEach((category) => {
+  const fields = category.commands.map((c) => ({
+    name: `/${c.meta.name}`,
+    value: c.meta.description,
+  }));
+
+  categoryPages.set(category.name, {
+    ...category,
+    length: category.commands.length,
+    fields: chunk(fields, 10),
+  });
+});
+
 /**
  * Generate new embed for root category page
  * @param ephemeral Whether the reply should be ephemeral
  * @returns The generated embed
  */
 export function getCategoryRoot(ephemeral?: boolean): InteractionReplyOptions {
-  // Add option for each category
-  const options = CategoryRoot.map(
-    ({ name, description, emoji }) =>
-      new StringSelectMenuOptionBuilder({
-        label: name,
-        description,
-        emoji,
-        value: name,
-      })
-  );
-
   const embed = new EmbedBuilder()
     .setTitle('Help Menu')
     .setDescription('Browse through all commands.')
@@ -82,20 +97,11 @@ export function getCategoryPage(
   const [_namespace, categoryName, action, currentOffset] =
     readId(interactionId);
 
-  const category = CategoryRoot.find(({ name }) => name === categoryName);
+  const category = categoryPages.get(categoryName);
   if (!category)
     throw new Error(
       'Invalid interactionId; Failed to find corresponding category page!'
     );
-
-  // Create embed fields from commands, chunked into groups of 10
-  const fields: APIEmbedField[][] = chunk(
-    category.commands.map((c) => ({
-      name: `/${c.meta.name}`,
-      value: c.meta.description,
-    })),
-    10
-  );
 
   let offset = parseInt(currentOffset);
   if (isNaN(offset)) offset = 0;
@@ -105,13 +111,13 @@ export function getCategoryPage(
   else if (action === A.back) offset--;
 
   const emoji = category.emoji ? `${category.emoji} ` : '';
-  const defaultDescription = `Browse through ${category.commands.length} commands in ${emoji}${category.name}`;
+  const defaultDescription = `Browse through ${category.length} commands in ${emoji}${category.name}`;
 
   const embed = new EmbedBuilder()
     .setTitle(`${emoji}${category.name} Commands`)
     .setDescription(category.description ?? defaultDescription)
-    .setFields(fields[offset])
-    .setFooter({ text: `Page ${offset + 1} / ${category.commands.length}` })
+    .setFields(category.fields[offset])
+    .setFooter({ text: `Page ${offset + 1} / ${category.length}` })
     .setColor(COLORS.embed);
 
   // Back button

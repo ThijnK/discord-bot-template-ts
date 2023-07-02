@@ -3,6 +3,7 @@ import {
   Client,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  APIEmbedField,
 } from 'discord.js';
 import { Logger } from '../utils';
 
@@ -21,12 +22,18 @@ export interface Command {
   exec: CommandExec;
 }
 
-export interface CommandCategoryExtra {
+export interface CommandCategoryMetadata {
+  name: string;
   description?: string;
   emoji?: string;
 }
 
-export interface CommandCategory extends CommandCategoryExtra {
-  name: string;
+export interface CommandCategory extends CommandCategoryMetadata {
   commands: Command[];
+}
+
+/** Fields for each category page */
+export interface CommandCategoryPage extends CommandCategoryMetadata {
+  length: number;
+  fields: APIEmbedField[][];
 }

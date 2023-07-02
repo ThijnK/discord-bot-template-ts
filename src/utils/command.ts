@@ -1,7 +1,7 @@
 import {
   Command,
   CommandCategory,
-  CommandCategoryExtra,
+  CommandCategoryMetadata,
   CommandExec,
   CommandMeta,
 } from '../types';
@@ -14,13 +14,11 @@ export function command(meta: CommandMeta, exec: CommandExec): Command {
 }
 
 export function category(
-  name: string,
-  commands: Command[],
-  extra: CommandCategoryExtra = {}
+  metadata: CommandCategoryMetadata,
+  commands: Command[]
 ): CommandCategory {
   return {
-    name,
+    ...metadata,
     commands,
-    ...extra,
   };
 }
