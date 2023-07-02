@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { REST, Routes, APIUser } from 'discord.js';
 import commands from '../commands';
-import { ENV } from '../../env';
+import { ENV } from '../env';
 import { log } from '../utils';
 
 const body = commands

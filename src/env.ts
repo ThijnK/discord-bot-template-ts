@@ -1,4 +1,7 @@
+import { log } from './utils';
+
 export const ENV = {
+  /** Whether or not the app is running in the development environment */
   DEV:
     process.env.NODE_ENV !== 'production' &&
     process.env.NODE_ENV !== 'PRODUCTION',
@@ -9,5 +12,8 @@ export const ENV = {
 } as const;
 
 for (const [key, value] of Object.entries(ENV)) {
-  if (!value) throw new Error(`Missing ENV variable: ${key}`);
+  if (!value) {
+    log.error('env', `Missing environment variable: ${key}`);
+    process.exit(1);
+  }
 }

@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { REST, Routes, APIUser } from 'discord.js';
-import { ENV } from '../../env';
+import { ENV } from '../env';
 import { log } from '../utils';
 
 const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);

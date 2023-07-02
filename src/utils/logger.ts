@@ -14,17 +14,17 @@ export enum LogType {
 const getTextColor = (type: LogType) => {
   switch (type) {
     case 'default':
-      return '\x1b[0m';
+      return '\x1b[0m'; // White
     case 'system':
-      return '\x1b[36m%s\x1b[0m';
+      return '\x1b[36m%s\x1b[0m'; // Cyan
     case 'error':
-      return '\x1b[31m%s\x1b[0m';
+      return '\x1b[31m%s\x1b[0m'; // Red
     case 'warn':
-      return '\x1b[33m%s\x1b[0m';
+      return '\x1b[33m%s\x1b[0m'; // Yellow
     case 'debug':
-      return '\x1b[90m%s\x1b[0m';
+      return '\x1b[90m%s\x1b[0m'; // Gray
     default:
-      return '\x1b[37m%s\x1b[0m';
+      return '\x1b[37m%s\x1b[0m'; // White
   }
 };
 
