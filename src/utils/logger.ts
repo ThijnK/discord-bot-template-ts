@@ -40,27 +40,27 @@ export class Logger {
     this.category = category;
   }
 
-  log(message: any, type: LogType = LogType.Default) {
+  log(message: unknown, type: LogType = LogType.Default) {
     log(this.category, message, type);
   }
 
-  info(message: any) {
+  info(message: unknown) {
     log(this.category, message, LogType.Default);
   }
 
-  error(message: any) {
+  error(message: unknown) {
     log(this.category, message, LogType.Error);
   }
 
-  warn(message: any) {
+  warn(message: unknown) {
     log(this.category, message, LogType.Warn);
   }
 
-  debug(message: any) {
+  debug(message: unknown) {
     log(this.category, message, LogType.Debug);
   }
 
-  system(message: any) {
+  system(message: unknown) {
     log(this.category, message, LogType.System);
   }
 }
@@ -73,7 +73,7 @@ export class Logger {
  */
 export const log = (
   category: string,
-  message: string,
+  message: unknown,
   type: LogType = LogType.Default
 ) =>
   console.log(
@@ -81,14 +81,14 @@ export const log = (
     `[${type}] ${category.toLowerCase()} - ${message}`
   );
 
-log.error = (category: string, message: any) =>
+log.error = (category: string, message: unknown) =>
   log(category, message, LogType.Error);
 
-log.warn = (category: string, message: any) =>
+log.warn = (category: string, message: unknown) =>
   log(category, message, LogType.Warn);
 
-log.debug = (category: string, message: any) =>
+log.debug = (category: string, message: unknown) =>
   log(category, message, LogType.Debug);
 
-log.system = (category: string, message: any) =>
+log.system = (category: string, message: unknown) =>
   log(category, message, LogType.System);
