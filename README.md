@@ -124,24 +124,44 @@ There is built-in support for pagination of content using embeds. Currently, thi
 1. Create a paginator in the [`src/utils/paginators.ts`](./src/utils/paginators) folder, satisfying the interface specification in [`src/types/paginators.ts`](./src/types/paginators.ts)
 2. Use the `paginationEmbed()` function from the utils to create an embed that can be used to navigate through the pages
 
-The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts](./src/events/interactionCreate/help.ts) file.
+The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
 
 The pagination uses embed fields to display the content, and thus the limit of items to show on a single page is 25 (the maximum number of fields allowed in an embed). You can also pass additional components to the embed (such as buttons), which will be added to the embed, but the amount is limited to 3, because of Discord's limit of 5 action rows per embed. Two action rows are already used by the pagination embed, one for the _next_ and _back_ buttons, and another for the page selection menu.
 
 ## Interaction IDs
 
-Discord interaction IDs are used to identify interactions, such as slash commands, buttons, and select menus. This allows the bot to differentiate between multiple interactions of the same type. For example, if you have a slash command that sends a message with a button, and you click that button, the bot needs to know which button was clicked. This is done by using the interaction ID. In this template, **namespaces** are used as the primary identifier of an interaction, and additional arguments, separated by `;`, can be used to pass specific data along. The currently available namespaces can be found in the [`src/constants/namespaces.ts](./src/constants/namespaces.ts) file. The general structure of an interaction ID is thus as follows:
+Discord interaction IDs are used to identify interactions, such as slash commands, buttons, and select menus.
+This allows the bot to differentiate between multiple interactions of the same type.
+For example, if you have a slash command that sends a message with a button, and you click that button, the bot needs to know which button was clicked.
+This is done by using the interaction ID.
+In this template, **namespaces** are used as the primary identifier of an interaction, and additional arguments, separated by `;`, can be used to pass specific data along.
+The currently available namespaces can be found in the [`src/constants/namespaces.ts`](./src/constants/namespaces.ts) file.
+The general structure of an interaction ID is thus as follows:
 
 ```
 <namespace>;<arg1>;<arg2>;<...>
 ```
 
-To facilitate the easy usage of this configuration, there are two utility functions available in the [`src/utils/interaction.ts`](./src/utils/interaction.ts) file:
+The namespaces can be used to filter out other interactions in the `interactionCreate` event handler, and the arguments can be used to pass specific data along with the interaction.
+For example, the pagination (see the [Pagination](#pagination) section) uses the `pagination` namespace, and passes the paginator name and current offset as arguments.
+The event handler for the pagination buttons can then filter out other interactions by checking the namespace, and use the arguments to determine which paginator to use and what the current offset is.
+In particular, it looks something like this:
+
+```ts
+if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
+const [namespace] = parseId(interaction.customId);
+if (namespace !== NAMESPACES.pagination) return;
+```
+
+The first line filters out other types of interactions, such as slash commands, and the second line parses the interaction ID to retrieve the namespace, which is then used to check that the interaction is indeed a pagination interaction.
+Notice the use of the `NAMESPACES` object to make sure we always use the correct string identifier for each namespace and allow for easy renaming of namespaces.
+
+To facilitate the easy usage of this configuration of interaction IDs, there are two utility functions available in the [`src/utils/interaction.ts`](./src/utils/interaction.ts) file:
 
 - `createId()`: create an interaction ID from a namespace and a list of arguments
 - `parseId()`: parse an interaction ID into a namespace and a list of arguments
 
-## Other utilities
+## Other utility functions
 
 - [`splitSend`](./src/utils/split.ts): split a a list of lines over multiple embeds, respecting Discord's embed description length limit
 - [`chunk`](./src/utils/chunk.ts): split an array into chunks of a given size (jagged array / matrix)
