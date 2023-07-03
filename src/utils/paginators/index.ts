@@ -1,5 +1,3 @@
-// Export as object to enable fast indexing
-
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -14,7 +12,8 @@ import { createId, parseId } from '../interaction';
 import { COLORS, NAMESPACES } from '../../constants';
 import { log } from '../logger';
 
-const _paginators = [...helpPaginators];
+// Add new paginators to this array
+const _paginators = [...helpPaginators /*, otherPaginator */];
 
 const paginators = new Map<string, Paginator>(
   _paginators.map((p) => [p.name, p])
