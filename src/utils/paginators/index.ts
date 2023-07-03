@@ -121,3 +121,13 @@ export function generatePage(interactionId: string): InteractionReplyOptions {
     ephemeral: paginator.ephemeral ?? true,
   };
 }
+
+/**
+ * Create a paginated embed for a specific paginator
+ * @param paginatorName The name of the paginator to generate the embed for
+ * @returns The generated embed
+ */
+export function paginationEmbed(paginatorName: string) {
+  const id = createId(NAMESPACES.pagination, paginatorName);
+  return generatePage(id);
+}

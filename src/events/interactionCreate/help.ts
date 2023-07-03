@@ -1,4 +1,4 @@
-import { createId, event, generatePage, parseId, reply } from '../../utils';
+import { event, paginationEmbed, parseId, reply } from '../../utils';
 import { NAMESPACES } from '../../constants';
 
 export default event('interactionCreate', async ({ logger }, interaction) => {
@@ -8,8 +8,7 @@ export default event('interactionCreate', async ({ logger }, interaction) => {
 
   try {
     await interaction.deferUpdate();
-    const newId = createId(NAMESPACES.pagination, interaction.values[0]);
-    return await interaction.editReply(generatePage(newId));
+    return await interaction.editReply(paginationEmbed(interaction.values[0]));
   } catch (error) {
     logger.error(error);
     reply.error(interaction);
