@@ -12,11 +12,20 @@ This is a template for a Discord bot written in TypeScript, using the [discord.j
 - [x] Fancy logging
 - [x] Easy handling of interaction IDs
 
+## Prerequisites
+
+Some knowledge of TypeScript and Discord.js is recommended, and you'll need the following installed:
+
+- [Node.js](https://nodejs.org/en/) (v16.9.0 or higher)
+- [npm](https://www.npmjs.com/) (should come with Node.js)
+
+You will need a Discord bot token, which you can get by creating a new application in the [Discord developer portal](https://discord.com/developers/applications) by following the steps outlined in the [Discord developer documentation](https://discord.com/developers/docs/getting-started).
+
 ## Getting started
 
 To get started, create a new repository from this template, as explained in the [GitHub docs](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template).
 
-Add the required environment variables, as explained in the [Environment variables](#environment-variables) section.
+Add the required environment variables (see section [Environment variables](#environment-variables)).
 Then run the following commands to install the dependencies and start the bot:
 
 ```sh
