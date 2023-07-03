@@ -6,3 +6,4 @@ export * from './interaction';
 export * from './logger';
 export * from './help';
 export * from './paginators';
+export * from './split';

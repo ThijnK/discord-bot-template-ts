@@ -3,13 +3,13 @@ import {
   InteractionEditReplyOptions,
   BaseInteraction,
 } from 'discord.js';
-import { COLORS, EMOJIS } from '../constants';
+import { EMOJIS } from '../constants';
 import { log } from './logger';
 
 interface DeferableInteraction extends BaseInteraction {
   deferred: boolean;
-  reply: (options: InteractionReplyOptions) => Promise<any>;
-  editReply: (options: InteractionEditReplyOptions) => Promise<any>;
+  reply: (options: InteractionReplyOptions) => Promise<unknown>;
+  editReply: (options: InteractionEditReplyOptions) => Promise<unknown>;
 }
 
 enum ReplyType {

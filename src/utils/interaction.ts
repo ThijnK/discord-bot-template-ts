@@ -1,10 +1,4 @@
 /**
- * @module interaction
- * @description
- * This module contains functions for creating and reading interaction ids.
- */
-
-/**
  * Creates a custom id from a namespace and list of arguments, separated by `;`.
  * @param namespace The namespace of the interaction.
  * @param args The arguments to be passed to the interaction.
