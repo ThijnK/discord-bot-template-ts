@@ -1,0 +1,44 @@
+name: Format Checks
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  # Install and cache npm dependencies
+  install-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Commit
+        uses: actions/checkout@v3
+      - name: Cache node modules
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build
+      - name: Install dependencies if cache invalid
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+  format-and-lint-check:
+    runs-on: ubuntu-latest
+    needs: install-cache
+    steps:
+      - uses: actions/checkout@v3
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build
+      - name: Run Prettier formatting check
+        run: npx prettier --check ./src
