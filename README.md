@@ -16,7 +16,7 @@ This is a template for a Discord bot written in TypeScript, using the [discord.j
 
 To get started, create a new repository from this template, as explained in the [GitHub docs](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template).
 
-Add the required environemnt variables, as explained in the [Environment variables](#environment-variables) section.
+Add the required environment variables, as explained in the [Environment variables](#environment-variables) section.
 Then run the following commands to install the dependencies and start the bot:
 
 ```sh
