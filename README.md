@@ -70,13 +70,76 @@ A `/help` command is already provided in the [`src/commands/general/help.ts`](./
 
 ## Events
 
+Events are located in the [`src/events`](./src/events) folder. The [index.ts](./src/events/index.ts) file exports all event handlers, which is used to register them in the [`src/index.ts`](./src/index.ts) file, which in turn calls the `registerEvents` function from [`src/utils/event.ts`](./src/utils/event.ts).
+
+All `interactionCreate` events are grouped together in the [`src/events/interactionCreate`](./src/events/interactionCreate) folder, and are exported in the corresponding [`index.ts`](./src/events/interactionCreate/index.ts) file.
+When adding new events, it is recommended to group them in a similar way.
+
+Each event handler consists of the event name and a listener function, which is called when the event is triggered. The listener function recieves a context with the bot client and a Logger instance (instantiated with the event name; see the [Logging](#logging) section), as well as a list of arguments specific to the event.
+
+An event handler file should look something like this:
+
+```ts
+import { event } from '../utils';
+
+export default event('ready', ({ logger }, client) => {
+  logger.system(
+    `\x1b[4m${client.user.tag}\x1b[0m\x1b[36m is up and ready to go!`
+  );
+});
+```
+
 ## Logging
 
-## Replies
+The [`src/utils/log.ts`](./src/utils/log.ts) file exports a `Logger` class, which can be used to log messages to the console. It is instantiated with a `category` string, which is used to prefix the log messages. The file also exports a `log()` function, with additional functions, such as `log.system()`, for every type of log message.
+
+The `Logger` class is used in the contexts of events and commands to automatically prefix every logged message in specific commands or events with the corresponding command or event name. Anywhere else, you can easily use the `log()` function, or any sub-function, to log messages. This takes the category as the first argument, and the message as the second argument.
+
+The following log message types are currently supported:
+
+- `default`: default log message (white text)
+- `error`: error messages (red text)
+- `warn`: warning messages (yellow text)
+- `debug`: debug messages (gray text)
+- `system`: system messages, such as startup messages (cyan text)
+
+## Interaction replies
+
+The [`src/utils/reply.ts`](./src/utils/reply.ts) file exports a `reply` class, which can be used to send replies to interactions, without having to worry about whether you should be using `interaction.reply()` or `interaction.editReply()`, as it automatically uses the correct method.
+
+The function takes the interaction to reply to, the options for the reply (meaning you can provide the same options as you would to `interaction.reply()` or `interaction.editReply()`), and optionally a reply type. The reply will be made ephemeral by default, but it can be overwritten by providing a value for it yourself in the options (second argument). The reply type can be one of the following:
+
+- `default`: send a normal reply
+- `error`: send an error reply, which is prepended with an error emoji
+- `warn`: send a warning reply, which is prepended with a warning emoji
+
+Similar to the `log()` function (see the [Logging](#logging) section), the `reply()` function provides easy-to-use sub-functions for each type, so currenlty `reply.error()` and `reply.warn()`.
+
+If you want these replies to use embeds by default, this can be easily changed by modifying the `getOptions()` function in the [`src/utils/reply.ts`](./src/utils/reply.ts) file.
 
 ## Pagination
 
+There is built-in support for pagination of content using embeds. Currently, this is only used in the `/help` command, but you can create your own pagination by following these steps:
+
+1. Create a paginator in the [`src/utils/paginators.ts`](./src/utils/paginators) folder, satisfying the interface specification in [`src/types/paginators.ts`](./src/types/paginators.ts)
+2. Use the `paginationEmbed()` function from the utils to create an embed that can be used to navigate through the pages
+
+The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts](./src/events/interactionCreate/help.ts) file.
+
+The pagination uses embed fields to display the content, and thus the limit of items to show on a single page is 25 (the maximum number of fields allowed in an embed). You can also pass additional components to the embed (such as buttons), which will be added to the embed, but the amount is limited to 3, because of Discord's limit of 5 action rows per embed. Two action rows are already used by the pagination embed, one for the _next_ and _back_ buttons, and another for the page selection menu.
+
 ## Interaction IDs
+
+Discord interaction IDs are used to identify interactions, such as slash commands, buttons, and select menus. This allows the bot to differentiate between multiple interactions of the same type. For example, if you have a slash command that sends a message with a button, and you click that button, the bot needs to know which button was clicked. This is done by using the interaction ID. In this template, **namespaces** are used as the primary identifier of an interaction, and additional arguments, separated by `;`, can be used to pass specific data along. The currently available namespaces can be found in the [`src/constants/namespaces.ts](./src/constants/namespaces.ts) file. The general structure of an interaction ID is thus as follows:
+
+```
+<namespace>;<arg1>;<arg2>;<...>
+```
+
+To facilitate the easy usage of this configuration, there are two utility functions available in the [`src/utils/interaction.ts`](./src/utils/interaction.ts) file:
+
+- `createId()`: create an interaction ID from a namespace and a list of arguments
+- `parseId()`: parse an interaction ID into a namespace and a list of arguments
 
 ## Other utilities
 
@@ -142,12 +205,4 @@ src
 │   │   ├── index.ts
 │   │   └── ...
 ├── ...
-```
-
-## Future work
-
-- [ ] Add support for running an express server (separate /src/server folder, with subfolders for routes, middleware, etc.)
-
-```
-
 ```

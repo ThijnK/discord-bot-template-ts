@@ -9,8 +9,8 @@ const paginators: Paginator[] = categories.map((category) => {
   }));
 
   const emoji = category.emoji ? `${category.emoji} ` : '';
-
   const pageLength = 2;
+
   return {
     name: category.name,
     title: `${emoji}${category.name} Commands`,
