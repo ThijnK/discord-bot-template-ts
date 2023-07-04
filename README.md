@@ -206,16 +206,21 @@ Note that passing the database in the context like this is recommended over impo
 For example, the following snippet initializes a database connection using the `firebase-admin` package and would be added to the `src/client/db.ts` file:
 
 ```ts
+import admin from 'firebase-admin';
+import { ENV } from '../env';
+
 const serviceAccount = JSON.parse(ENV.FIREBASE_SDK);
 
 // Initialize Firebase with the realtime database
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.DB_URL,
+  databaseURL: ENV.DB_URL,
 });
 
 export const db = admin.database();
 ```
+
+Don't forget to add the `FIREBASE_SDK` and `DB_URL` environment variables to your `.env` and `env.ts` files if you use the above snippet. You'll also have to install the `firebase-admin` package using `npm i firebase-admin`.
 
 ## Server
 
