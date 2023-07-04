@@ -97,6 +97,14 @@ export default command(meta, async ({ interaction }) => {
 
 A `/help` command is already provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands and their descriptions, using the pagination functionality described in section [Pagination](#pagination).
 
+### Options
+
+The `command()` function takes an optional third argument, which is an object containing the following options:
+
+- `private`: whether the command should be private to the test guild (default: `false`)
+
+When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use, such as stats about the bot.
+
 ## Events
 
 Events are located in the [`src/events`](./src/events) folder. The [index.ts](./src/events/index.ts) file exports all event handlers, which is used to register them in the [`src/index.ts`](./src/index.ts) file, which in turn calls the `registerEvents` function from [`src/utils/event.ts`](./src/utils/event.ts).
