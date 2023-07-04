@@ -1,12 +1,8 @@
 import 'dotenv/config';
 import { REST, Routes, APIUser } from 'discord.js';
-import commands from '../commands';
+import categories from '../commands';
 import { ENV } from '../env';
 import { log } from '../utils';
-
-const body = commands
-  .map(({ commands }) => commands.map(({ meta }) => meta))
-  .flat();
 
 const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
 
@@ -16,6 +12,14 @@ async function main() {
   const endpoint = ENV.DEV
     ? Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD)
     : Routes.applicationCommands(currentUser.id);
+
+  const body = categories
+    .map(({ commands }) =>
+      commands
+        .filter((c) => ENV.DEV || !c.options || !c.options.private)
+        .map(({ meta }) => meta)
+    )
+    .flat();
 
   await rest.put(endpoint, { body });
 

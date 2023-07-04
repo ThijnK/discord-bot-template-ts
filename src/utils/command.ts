@@ -4,12 +4,18 @@ import {
   CommandCategoryMetadata,
   CommandExec,
   CommandMeta,
+  CommandOptions,
 } from '../types';
 
-export function command(meta: CommandMeta, exec: CommandExec): Command {
+export function command(
+  meta: CommandMeta,
+  exec: CommandExec,
+  opts: CommandOptions | undefined = undefined
+): Command {
   return {
     meta,
     exec,
+    options: opts,
   };
 }
 

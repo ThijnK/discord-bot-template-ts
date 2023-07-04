@@ -13,13 +13,11 @@ const meta = new SlashCommandBuilder()
       .setRequired(false)
   );
 
-export default command(meta, async ({ interaction }) => {
+export default command(meta, async ({ client, interaction }) => {
   const message = interaction.options.getString('message');
 
   return interaction.reply({
     ephemeral: true,
-    content: `${message ?? 'Pong!'} (${
-      Date.now() - interaction.createdTimestamp
-    }ms)`,
+    content: `${message ?? 'Pong!'} (${client.ws.ping}ms)`,
   });
 });

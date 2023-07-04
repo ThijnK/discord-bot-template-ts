@@ -13,6 +13,13 @@ export interface CommandProps {
   logger: Logger;
 }
 
+export type CommandOptions = {
+  /**
+   * When set to `true`, this command will be registered only in the `TEST_GUILD` defined in the .env
+   * @default false
+   */
+  private: boolean;
+};
 export type CommandExec = (props: CommandProps) => Awaitable<unknown>;
 export type CommandMeta =
   | SlashCommandBuilder
@@ -20,6 +27,7 @@ export type CommandMeta =
 export interface Command {
   meta: CommandMeta;
   exec: CommandExec;
+  options?: CommandOptions;
 }
 
 export interface CommandCategoryMetadata {
@@ -27,11 +35,9 @@ export interface CommandCategoryMetadata {
   description?: string;
   emoji?: string;
 }
-
 export interface CommandCategory extends CommandCategoryMetadata {
   commands: Command[];
 }
-
 /** Fields for each category page */
 export interface CommandCategoryPage extends CommandCategoryMetadata {
   length: number;
