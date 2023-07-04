@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { COLORS } from '../constants';
 
 /** The maximum character length of an embed to send */
-const MAX_EMBED_LENGTH = 20 as const;
+const MAX_EMBED_LENGTH = 2048 as const;
 
 /**
  * Function to split an array of lines into multiple embeds (when necessary) and send them in the channel of the interaction
@@ -25,10 +25,10 @@ export async function splitSend(
 
   // Split the input into multiple embed descriptions
   const descriptions: string[][] = [];
-  let wordCount = 0;
+  let charCount = 0;
   for (let i = 0; i < input.length; i++) {
-    wordCount += input[i].length + seperator.length;
-    const index = Math.floor(wordCount / MAX_EMBED_LENGTH);
+    charCount += input[i].length + seperator.length;
+    const index = Math.floor(charCount / MAX_EMBED_LENGTH);
     if (index === descriptions.length) {
       descriptions.push([]);
     }
