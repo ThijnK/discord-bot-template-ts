@@ -7,7 +7,7 @@ import {
   StringSelectMenuBuilder,
 } from 'discord.js';
 import helpPaginators from './help';
-import { Paginator } from '../../types/paginators';
+import { Paginator } from '../../types';
 import { createId, parseId } from '../interaction';
 import { COLORS, NAMESPACES } from '../../constants';
 import { log } from '../logger';

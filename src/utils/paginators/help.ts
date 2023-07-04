@@ -1,5 +1,5 @@
 import categories from '../../commands';
-import { Paginator } from '../../types/paginators';
+import { Paginator } from '../../types';
 import { helpSelectComponent } from '../help';
 
 const paginators: Paginator[] =
