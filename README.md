@@ -57,8 +57,16 @@ If no `TEST_TOKEN` is provided, the `BOT_TOKEN` will be used for development as 
 
 ## Styling
 
-<!-- - Colors
-- [Other constants?] -->
+To ensure consistent styling throughout the bot's embeds and messages, some constants are provided in the [`src/constants/index.ts`](./src/constants/index.ts) file.
+Currently, this includes the following:
+
+- `COLORS`: a list of colors, which can be used to provide a color to an embed, or really anything else
+- `EMOJIS`: a list of emojis, which can be used to add emoji's to messages
+
+The `EMOJIS` constant is already used to add emoji's to the reply messages created through the `reply()` function (see the [Interaction replies](#interaction-replies) section).
+The `COLORS` constant is only being used to give the same color to every embed the bot sends out, namely `COLORS.embed`. The `warn` and `error` colors are not being used anywhere, but are provided as examples.
+
+You are free to change these constants, or add new ones and new fields to the existing ones, to customize the bot to your liking.
 
 ## Commands
 
