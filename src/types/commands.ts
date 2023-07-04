@@ -18,7 +18,12 @@ export type CommandOptions = {
    * When set to `true`, this command will be registered only in the `TEST_GUILD` defined in the .env
    * @default false
    */
-  private: boolean;
+  private?: boolean;
+  /**
+   * When set to `true`, only admins in the server will be allowed to use this command
+   * @default false
+   */
+  adminOnly?: boolean;
 };
 export type CommandExec = (props: CommandProps) => Awaitable<unknown>;
 export type CommandMeta =
@@ -27,7 +32,7 @@ export type CommandMeta =
 export interface Command {
   meta: CommandMeta;
   exec: CommandExec;
-  options?: CommandOptions;
+  options: CommandOptions;
 }
 
 export interface CommandCategoryMetadata {

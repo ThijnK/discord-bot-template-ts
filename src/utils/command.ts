@@ -8,14 +8,13 @@ import {
 } from '../types';
 
 export function command(
-  meta: CommandMeta,
-  exec: CommandExec,
-  opts: CommandOptions | undefined = undefined
+  { meta, ...options }: { meta: CommandMeta } & CommandOptions,
+  exec: CommandExec
 ): Command {
   return {
     meta,
     exec,
-    options: opts,
+    options,
   };
 }
 
@@ -26,8 +25,8 @@ export function category(
   return {
     ...metadata,
     commands: {
-      public: commands.filter((c) => !c.options?.private),
-      private: commands.filter((c) => c.options?.private),
+      public: commands.filter((c) => !c.options.private),
+      private: commands.filter((c) => c.options.private),
       all: commands,
     },
   };

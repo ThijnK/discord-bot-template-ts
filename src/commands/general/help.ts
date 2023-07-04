@@ -6,7 +6,7 @@ const meta = new SlashCommandBuilder()
   .setName('help')
   .setDescription('Get a list of all commands for the bot.');
 
-export default command(meta, async ({ interaction }) => {
+export default command({ meta }, async ({ interaction }) => {
   const embed = new EmbedBuilder()
     .setTitle('Help Menu')
     .setDescription(

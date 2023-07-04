@@ -13,7 +13,7 @@ const meta = new SlashCommandBuilder()
       .setRequired(false)
   );
 
-export default command(meta, async ({ client, interaction }) => {
+export default command({ meta }, async ({ client, interaction }) => {
   const message = interaction.options.getString('message');
 
   return interaction.reply({

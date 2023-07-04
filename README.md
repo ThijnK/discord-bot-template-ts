@@ -73,9 +73,9 @@ You are free to change these constants, or add new ones and new fields to the ex
 
 Commands are located in the [`src/commands`](./src/commands) folder. The [index.ts](./src/commands/index.ts) file exports all command categories, which is used to register them in the [`src/events/interactionCreate/commands.ts`](./src/events/interactionCreate/commands.ts) file.
 
-Commands are grouped into _categories_, each of which has its own folder. The `index.ts` file in each folder exports the commands in that category and provides some metadata about the category, which includes at least the name of the category.
+Commands are grouped into _categories_, each of which has its own folder. The `index.ts` file in each folder exports the commands in that category and provides some metadata about the category, which includes at least the name of the category, and optionally a description and emoji.
 
-Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and a `exec` function, which is called when the command is executed. This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself.
+Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and an `exec` function, which is called when the command is executed. This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself.
 
 A command file should look something like this:
 
@@ -87,7 +87,7 @@ const meta = new SlashCommandBuilder()
   .setName('example')
   .setDescription('Example command.');
 
-export default command(meta, async ({ interaction }) => {
+export default command({ meta }, async ({ interaction }) => {
   return interaction.reply({
     ephemeral: true,
     content: 'Hello world!',
@@ -97,13 +97,22 @@ export default command(meta, async ({ interaction }) => {
 
 A `/help` command is already provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands and their descriptions, using the pagination functionality described in section [Pagination](#pagination).
 
-### Options
+### Command options
 
-The `command()` function takes an optional third argument, which is an object containing the following options:
+The first argument of the `command()` function takes an object containing at least the `meta` object created using the `SlashCommandBuilder` from `discord.js`. There's some optional fields that can be passed into the object alongside the `meta` to further configure the command. The following optional fields are available:
 
 - `private`: whether the command should be private to the test guild (default: `false`)
+- `adminOnly`: whether the command should only be available to users with the `ADMINISTRATOR` permission (default: `false`)
 
 When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use, such as stats about the bot.
+
+### Subcommands
+
+Subcommands are supported by the `SlashCommandBuilder` from `discord.js`, and can be added to a command by calling the `addSubcommand()` or `addSubcommandGroup()` methods on the `SlashCommandBuilder` object. The `addSubcommand()` method takes a `SlashCommandSubcommandBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, and the `addSubcommandGroup()` method takes a `SlashCommandSubcommandGroupBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, but with the addition of the `addSubcommand()` method.
+
+Subcommands will be picked up automatically by the help command, however deep they are nested in subcommand groups.
+
+To keep the code clear, you might want to consider creating separate files for each subcommand, especially if the command has many subcommands. In the end, however, this is all up to you.
 
 ## Events
 

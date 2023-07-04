@@ -6,7 +6,7 @@ const meta = new SlashCommandBuilder()
   .setName('info')
   .setDescription('Get some info about this server.');
 
-export default command(meta, async ({ interaction }) => {
+export default command({ meta }, async ({ interaction }) => {
   await interaction.deferReply({ ephemeral: true });
   const owner = await interaction.guild?.fetchOwner();
   const channels = await interaction.guild?.channels.fetch();

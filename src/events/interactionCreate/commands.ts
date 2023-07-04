@@ -1,3 +1,4 @@
+import { GuildMember, PermissionFlagsBits } from 'discord.js';
 import categories from '../../commands';
 import { Command } from '../../types';
 import { event, Logger, reply } from '../../utils';
@@ -19,6 +20,15 @@ export default event('interactionCreate', async ({ client }, interaction) => {
 
     if (!command)
       throw new Error(`Command "${interaction.commandName}" not found`);
+
+    // If the command is marked as adminOnly, check if the user is an admin
+    if (
+      command.options.adminOnly &&
+      !(interaction.member as GuildMember).permissions.has(
+        PermissionFlagsBits.Administrator
+      )
+    )
+      return reply.deny(interaction);
 
     await command.exec({
       client,
