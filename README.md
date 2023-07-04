@@ -1,6 +1,12 @@
 # Discord bot template
 
-This is a template for a Discord bot written in TypeScript, using the [discord.js](https://discord.js.org/) library.
+[![discord.js](https://img.shields.io/github/package-json/dependency-version/ThijnK/discord-bot-template-ts/discord.js)](https://discord.js.org/)
+[![Stars](https://img.shields.io/github/stars/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/graphs/contributors)
+[![GitHub release](https://img.shields.io/github/v/release/ThijnK/discord-bot-template-ts?label=version)](https://github.com/ThijnK/discord-bot-template-ts/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://discord.js.org/) library.
 
 ## Features
 
