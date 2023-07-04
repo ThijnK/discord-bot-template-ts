@@ -8,3 +8,4 @@ export * from './help';
 export * from './paginators';
 export * from './split';
 export * from './mentions';
+export * from './date';
