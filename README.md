@@ -265,6 +265,14 @@ A [`.prettierrc.json`](./.prettierrc.json) config file is provided to configure 
 
 The project also uses [ESLint](https://eslint.org/) to lint the code, a config for which is included in the [`.eslintrc.json`](./.eslintrc.json) file.
 
+## Contributing
+
+Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+Try to make sure the code is formatted correctly, as specified in the [Code style](#code-style) section. A GitHub Action will automatically check this for you when you open a pull request. You can make sure that everything is formatted correctly by running the `npm run format` command.
+
+Please make sure to use [semantic commit messages](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) to keep the commit history clean and readable.
+
 ## License
 
 This project is licensed under the [MIT license](./LICENSE).
