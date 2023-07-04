@@ -25,7 +25,13 @@ export enum ReplyType {
  * @param type The type of reply
  * @returns The altered options
  */
-const getOptions = (options: InteractionReplyOptions, type: ReplyType) => {
+const getOptions = (
+  options: InteractionReplyOptions | string,
+  type: ReplyType
+): InteractionReplyOptions => {
+  if (typeof options === 'string')
+    return getOptions({ content: options }, type);
+
   const { content, ephemeral } = options;
   const emoji = type === ReplyType.Default ? '' : EMOJIS[type];
 
@@ -45,10 +51,16 @@ const getOptions = (options: InteractionReplyOptions, type: ReplyType) => {
  */
 export const reply = <T extends DeferableInteraction>(
   interaction: T,
-  options: InteractionReplyOptions,
+  options: InteractionReplyOptions | string,
   type: ReplyType = ReplyType.Default
 ) => {
-  if (!options.content && !options.embeds && !options.files)
+  if (
+    !options ||
+    (typeof options === 'object' &&
+      !options.content &&
+      !options.embeds &&
+      !options.files)
+  )
     return log.error('reply', 'Cannot send an empty message');
 
   const alteredOptions = getOptions(options, type);
@@ -58,19 +70,17 @@ export const reply = <T extends DeferableInteraction>(
 
 reply.error = <T extends DeferableInteraction>(
   interaction: T,
-  options: InteractionReplyOptions = {
-    content: 'Oops. Something went wrong!',
-  }
+  options: InteractionReplyOptions | string = 'Oops. Something went wrong!'
 ) => reply(interaction, options, ReplyType.Error);
 
 reply.warn = <T extends DeferableInteraction>(
   interaction: T,
-  options: InteractionReplyOptions
+  options: InteractionReplyOptions | string
 ) => reply(interaction, options, ReplyType.Warn);
 
 reply.deny = <T extends DeferableInteraction>(
   interaction: T,
-  options: InteractionReplyOptions = {
-    content: 'You do not have permission to do that!',
-  }
+  options:
+    | InteractionReplyOptions
+    | string = 'You do not have permission to do that!'
 ) => reply(interaction, options, ReplyType.Deny);
