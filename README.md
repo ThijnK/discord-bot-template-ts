@@ -58,7 +58,7 @@ If no `TEST_TOKEN` is provided, the `BOT_TOKEN` will be used for development as 
 
 ## Styling
 
-To ensure consistent styling throughout the bot's embeds and messages, some constants are provided in the [`src/constants/index.ts`](./src/constants/index.ts) file.
+To ensure consistent styling throughout the bot's embeds and messages, some constants are provided in the [`src/constants/style.ts`](./src/constants/style.ts) file.
 Currently, this includes the following:
 
 - `COLORS`: a list of colors, which can be used to provide a color to an embed, or really anything else
