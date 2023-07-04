@@ -14,6 +14,7 @@ interface DeferableInteraction extends BaseInteraction {
 
 export enum ReplyType {
   Default = 'default',
+  Success = 'success',
   Error = 'error',
   Warn = 'warn',
   Deny = 'deny',
@@ -67,6 +68,11 @@ export const reply = <T extends DeferableInteraction>(
   if (interaction.deferred) return interaction.editReply(alteredOptions);
   return interaction.reply(alteredOptions);
 };
+
+reply.success = <T extends DeferableInteraction>(
+  interaction: T,
+  options: InteractionReplyOptions | string
+) => reply(interaction, options, ReplyType.Success);
 
 reply.error = <T extends DeferableInteraction>(
   interaction: T,

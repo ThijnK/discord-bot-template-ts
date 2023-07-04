@@ -147,6 +147,7 @@ The [`src/utils/reply.ts`](./src/utils/reply.ts) file exports a `reply` class, w
 The function takes the interaction to reply to, the options for the reply (meaning you can provide the same options as you would to `interaction.reply()` or `interaction.editReply()`), and optionally a reply type. The reply will be made ephemeral by default, but it can be overwritten by providing a value for it yourself in the options (second argument). The reply type can be one of the following:
 
 - `default`: send a normal reply
+- `success`: send a success reply, which is prepended with a success emoji
 - `error`: send an error reply, which is prepended with an error emoji
 - `warn`: send a warning reply, which is prepended with a warning emoji
 - `deny`: send a reply that denies the interaction, which is prepended with a deny emoji

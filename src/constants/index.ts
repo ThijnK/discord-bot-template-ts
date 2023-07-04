@@ -7,6 +7,7 @@ export const COLORS = {
 } as const;
 
 export const EMOJIS = {
+  success: '✅',
   error: '❌',
   warn: '⚠️',
   deny: '🚫',
