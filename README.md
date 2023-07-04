@@ -4,6 +4,7 @@
 [![Stars](https://img.shields.io/github/stars/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/stargazers)
 [![Contributors](https://img.shields.io/github/contributors/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/graphs/contributors)
 [![GitHub release](https://img.shields.io/github/v/release/ThijnK/discord-bot-template-ts?label=version)](https://github.com/ThijnK/discord-bot-template-ts/releases)
+[![Build](https://img.shields.io/github/actions/workflow/status/ThijnK/discord-bot-template-ts/build.yml)](https://github.com/ThijnK/discord-bot-template-ts/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://discord.js.org/) library.
