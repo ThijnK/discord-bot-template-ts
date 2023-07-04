@@ -4,7 +4,7 @@ import { helpSelectComponent } from '../help';
 
 const paginators: Paginator[] =
   categories?.map((category) => {
-    const items = category.commands.map((c) => ({
+    const items = category.commands.public.map((c) => ({
       name: `/${c.meta.name}`,
       value: c.meta.description,
     }));
@@ -17,7 +17,7 @@ const paginators: Paginator[] =
       title: `${emoji}${category.name} Commands`,
       description:
         category.description ??
-        `Browse through ${category.commands.length} commands in ${emoji}${category.name}`,
+        `Browse through ${category.commands.public.length} commands in ${emoji}${category.name}`,
       pageLength,
       getPage: (offset) => items.slice(offset, offset + pageLength),
       getLength: () => items.length,

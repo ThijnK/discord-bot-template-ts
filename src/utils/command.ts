@@ -25,6 +25,10 @@ export function category(
 ): CommandCategory {
   return {
     ...metadata,
-    commands,
+    commands: {
+      public: commands.filter((c) => !c.options?.private),
+      private: commands.filter((c) => c.options?.private),
+      all: commands,
+    },
   };
 }

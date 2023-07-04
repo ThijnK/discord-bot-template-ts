@@ -10,11 +10,14 @@ export const helpSelectComponent =
       custom_id: createId(NAMESPACES.help),
       placeholder: 'Select a category...',
       max_values: 1,
-      options: categories?.map(({ name, description, emoji }) => ({
-        label: name,
-        description,
-        emoji,
-        value: name,
-      })),
+      // Filter out categories with no public commands
+      options: categories
+        ?.filter((c) => c.commands.public.length > 0)
+        .map(({ name, description, emoji }) => ({
+          label: name,
+          description,
+          emoji,
+          value: name,
+        })),
     })
   );

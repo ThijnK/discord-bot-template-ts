@@ -36,7 +36,11 @@ export interface CommandCategoryMetadata {
   emoji?: string;
 }
 export interface CommandCategory extends CommandCategoryMetadata {
-  commands: Command[];
+  commands: {
+    public: Command[];
+    private: Command[];
+    all: Command[];
+  };
 }
 /** Fields for each category page */
 export interface CommandCategoryPage extends CommandCategoryMetadata {

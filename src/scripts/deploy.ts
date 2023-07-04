@@ -13,11 +13,10 @@ async function main() {
     ? Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD)
     : Routes.applicationCommands(currentUser.id);
 
+  // Do not register private commands in production
   const body = categories
     .map(({ commands }) =>
-      commands
-        .filter((c) => ENV.DEV || !c.options || !c.options.private)
-        .map(({ meta }) => meta)
+      (ENV.DEV ? commands.all : commands.public).map(({ meta }) => meta)
     )
     .flat();
 

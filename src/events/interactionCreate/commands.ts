@@ -1,10 +1,12 @@
-import commands from '../../commands';
+import categories from '../../commands';
 import { Command } from '../../types';
 import { event, Logger, reply } from '../../utils';
 
-const allCommands = commands.map(({ commands }) => commands).flat();
-const allCommandsMap = new Map<string, Command>(
-  allCommands.map((c) => [c.meta.name, c])
+const commands = new Map<string, Command>(
+  categories
+    .map(({ commands }) => commands.all)
+    .flat()
+    .map((c) => [c.meta.name, c])
 );
 
 export default event('interactionCreate', async ({ client }, interaction) => {
@@ -13,7 +15,7 @@ export default event('interactionCreate', async ({ client }, interaction) => {
   const logger = new Logger(`/${interaction.commandName}`);
 
   try {
-    const command = allCommandsMap.get(interaction.commandName);
+    const command = commands.get(interaction.commandName);
 
     if (!command)
       throw new Error(`Command "${interaction.commandName}" not found`);
