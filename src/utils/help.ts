@@ -10,7 +10,7 @@ export const helpSelectComponent =
       custom_id: createId(NAMESPACES.help),
       placeholder: 'Select a category...',
       max_values: 1,
-      options: categories.map(({ name, description, emoji }) => ({
+      options: categories?.map(({ name, description, emoji }) => ({
         label: name,
         description,
         emoji,

@@ -12,7 +12,7 @@ interface DeferableInteraction extends BaseInteraction {
   editReply: (options: InteractionEditReplyOptions) => Promise<unknown>;
 }
 
-enum ReplyType {
+export enum ReplyType {
   Default = 'default',
   Error = 'error',
   Warn = 'warn',

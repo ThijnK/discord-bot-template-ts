@@ -22,7 +22,7 @@ export const ENV = {
 
 // Check to make sure no environment variables are missing
 for (const [key, value] of Object.entries(ENV)) {
-  if (!value) {
+  if (value === undefined || value === null || value === '') {
     log.error('env', `Missing environment variable: ${key}`);
     process.exit(1);
   }

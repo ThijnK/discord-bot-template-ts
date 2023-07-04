@@ -194,6 +194,7 @@ To facilitate the easy usage of this configuration of interaction IDs, there are
 
 - [`splitSend`](./src/utils/split.ts): split a a list of lines over multiple embeds, respecting Discord's embed description length limit
 - [`chunk`](./src/utils/chunk.ts): split an array into chunks of a given size (jagged array / matrix)
+- [`mention`](./src/utils/mentions.ts): create a string that will mention a user, role, channel, or application command
 
 ## Database
 
