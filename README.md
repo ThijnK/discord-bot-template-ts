@@ -49,6 +49,11 @@ You should provide at least the following environment variables:
 In case you want to use a separate bot token for development, you can provide it in the `TEST_TOKEN` environment variable.
 If no `TEST_TOKEN` is provided, the `BOT_TOKEN` will be used for development as well.
 
+## Styling
+
+<!-- - Colors
+- [Other constants?] -->
+
 ## Commands
 
 Commands are located in the [`src/commands`](./src/commands) folder. The [index.ts](./src/commands/index.ts) file exports all command categories, which is used to register them in the [`src/events/interactionCreate/commands.ts`](./src/events/interactionCreate/commands.ts) file.
@@ -235,3 +240,17 @@ src
 │   │   └── ...
 ├── ...
 ```
+
+## Code style
+
+This template uses the [Prettier](https://prettier.io/) code formatter to automatically format the code.
+A command, `npm run format`, is provided to run Prettier on all files in the `src` folder and immediately fix any issues.
+You can also use the Prettier extension for your editor of choice to automatically format the code on save.
+
+A [`.prettierrc.json`](./.prettierrc.json) config file is provided to configure Prettier.
+
+The project also uses [ESLint](https://eslint.org/) to lint the code, a config for which is included in the [`.eslintrc.json`](./.eslintrc.json) file.
+
+## License
+
+This project is licensed under the [MIT license](./LICENSE).
