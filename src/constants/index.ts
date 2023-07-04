@@ -9,4 +9,5 @@ export const COLORS = {
 export const EMOJIS = {
   error: '❌',
   warn: '⚠️',
+  deny: '🚫',
 } as const;
