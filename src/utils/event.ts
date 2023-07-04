@@ -12,7 +12,7 @@ export function event<T extends EventKeys>(
   };
 }
 
-export function registerEvents(client: Client, events: Event<never>[]): void {
+export function registerEvents(client: Client, events: Event<any>[]): void {
   for (const event of events)
     client.on(event.id, async (...args) => {
       const logger = new Logger(event.id);
