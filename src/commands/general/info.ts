@@ -89,7 +89,7 @@ const getServerInfo = async ({ interaction }: CommandProps) => {
       },
     ]);
 
-  reply(interaction, { embeds: [embed] });
+  await reply(interaction, { embeds: [embed] });
 };
 
 const getBotInfo = async ({ interaction }: CommandProps) => {
@@ -116,7 +116,7 @@ const getBotInfo = async ({ interaction }: CommandProps) => {
       },
     ]);
 
-  reply(interaction, { embeds: [embed] });
+  await reply(interaction, { embeds: [embed] });
 };
 
 const getUserInfo = async ({ interaction }: CommandProps) => {
@@ -148,5 +148,5 @@ const getUserInfo = async ({ interaction }: CommandProps) => {
       },
     ]);
 
-  reply(interaction, { embeds: [embed] });
+  await reply(interaction, { embeds: [embed] });
 };

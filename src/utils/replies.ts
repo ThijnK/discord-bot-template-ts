@@ -8,6 +8,7 @@ import { log } from './logger';
 
 interface DeferableInteraction extends BaseInteraction {
   deferred: boolean;
+  replied: boolean;
   reply: (options: InteractionReplyOptions) => Promise<unknown>;
   editReply: (options: InteractionEditReplyOptions) => Promise<unknown>;
 }
@@ -63,6 +64,9 @@ export const reply = <T extends DeferableInteraction>(
       !options.files)
   )
     return log.error('reply', 'Cannot send an empty message');
+
+  if (interaction.replied)
+    return log.error('reply', 'Interaction already replied');
 
   const alteredOptions = getOptions(options, type);
   if (interaction.deferred) return interaction.editReply(alteredOptions);

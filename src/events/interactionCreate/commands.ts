@@ -14,29 +14,25 @@ export default event('interactionCreate', async ({ client }, interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   const logger = new Logger(`/${interaction.commandName}`);
+  const command = commands.get(interaction.commandName);
 
-  try {
-    const command = commands.get(interaction.commandName);
-
-    if (!command)
-      throw new Error(`Command "${interaction.commandName}" not found`);
-
-    // If the command is marked as adminOnly, check if the user is an admin
-    if (
-      command.options.adminOnly &&
-      !(interaction.member as GuildMember).permissions.has(
-        PermissionFlagsBits.Administrator
-      )
-    )
-      return reply.deny(interaction);
-
-    await command.exec({
-      client,
-      interaction,
-      logger,
-    });
-  } catch (error) {
-    logger.error(error);
-    reply.error(interaction, { content: undefined });
+  if (!command) {
+    logger.error('Command not found.');
+    return reply.error(interaction, 'Command not found.');
   }
+
+  // If the command is marked as adminOnly, check if the user is an admin
+  if (
+    command.options.adminOnly &&
+    !(interaction.member as GuildMember).permissions.has(
+      PermissionFlagsBits.Administrator
+    )
+  )
+    return reply.deny(interaction);
+
+  await command.exec({
+    client,
+    interaction,
+    logger,
+  });
 });

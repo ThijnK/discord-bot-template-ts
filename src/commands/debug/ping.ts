@@ -16,7 +16,7 @@ const meta = new SlashCommandBuilder()
 export default command({ meta }, async ({ client, interaction }) => {
   const message = interaction.options.getString('message');
 
-  return interaction.reply({
+  await interaction.reply({
     ephemeral: true,
     content: `${message ?? 'Pong!'} (${client.ws.ping}ms)`,
   });
