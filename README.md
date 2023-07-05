@@ -75,7 +75,7 @@ Commands are located in the [`src/commands`](./src/commands) folder. The [index.
 
 Commands are grouped into _categories_, each of which has its own folder. The `index.ts` file in each folder exports the commands in that category and provides some metadata about the category, which includes at least the name of the category, and optionally a description and emoji.
 
-Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and an `exec` function, which is called when the command is executed. This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself.
+Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and an `exec` function, which is called when the command is executed. This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself. Note that errors thrown in the `exec` function will be caught and logged automatically, so you don't have to worry about catching them yourself. Do, however, make sure that you await asynchronous functions, such that errors thrown inside such functions will be caught as well!
 
 A command file should look something like this:
 
@@ -88,7 +88,7 @@ const meta = new SlashCommandBuilder()
   .setDescription('Example command.');
 
 export default command({ meta }, async ({ interaction }) => {
-  return interaction.reply({
+  await interaction.reply({
     ephemeral: true,
     content: 'Hello world!',
   });
