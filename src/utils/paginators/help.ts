@@ -4,8 +4,9 @@ import {
   ApplicationCommandOptionType,
 } from 'discord.js';
 import categories from '../../commands';
-import { Command, Paginator } from '../../types';
+import { Command } from '../../types';
 import { helpSelectComponent } from '../help';
+import { Paginator } from '../pagination';
 
 /**
  * Extracts subcommands from a command option recursively
@@ -51,24 +52,20 @@ const getCommands = (command: Command): APIEmbedField[] => {
   return result;
 };
 
-const paginators: Paginator[] =
+const helpPaginators: Paginator[] =
   categories?.map((category) => {
     const items = category.commands.public.map((c) => getCommands(c)).flat();
-
     const emoji = category.emoji ? `${category.emoji} ` : '';
-    const pageLength = 20;
 
-    return {
-      name: category.name,
+    return new Paginator(category.name, {
       title: `${emoji}${category.name} Commands`,
       description:
         category.description ??
         `Browse through ${category.commands.public.length} commands in ${emoji}${category.name}`,
-      pageLength,
-      getPage: (offset) => items.slice(offset, offset + pageLength),
-      getLength: () => items.length,
+      pageLength: 20,
+      data: items,
       components: [helpSelectComponent],
-    };
+    });
   }) ?? [];
 
-export default paginators;
+export default helpPaginators;
