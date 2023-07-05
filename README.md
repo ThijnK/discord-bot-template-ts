@@ -250,7 +250,6 @@ Create an `index.ts` file in this folder, and add the following snippet to run a
 ```ts
 import express from 'express';
 import { log } from '../utils';
-import { ENV } from '../env';
 
 const app = express();
 
