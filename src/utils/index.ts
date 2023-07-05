@@ -6,5 +6,6 @@ export * from './interaction';
 export * from './logger';
 export * from './help';
 export * from './paginators';
+export * from './pagination';
 export * from './split';
 export * from './date';
