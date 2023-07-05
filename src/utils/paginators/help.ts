@@ -62,7 +62,7 @@ const helpPaginators: Paginator[] =
       description:
         category.description ??
         `Browse through ${category.commands.public.length} commands in ${emoji}${category.name}`,
-      pageLength: 20,
+      pageLength: 10,
       data: items,
       components: [helpSelectComponent],
     });
