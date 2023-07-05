@@ -72,7 +72,7 @@ export class Paginator {
     this.ephemeral = ephemeral;
     this.components = components;
     this.data = data;
-    this.pageCount = data.length / pageLength;
+    this.pageCount = Math.ceil(data.length / pageLength);
   }
 
   /**
@@ -140,7 +140,12 @@ export class Paginator {
 
     return {
       embeds: [embed],
-      components: [buttons, selectMenu, ...(this.components ?? [])],
+      components: [
+        buttons,
+        // Only show page selection menu if there are multiple pages
+        ...(this.pageCount > 1 ? [selectMenu] : []),
+        ...(this.components ?? []),
+      ],
       // Ephemeral by default
       ephemeral: this.ephemeral ?? true,
     };
