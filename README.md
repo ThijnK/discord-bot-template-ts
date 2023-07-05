@@ -11,13 +11,13 @@ A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://di
 
 ## Features
 
-- [x] TypeScript
-- [x] Slash commands
-- [x] Event handlers
-- [x] Built-in pagination
-- [x] Automatic help command
-- [x] Fancy logging
-- [x] Easy handling of interaction IDs
+- 🟦 TypeScript
+- 🪄 Slash commands
+- 📆 Event handlers
+- 📄 Built-in pagination
+- ❔ Automatic help command
+- 🪵 Fancy logging
+- 🆔 Easy handling of interaction IDs
 
 ## Prerequisites
 
