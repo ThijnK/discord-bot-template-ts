@@ -4,6 +4,7 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   APIEmbedField,
+  SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
 import { Logger } from '../utils';
 
@@ -28,7 +29,8 @@ export type CommandOptions = {
 export type CommandExec = (props: CommandProps) => Awaitable<unknown>;
 export type CommandMeta =
   | SlashCommandBuilder
-  | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+  | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
+  | SlashCommandSubcommandsOnlyBuilder;
 export interface Command {
   meta: CommandMeta;
   exec: CommandExec;

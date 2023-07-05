@@ -1,5 +1,6 @@
 import { category } from '../../utils';
 import help from './help';
+import info from './info';
 
 export default category(
   {
@@ -7,5 +8,5 @@ export default category(
     description: 'General commands',
     emoji: '📖',
   },
-  [help]
+  [help, info]
 );

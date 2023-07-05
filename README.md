@@ -95,8 +95,6 @@ export default command({ meta }, async ({ interaction }) => {
 });
 ```
 
-A `/help` command is already provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands and their descriptions, using the pagination functionality described in section [Pagination](#pagination).
-
 ### Command options
 
 The first argument of the `command()` function takes an object containing at least the `meta` object created using the `SlashCommandBuilder` from `discord.js`. There's some optional fields that can be passed into the object alongside the `meta` to further configure the command. The following optional fields are available:
@@ -106,13 +104,17 @@ The first argument of the `command()` function takes an object containing at lea
 
 When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use, such as stats about the bot.
 
+### Help command
+
+A `/help` command is already provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!) and their descriptions, using the pagination functionality described in section [Pagination](#pagination). This will show _ALL_ of the (public) commands, including their subcommands, even if they're hidden away in subcommand groups, no matter how deeply nested they are.
+
 ### Subcommands
 
 Subcommands are supported by the `SlashCommandBuilder` from `discord.js`, and can be added to a command by calling the `addSubcommand()` or `addSubcommandGroup()` methods on the `SlashCommandBuilder` object. The `addSubcommand()` method takes a `SlashCommandSubcommandBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, and the `addSubcommandGroup()` method takes a `SlashCommandSubcommandGroupBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, but with the addition of the `addSubcommand()` method.
 
 Subcommands will be picked up automatically by the help command, however deep they are nested in subcommand groups.
 
-To keep the code clear, you might want to consider creating separate files for each subcommand, especially if the command has many subcommands. In the end, however, this is all up to you.
+An example of the usage of subcommands can be found in the [`src/commands/general/info.ts`](./src/commands/general/info.ts) file.
 
 ## Events
 

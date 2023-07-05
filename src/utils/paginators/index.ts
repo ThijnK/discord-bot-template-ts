@@ -24,14 +24,14 @@ paginators.forEach((paginator) => {
   if (paginator.pageLength > 25) {
     log.error(
       'paginators',
-      `Paginator "${paginator.title}" has a page length greater than 25`
+      `Paginator "${paginator.name}" has a page length greater than 25`
     );
     process.exit(1);
   }
   if (paginator.components && paginator.components.length > 3) {
     log.error(
       'paginators',
-      `Paginator "${paginator.title}" has more than 3 components`
+      `Paginator "${paginator.name}" has more than 3 components`
     );
     process.exit(1);
   }
