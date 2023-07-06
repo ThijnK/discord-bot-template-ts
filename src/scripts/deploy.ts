@@ -2,25 +2,34 @@ import 'dotenv/config';
 import { REST, Routes, APIUser } from 'discord.js';
 import categories from '../commands';
 import { ENV } from '../env';
-import { log } from '../utils';
+import { extractMeta, log } from '../utils';
 
 const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
 
 async function main() {
   const currentUser = (await rest.get(Routes.user())) as APIUser;
 
-  const endpoint = ENV.DEV
-    ? Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD)
-    : Routes.applicationCommands(currentUser.id);
-
-  // Do not register private commands in production
-  const body = categories
-    .map(({ commands }) =>
-      (ENV.DEV ? commands.all : commands.public).map(({ meta }) => meta)
-    )
-    .flat();
-
-  await rest.put(endpoint, { body });
+  // In development, all commands are deployed to the test guild.
+  if (ENV.DEV)
+    await rest.put(
+      Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD),
+      {
+        body: extractMeta(categories, 'all'),
+      }
+    );
+  // In production, public commmands are deployed globally, and private commands
+  // are deployed to the test guild.
+  else {
+    await rest.put(Routes.applicationCommands(currentUser.id), {
+      body: extractMeta(categories, 'public'),
+    });
+    await rest.put(
+      Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD),
+      {
+        body: extractMeta(categories, 'private'),
+      }
+    );
+  }
 
   return currentUser;
 }
