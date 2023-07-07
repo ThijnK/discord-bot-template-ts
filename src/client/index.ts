@@ -3,7 +3,7 @@ import { log } from '../utils';
 import { ENV } from '../env';
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+  intents: [GatewayIntentBits.Guilds],
 });
 
 client.login(ENV.BOT_TOKEN).catch((err) => {

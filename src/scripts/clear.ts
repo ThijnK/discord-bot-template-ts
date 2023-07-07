@@ -1,9 +1,10 @@
 import 'dotenv/config';
 import { REST, Routes, APIUser } from 'discord.js';
 import { ENV } from '../env';
-import { log } from '../utils';
+import { Logger } from '../utils';
 
 const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
+const logger = new Logger('clear');
 
 async function main() {
   const currentUser = (await rest.get(Routes.user())) as APIUser;
@@ -20,6 +21,6 @@ async function main() {
 main()
   .then((user) => {
     const tag = `${user.username}#${user.discriminator}`;
-    log.system('clear', `Commands cleared for \x1b[4m${tag}\x1b[0m\x1b[36m!`);
+    logger.system(`Commands cleared for \x1b[4m${tag}\x1b[0m\x1b[36m!`);
   })
-  .catch(console.error);
+  .catch((e) => logger.error(e));
