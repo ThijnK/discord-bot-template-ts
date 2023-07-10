@@ -176,7 +176,11 @@ There is built-in support for pagination of content using embeds. Currently, thi
 
 The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
 
-The pagination uses embed fields to display the content, and thus the limit of items to show on a single page is 25 (the maximum number of fields allowed in an embed). You can also pass additional components to the embed (such as buttons), which will be added to the embed, but the amount is limited to 3, because of Discord's limit of 5 action rows per embed. Two action rows are already used by the pagination embed, one for the _next_ and _back_ buttons, and another for the page selection menu.
+The pagination uses embed fields to display the content, and thus the limit of items to show on a single page is 25 (the maximum number of fields allowed in an embed).
+You can customize the comopnents of the embed being sent using the `embedData` prop, except the fields and footer, since those are set by the pagination.
+Additionally, you can change the options of the reply message using the `replyOptions` prop.
+The pagination embed, the _next_ and _back_ buttons and the page selector will be added onto the given reply options to compose the final message.
+The reply is made ephemeral by default, so if you want it to not be ephemeral, you have to explicitly pass `ephemeral: false` to the `replyOptions`.
 
 ## Interaction IDs
 

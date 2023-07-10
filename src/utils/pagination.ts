@@ -1,5 +1,5 @@
 import {
-  APIEmbedField,
+  APIEmbed,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
@@ -10,48 +10,51 @@ import {
 import { createId } from './interaction';
 import { COLORS, NAMESPACES } from '../constants';
 import { log } from './logger';
+import { PaginatorData } from '../types';
 
 export class Paginator {
   name: string;
-  /** The title of the embed. */
-  title: string;
-  /** The description of the embed. */
-  description: string;
-  /** Whether the reply should be ephemeral. */
-  ephemeral?: boolean;
-  /** Optional components to include in the reply (max 3). */
-  components?: ActionRowBuilder<any>[];
+  /**
+   * The embed data to use for the pagination embed.
+   * The fields and footer are automatically set by the paginator.
+   */
+  embedData: Omit<APIEmbed, 'fields' | 'footer'>;
+  /**
+   * The reply to which the pagination embed and its controls are added.
+   * If not specified, the reply is ephemeral by default.
+   */
+  replyOptions: InteractionReplyOptions;
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
 
-  data: APIEmbedField[];
+  data: PaginatorData;
   pageCount: number;
 
   constructor(
     /** Name of the paginator */
     name: string,
     {
-      title,
-      description,
+      embedData,
+      replyOptions,
       pageLength,
-      ephemeral,
-      components,
       data,
     }: {
-      /** The title of the embed. */
-      title: string;
-      /** The description of the embed. */
-      description: string;
-      /** Whether the reply should be ephemeral. */
-      ephemeral?: boolean;
-      /** Optional components to include in the reply (max 3). */
-      components?: ActionRowBuilder<any>[];
+      /**
+       * The embed data to use for the pagination embed.
+       * The fields and footer are automatically set by the paginator.
+       */
+      embedData: typeof Paginator.prototype.embedData;
+      /**
+       * The reply to which the pagination embed and its controls are added.
+       * If not specified, the reply is ephemeral by default.
+       */
+      replyOptions: typeof Paginator.prototype.replyOptions;
       /** The number of fields to display on a single page (max 25). */
-      pageLength: number;
-      data: APIEmbedField[];
+      pageLength: typeof Paginator.prototype.pageLength;
+      data: typeof Paginator.prototype.data;
     }
   ) {
-    // Check for invalid values
+    // Page length can be at most 25 due to limit of 25 fields per embed
     if (pageLength > 25) {
       log.error(
         'paginators',
@@ -60,17 +63,24 @@ export class Paginator {
       process.exit(1);
     }
 
-    if (components && components.length > 3) {
+    // Components can have at most 3 rows, because of the 5 component limit on embeds
+    // (2 are already being used for back/next buttons and page selector)
+    if (replyOptions.components && replyOptions.components.length > 3) {
       log.error('paginators', `Paginator "${name}" has more than 3 components`);
       process.exit(1);
     }
 
+    // The replyOptions can have at most 4 embeds, because of the 5 embed limit on replies
+    // (1 is already being used for the pagination embed)
+    if (replyOptions.embeds && replyOptions.embeds.length > 4) {
+      log.error('paginators', `Paginator "${name}" has more than 4 embeds`);
+      process.exit(1);
+    }
+
     this.name = name;
-    this.title = title;
-    this.description = description;
+    this.embedData = embedData;
+    this.replyOptions = replyOptions;
     this.pageLength = pageLength;
-    this.ephemeral = ephemeral;
-    this.components = components;
     this.data = data;
     this.pageCount = Math.ceil(data.length / pageLength);
   }
@@ -78,20 +88,31 @@ export class Paginator {
   /**
    * Get a page of the paginator at a given offset
    * @param offset The offset to get the page at
-   * @returns The interaction repy options for the page at the given offset
+   * @returns The interaction reply options for the page at the given offset
    */
   getPage(offset: number): InteractionReplyOptions {
-    const fields = this.data.slice(offset, offset + this.pageLength);
+    return this.formatPage(offset, this.data);
+  }
+
+  /**
+   * Format a page of the paginator at a given offset
+   * @param offset The offset to get the page at
+   * @param data The data to format
+   * @returns The interaction reply options for the page at the given offset
+   */
+  protected formatPage(
+    offset: number,
+    data: PaginatorData
+  ): InteractionReplyOptions {
+    const fields = data.slice(offset, offset + this.pageLength);
     const currentPage = Math.floor(offset / this.pageLength) + 1;
 
-    const embed = new EmbedBuilder()
-      .setTitle(this.title)
-      .setDescription(this.description)
+    const embed = new EmbedBuilder(this.embedData)
       .setFields(fields)
       .setFooter({
         text: `Page ${currentPage} / ${this.pageCount}`,
       })
-      .setColor(COLORS.embed);
+      .setColor(this.embedData.color ?? COLORS.embed);
 
     // Back button
     const backId = createId(
@@ -139,15 +160,16 @@ export class Paginator {
       );
 
     return {
-      embeds: [embed],
+      ...this.replyOptions,
+      embeds: [embed, ...(this.replyOptions.embeds ?? [])],
       components: [
         buttons,
         // Only show page selection menu if there are multiple pages
         ...(this.pageCount > 1 ? [selectMenu] : []),
-        ...(this.components ?? []),
+        ...(this.replyOptions.components ?? []),
       ],
       // Ephemeral by default
-      ephemeral: this.ephemeral ?? true,
+      ephemeral: this.replyOptions.ephemeral ?? true,
     };
   }
 }

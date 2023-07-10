@@ -1,10 +1,9 @@
 import {
   APIApplicationCommandOption,
-  APIEmbedField,
   ApplicationCommandOptionType,
 } from 'discord.js';
 import categories from '../../commands';
-import { Command } from '../../types';
+import { Command, PaginatorData } from '../../types';
 import { helpSelectComponent } from '../help';
 import { Paginator } from '../pagination';
 
@@ -17,8 +16,8 @@ import { Paginator } from '../pagination';
 const extractSubcommandsRecursive = (
   option: APIApplicationCommandOption,
   name: string
-): APIEmbedField[] => {
-  const result: APIEmbedField[] = [];
+): PaginatorData => {
+  const result: PaginatorData = [];
   if (option.type === ApplicationCommandOptionType.Subcommand)
     result.push({
       name: `/${name} ${option.name}`,
@@ -36,7 +35,7 @@ const extractSubcommandsRecursive = (
  * @param command The command to get subcommands for
  * @returns An array of embed fields for each command, comprising the name and description of the command
  */
-const getCommands = (command: Command): APIEmbedField[] => {
+const getCommands = (command: Command): PaginatorData => {
   const result = command.meta.options
     .map((option) =>
       extractSubcommandsRecursive(option.toJSON(), command.meta.name)
@@ -58,13 +57,19 @@ const helpPaginators: Paginator[] =
     const emoji = category.emoji ? `${category.emoji} ` : '';
 
     return new Paginator(category.name, {
-      title: `${emoji}${category.name} Commands`,
-      description:
-        category.description ??
-        `Browse through ${category.commands.public.length} commands in ${emoji}${category.name}`,
+      embedData: {
+        title: `${emoji}${category.name} Commands`,
+        description: `Browse through ${
+          category.commands.public.length
+        } command${category.commands.public.length > 1 ? 's' : ''} in ${emoji}${
+          category.name
+        }`,
+      },
+      replyOptions: {
+        components: [helpSelectComponent],
+      },
       pageLength: 10,
       data: items,
-      components: [helpSelectComponent],
     });
   }) ?? [];
 
