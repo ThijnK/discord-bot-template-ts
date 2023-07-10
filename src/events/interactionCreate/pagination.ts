@@ -15,5 +15,5 @@ export default event('interactionCreate', async (_props, interaction) => {
       `select-${interaction.values[0]}`
     );
 
-  return await interaction.editReply(generatePage(interactionId));
+  return await interaction.editReply(await generatePage(interactionId));
 });

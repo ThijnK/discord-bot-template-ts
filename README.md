@@ -172,7 +172,7 @@ If you want these replies to use embeds by default, this can be easily changed b
 There is built-in support for pagination of content using embeds. Currently, this is only used in the `/help` command, but you can create your own pagination by following these steps:
 
 1. Create a paginator in the [`src/utils/paginators.ts`](./src/utils/paginators) folder, using the constructor of the `Paginator` class defined in [`src/utils/pagination.ts`](./src/utils/pagination.ts)
-2. Use the `paginationEmbed()` function from the utils to create an embed that can be used to navigate through the pages
+2. Use the `paginationReply()` function from the utils to create an embed that can be used to navigate through the pages. Don't forget to await this function!
 
 The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
 

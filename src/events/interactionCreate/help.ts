@@ -1,4 +1,4 @@
-import { event, paginationEmbed, parseId } from '../../utils';
+import { event, paginationReply, parseId } from '../../utils';
 import { NAMESPACES } from '../../constants';
 
 export default event('interactionCreate', async (_props, interaction) => {
@@ -7,5 +7,7 @@ export default event('interactionCreate', async (_props, interaction) => {
   if (namespace !== NAMESPACES.help) return;
 
   await interaction.deferUpdate();
-  return await interaction.editReply(paginationEmbed(interaction.values[0]));
+  return await interaction.editReply(
+    await paginationReply(interaction.values[0])
+  );
 });

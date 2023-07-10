@@ -26,11 +26,10 @@ export class Paginator {
   replyOptions: InteractionReplyOptions;
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
+  /** Asynchronous function to fetch the data for the paginator */
+  getData: () => Promise<PaginatorData>;
 
-  data: PaginatorData;
-  pageCount: number;
-
-  logger: Logger;
+  private logger: Logger;
 
   constructor(
     /** Name of the paginator */
@@ -39,7 +38,7 @@ export class Paginator {
       embedData,
       replyOptions,
       pageLength,
-      data,
+      getData,
     }: {
       /**
        * The embed data to use for the pagination embed.
@@ -53,7 +52,7 @@ export class Paginator {
       replyOptions: typeof Paginator.prototype.replyOptions;
       /** The number of fields to display on a single page (max 25). */
       pageLength: typeof Paginator.prototype.pageLength;
-      data: typeof Paginator.prototype.data;
+      getData: typeof Paginator.prototype.getData;
     }
   ) {
     this.logger = new Logger(`paginators/${name}`);
@@ -84,8 +83,7 @@ export class Paginator {
     this.embedData = embedData;
     this.replyOptions = replyOptions;
     this.pageLength = pageLength;
-    this.data = data;
-    this.pageCount = Math.ceil(data.length / pageLength);
+    this.getData = getData;
   }
 
   /**
@@ -93,8 +91,9 @@ export class Paginator {
    * @param offset The offset to get the page at
    * @returns The interaction reply options for the page at the given offset
    */
-  getPage(offset: number): InteractionReplyOptions {
-    return this.formatPage(offset, this.data);
+  public async getPage(offset: number): Promise<InteractionReplyOptions> {
+    const data = await this.getData();
+    return this.formatPage(offset, data);
   }
 
   /**
@@ -109,11 +108,12 @@ export class Paginator {
   ): InteractionReplyOptions {
     const fields = data.slice(offset, offset + this.pageLength);
     const currentPage = Math.floor(offset / this.pageLength) + 1;
+    const pageCount = Math.ceil(data.length / this.pageLength);
 
     const embed = new EmbedBuilder(this.embedData)
       .setFields(fields)
       .setFooter({
-        text: `Page ${currentPage} / ${this.pageCount}`,
+        text: `Page ${currentPage} / ${pageCount}`,
       })
       .setColor(this.embedData.color ?? COLORS.embed);
 
@@ -139,7 +139,7 @@ export class Paginator {
       .setCustomId(nextId)
       .setLabel('Next')
       .setStyle(ButtonStyle.Primary)
-      .setDisabled(currentPage >= this.pageCount);
+      .setDisabled(currentPage >= pageCount);
 
     const selectId = createId(NAMESPACES.pagination, this.name);
     const pageSelector = new StringSelectMenuBuilder()
@@ -147,7 +147,7 @@ export class Paginator {
       .setPlaceholder('Select a page...')
       .setMaxValues(1)
       .setOptions(
-        Array.from(Array(this.pageCount).keys()).map((i) => ({
+        Array.from(Array(pageCount).keys()).map((i) => ({
           label: `Page ${i + 1}`,
           value: i.toString(),
         }))
@@ -168,7 +168,7 @@ export class Paginator {
       components: [
         buttons,
         // Only show page selection menu if there are multiple pages
-        ...(this.pageCount > 1 ? [selectMenu] : []),
+        ...(pageCount > 1 ? [selectMenu] : []),
         ...(this.replyOptions.components ?? []),
       ],
       // Ephemeral by default

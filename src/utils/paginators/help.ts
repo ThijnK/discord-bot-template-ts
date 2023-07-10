@@ -69,7 +69,7 @@ const helpPaginators: Paginator[] =
         components: [helpSelectComponent],
       },
       pageLength: 10,
-      data: items,
+      getData: async () => items,
     });
   }) ?? [];
 

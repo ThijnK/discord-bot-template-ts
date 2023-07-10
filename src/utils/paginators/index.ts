@@ -16,7 +16,9 @@ const paginatorMap = new Map<string, Paginator>(
  * @param interactionId The interactionId to generate the page for
  * @returns The generated embed
  */
-export function generatePage(interactionId: string): InteractionReplyOptions {
+export async function generatePage(
+  interactionId: string
+): Promise<InteractionReplyOptions> {
   // Extract metadata from interactionId
   const [_namespace, paginatorName, offsetString] = parseId(interactionId);
 
@@ -36,11 +38,11 @@ export function generatePage(interactionId: string): InteractionReplyOptions {
 }
 
 /**
- * Create a paginated embed for a specific paginator
- * @param paginatorName The name of the paginator to generate the embed for
- * @returns The generated embed
+ * Create a paginated reply for a specific paginator
+ * @param paginatorName The name of the paginator to generate the reply for
+ * @returns The generated reply options
  */
-export function paginationEmbed(paginatorName: string) {
+export function paginationReply(paginatorName: string) {
   const id = createId(NAMESPACES.pagination, paginatorName);
   return generatePage(id);
 }
