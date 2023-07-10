@@ -10,7 +10,7 @@ import {
 import { createId } from './interaction';
 import { COLORS, NAMESPACES } from '../constants';
 import { Logger } from './logger';
-import { PaginatorData } from '../types';
+import { PaginationProps, PaginatorData } from '../types';
 
 export class Paginator {
   name: string;
@@ -27,7 +27,7 @@ export class Paginator {
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
   /** Asynchronous function to fetch the data for the paginator */
-  getData: () => Promise<PaginatorData>;
+  getData: (props: PaginationProps) => Promise<PaginatorData>;
 
   private logger: Logger;
 
@@ -91,8 +91,11 @@ export class Paginator {
    * @param offset The offset to get the page at
    * @returns The interaction reply options for the page at the given offset
    */
-  public async getPage(offset: number): Promise<InteractionReplyOptions> {
-    const data = await this.getData();
+  public async getPage(
+    offset: number,
+    props: PaginationProps
+  ): Promise<InteractionReplyOptions> {
+    const data = await this.getData(props);
     return this.formatPage(offset, data);
   }
 
