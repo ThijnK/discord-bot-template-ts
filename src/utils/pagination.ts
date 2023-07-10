@@ -9,7 +9,7 @@ import {
 } from 'discord.js';
 import { createId } from './interaction';
 import { COLORS, NAMESPACES } from '../constants';
-import { log } from './logger';
+import { Logger } from './logger';
 import { PaginatorData } from '../types';
 
 export class Paginator {
@@ -29,6 +29,8 @@ export class Paginator {
 
   data: PaginatorData;
   pageCount: number;
+
+  logger: Logger;
 
   constructor(
     /** Name of the paginator */
@@ -54,10 +56,11 @@ export class Paginator {
       data: typeof Paginator.prototype.data;
     }
   ) {
+    this.logger = new Logger(`paginators/${name}`);
+
     // Page length can be at most 25 due to limit of 25 fields per embed
     if (pageLength > 25) {
-      log.error(
-        'paginators',
+      this.logger.error(
         `Paginator "${name}" has a page length greater than 25`
       );
       process.exit(1);
@@ -66,14 +69,14 @@ export class Paginator {
     // Components can have at most 3 rows, because of the 5 component limit on embeds
     // (2 are already being used for back/next buttons and page selector)
     if (replyOptions.components && replyOptions.components.length > 3) {
-      log.error('paginators', `Paginator "${name}" has more than 3 components`);
+      this.logger.error(`Paginator "${name}" has more than 3 components`);
       process.exit(1);
     }
 
     // The replyOptions can have at most 4 embeds, because of the 5 embed limit on replies
     // (1 is already being used for the pagination embed)
     if (replyOptions.embeds && replyOptions.embeds.length > 4) {
-      log.error('paginators', `Paginator "${name}" has more than 4 embeds`);
+      this.logger.error(`Paginator "${name}" has more than 4 embeds`);
       process.exit(1);
     }
 
