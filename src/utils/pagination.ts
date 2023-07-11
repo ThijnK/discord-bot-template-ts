@@ -10,7 +10,7 @@ import {
 import { createId } from './interaction';
 import { COLORS, NAMESPACES } from '../constants';
 import { Logger } from './logger';
-import { PaginationProps, PaginatorData } from '../types';
+import { PaginationProps, PaginationData } from '../types';
 
 export class Paginator {
   name: string;
@@ -27,7 +27,16 @@ export class Paginator {
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
   /** Asynchronous function to fetch the data for the paginator */
-  getData: (props: PaginationProps) => Promise<PaginatorData>;
+  getData: (props: PaginationProps) => Promise<PaginationData>;
+
+  // #region Cache
+  /** Whether or not to cache the fetched data */
+  cacheData = false;
+  /** The cached data */
+  protected cachedData: Map<string, PaginationData> = new Map();
+  /** Function to get the cache key for the paginator */
+  getCacheKey: (props: PaginationProps) => string;
+  // #endregion
 
   private logger: Logger;
 
@@ -39,6 +48,8 @@ export class Paginator {
       replyOptions,
       pageLength,
       getData,
+      cacheData,
+      getCacheKey,
     }: {
       /**
        * The embed data to use for the pagination embed.
@@ -53,6 +64,15 @@ export class Paginator {
       /** The number of fields to display on a single page (max 25). */
       pageLength: typeof Paginator.prototype.pageLength;
       getData: typeof Paginator.prototype.getData;
+      /** Whether or not to cache the fetched data */
+      cacheData?: boolean;
+      /**
+       * Function to get the cache key for the paginator based on the given props.
+       * This can be used to make the cache key unique to the user or guild.
+       * @example
+       * (props) => `${props.userId}-${props.guildId}`
+       */
+      getCacheKey?: typeof Paginator.prototype.getCacheKey;
     }
   ) {
     this.logger = new Logger(`paginators/${name}`);
@@ -79,11 +99,21 @@ export class Paginator {
       process.exit(1);
     }
 
+    // If caching is enabled, the cache key function must be specified
+    if (cacheData && !getCacheKey) {
+      this.logger.error(
+        `Paginator "${name}" has caching enabled but no cache key function specified`
+      );
+      process.exit(1);
+    }
+
     this.name = name;
     this.embedData = embedData;
     this.replyOptions = replyOptions;
     this.pageLength = pageLength;
     this.getData = getData;
+    this.cacheData = cacheData ?? false;
+    this.getCacheKey = getCacheKey ?? (() => name);
   }
 
   /**
@@ -95,7 +125,15 @@ export class Paginator {
     offset: number,
     props: PaginationProps
   ): Promise<InteractionReplyOptions> {
+    // If caching is enabled, try to get the data from the cache and fetch otherwise
+    const cacheKey = this.getCacheKey(props);
+    if (this.cacheData && this.cachedData.has(cacheKey)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.formatPage(offset, this.cachedData.get(cacheKey)!);
+    }
+
     const data = await this.getData(props);
+    if (this.cacheData) this.cachedData.set(cacheKey, data);
     return this.formatPage(offset, data);
   }
 
@@ -107,7 +145,7 @@ export class Paginator {
    */
   protected formatPage(
     offset: number,
-    data: PaginatorData
+    data: PaginationData
   ): InteractionReplyOptions {
     const fields = data.slice(offset, offset + this.pageLength);
     const currentPage = Math.floor(offset / this.pageLength) + 1;

@@ -172,9 +172,23 @@ If you want these replies to use embeds by default, this can be easily changed b
 There is built-in support for pagination of content using embeds. Currently, this is only used in the `/help` command, but you can create your own pagination by following these steps:
 
 1. Create a paginator in the [`src/utils/paginators.ts`](./src/utils/paginators) folder, using the constructor of the `Paginator` class defined in [`src/utils/pagination.ts`](./src/utils/pagination.ts)
-2. Use the `paginationReply()` function from the utils to create an embed that can be used to navigate through the pages. Don't forget to await this function!
+2. Add the paginator you created to the `paginators` array in the [`src/utils/paginators/index.ts`](./src/utils/paginators/index.ts) file
+3. Use the `paginationReply()` function from the utils to create an embed that can be used to navigate through the pages. Don't forget to await this function!
 
 The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
+
+### Caching pagination data
+
+The `Paginator` class takes a `getData()` function to fetch the data to paginate.
+It is passed a props object, whose type is defined in the [`src/types/pagination.ts`](./src/types/pagination.ts) file as `PaginationProps`.
+The props object currently contains the bot client and the interaction object, but you can add additional fields to it if you need to.
+
+To avoid having to fetch the data every time the page is changed, the `Paginator` class offers the option to cache the data by setting `cacheData` to `true` in the constructor.
+When you set this to `true`, you must also specify the `getCacheKey()` function in the constructor, which takes the props object and returns a string that is used as the key for the cache.
+The `getData()` function is then only called when the data is not yet cached, and the cached data is used otherwise.
+This allows you to cache the data for a specific user (and guild), for example, by using the user ID as the cache key.
+
+### Customizing pagination message
 
 The pagination uses embed fields to display the content, and thus the limit of items to show on a single page is 25 (the maximum number of fields allowed in an embed).
 You can customize the comopnents of the embed being sent using the `embedData` prop, except the fields and footer, since those are set by the pagination.

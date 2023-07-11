@@ -1,6 +1,6 @@
 import { APIEmbedField, BaseInteraction, Client } from 'discord.js';
 
-export type PaginatorData = APIEmbedField[];
+export type PaginationData = APIEmbedField[];
 
 export interface PaginationProps {
   client: Client;

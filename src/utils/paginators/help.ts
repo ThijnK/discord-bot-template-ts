@@ -3,7 +3,7 @@ import {
   ApplicationCommandOptionType,
 } from 'discord.js';
 import categories from '../../commands';
-import { Command, PaginatorData } from '../../types';
+import { Command, PaginationData } from '../../types';
 import { helpSelectComponent } from '../help';
 import { Paginator } from '../pagination';
 
@@ -16,8 +16,8 @@ import { Paginator } from '../pagination';
 const extractSubcommandsRecursive = (
   option: APIApplicationCommandOption,
   name: string
-): PaginatorData => {
-  const result: PaginatorData = [];
+): PaginationData => {
+  const result: PaginationData = [];
   if (option.type === ApplicationCommandOptionType.Subcommand)
     result.push({
       name: `/${name} ${option.name}`,
@@ -35,7 +35,7 @@ const extractSubcommandsRecursive = (
  * @param command The command to get subcommands for
  * @returns An array of embed fields for each command, comprising the name and description of the command
  */
-const getCommands = (command: Command): PaginatorData => {
+const getCommands = (command: Command): PaginationData => {
   const result = command.meta.options
     .map((option) =>
       extractSubcommandsRecursive(option.toJSON(), command.meta.name)
