@@ -4,7 +4,12 @@ import {
   PermissionFlagsBits,
 } from 'discord.js';
 import categories from '../../commands';
-import { Command, CommandCategoryCommands, PaginationData } from '../../types';
+import {
+  Command,
+  CommandCategoryCommands,
+  CommandOptions,
+  PaginationData,
+} from '../../types';
 import { helpSelectComponent } from '../help';
 import { Paginator } from '../pagination';
 import { ENV } from '../../env';
@@ -18,21 +23,23 @@ import { ENV } from '../../env';
 const extractSubcommandsRecursive = (
   option: APIApplicationCommandOption,
   name: string,
-  adminOnly = false
+  cmdOpts: CommandOptions
 ): PaginationData => {
   const result: PaginationData = [];
   if (option.type === ApplicationCommandOptionType.Subcommand)
     result.push({
       name: `/${name} ${option.name}`,
       value: `
-        ${option.description}
-        ${adminOnly ? '🛡️ _admin only_' : ''}
+      ${option.description}
+      ${cmdOpts.adminOnly ? '🛡️ _admin only_' : ''}${
+        cmdOpts.private ? `${cmdOpts.adminOnly ? '\n' : ''}🔒 _private_` : ''
+      }
       `,
     });
   else if (option.type === ApplicationCommandOptionType.SubcommandGroup)
     option.options?.forEach((sub) =>
       result.push(
-        ...extractSubcommandsRecursive(sub, `${name} ${option.name}`, adminOnly)
+        ...extractSubcommandsRecursive(sub, `${name} ${option.name}`, cmdOpts)
       )
     );
   return result;
@@ -48,7 +55,7 @@ const getCommands = (command: Command): PaginationData => {
     extractSubcommandsRecursive(
       option.toJSON(),
       command.meta.name,
-      command.options.adminOnly
+      command.options
     )
   );
 
@@ -58,7 +65,11 @@ const getCommands = (command: Command): PaginationData => {
       name: `/${command.meta.name}`,
       value: `
         ${command.meta.description}
-        ${command.options.adminOnly ? '🛡️ _admin only_' : ''}
+        ${command.options.adminOnly ? '🛡️ _admin only_' : ''}${
+        command.options.private
+          ? `${command.options.adminOnly && '\n'}🔒 _private_`
+          : ''
+      }
       `,
     });
   return result;
@@ -86,8 +97,8 @@ const helpPaginators: Paginator[] =
     // Separate commands into different categories depending on the guild and member that the command is used in/by
     const cmds = {
       private: {
-        member: filterCommands(category.commands, 'private'),
-        admin: filterCommands(category.commands, 'private', true),
+        member: filterCommands(category.commands, 'all'),
+        admin: filterCommands(category.commands, 'all', true),
       },
       public: {
         member: filterCommands(category.commands, 'public'),

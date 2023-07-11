@@ -180,7 +180,8 @@ There is built-in support for pagination of content using embeds. Currently, thi
 The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file.
 The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
 
-The help command only shows public commands, and hides private commands. It also hides `adminOnly` commands from users that are not administrators.
+The help command will show only the commands that are applicable to the user using the command. That is, in guilds other than the test guild (see the [Environment variables](#environment-variables) section), it will only show public commands, and in the test guild it will show all commands, including private commands.
+Additionally, if the member is an administrator, `adminOnly` commands as well.
 
 ### Caching pagination data
 
