@@ -64,6 +64,13 @@ const getCommands = (command: Command): PaginationData => {
   return result;
 };
 
+/**
+ * Filters commands by type and adminOnly, then extracts subcommands from each command, and flattens the result
+ * @param commands The commands to filter
+ * @param type The type of commands to filter
+ * @param isAdmin Whether the commands should be filtered for admin only
+ * @returns An array of embed fields for each command, comprising the name and description of the command
+ */
 const filterCommands = (
   commands: CommandCategoryCommands,
   type: keyof CommandCategoryCommands,
@@ -76,6 +83,7 @@ const filterCommands = (
 
 const helpPaginators: Paginator[] =
   categories?.map((category) => {
+    // Separate commands into different categories depending on the guild and member that the command is used in/by
     const cmds = {
       private: {
         member: filterCommands(category.commands, 'private'),
