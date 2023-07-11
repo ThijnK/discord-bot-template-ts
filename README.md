@@ -196,10 +196,12 @@ This allows you to cache the data for a specific user (and guild), for example, 
 ### Customizing pagination message
 
 The pagination uses embed fields to display the content, and thus the limit of items to show on a single page is 25 (the maximum number of fields allowed in an embed).
-You can customize the comopnents of the embed being sent using the `embedData` prop, except the fields and footer, since those are set by the pagination.
-Additionally, you can change the options of the reply message using the `replyOptions` prop.
+You can customize the components of the embed being sent using the optional `embedData` prop, except the fields and footer, since those are set by the pagination.
+Additionally, you can change the options of the reply message using the optional `replyOptions` prop.
 The pagination embed, the _next_ and _back_ buttons and the page selector will be added onto the given reply options to compose the final message.
 The reply is made ephemeral by default, so if you want it to not be ephemeral, you have to explicitly pass `ephemeral: false` to the `replyOptions`.
+
+_Note_: both the `embedData` and `replyOptions` props can either be the actual data, or a function that returns the data. The function is passed the props object, so you can use the props to determine the data to return.
 
 ## Interaction IDs
 

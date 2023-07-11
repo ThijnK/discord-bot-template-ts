@@ -1,6 +1,7 @@
 import {
   Command,
   CommandCategory,
+  CommandCategoryCommands,
   CommandCategoryMetadata,
   CommandExec,
   CommandMeta,
@@ -40,7 +41,7 @@ export function category(
  */
 export function extractMeta(
   categories: CommandCategory[],
-  type: keyof CommandCategory['commands']
+  type: keyof CommandCategoryCommands
 ) {
   return categories.flatMap(({ commands }) =>
     commands[type].map(({ meta }) => meta)

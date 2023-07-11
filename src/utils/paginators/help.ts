@@ -4,9 +4,10 @@ import {
   PermissionFlagsBits,
 } from 'discord.js';
 import categories from '../../commands';
-import { Command, PaginationData } from '../../types';
+import { Command, CommandCategoryCommands, PaginationData } from '../../types';
 import { helpSelectComponent } from '../help';
 import { Paginator } from '../pagination';
+import { ENV } from '../../env';
 
 /**
  * Extracts subcommands from a command option recursively
@@ -43,15 +44,13 @@ const extractSubcommandsRecursive = (
  * @returns An array of embed fields for each command, comprising the name and description of the command
  */
 const getCommands = (command: Command): PaginationData => {
-  const result = command.meta.options
-    .map((option) =>
-      extractSubcommandsRecursive(
-        option.toJSON(),
-        command.meta.name,
-        command.options.adminOnly
-      )
+  const result = command.meta.options.flatMap((option) =>
+    extractSubcommandsRecursive(
+      option.toJSON(),
+      command.meta.name,
+      command.options.adminOnly
     )
-    .flat();
+  );
 
   // If no subcommands are found, this command is a standalone command
   if (result.length === 0)
@@ -65,16 +64,28 @@ const getCommands = (command: Command): PaginationData => {
   return result;
 };
 
+const filterCommands = (
+  commands: CommandCategoryCommands,
+  type: keyof CommandCategoryCommands,
+  isAdmin = false
+) =>
+  commands[type]
+    .sort((a, b) => a.meta.name.localeCompare(b.meta.name))
+    .filter((c) => !c.options.adminOnly || isAdmin)
+    .flatMap((c) => getCommands(c));
+
 const helpPaginators: Paginator[] =
   categories?.map((category) => {
-    const cmds = category.commands.public.sort((a, b) =>
-      a.meta.name.localeCompare(b.meta.name)
-    );
-    const member = cmds
-      .filter((c) => !c.options.adminOnly)
-      .map((c) => getCommands(c))
-      .flat();
-    const admin = cmds.map((c) => getCommands(c)).flat();
+    const cmds = {
+      private: {
+        member: filterCommands(category.commands, 'private'),
+        admin: filterCommands(category.commands, 'private', true),
+      },
+      public: {
+        member: filterCommands(category.commands, 'public'),
+        admin: filterCommands(category.commands, 'public', true),
+      },
+    };
     const emoji = category.emoji ? `${category.emoji} ` : '';
 
     return new Paginator(category.name, {
@@ -86,17 +97,19 @@ const helpPaginators: Paginator[] =
             category.commands.public.length > 1 ? 's' : ''
           } in ${emoji}${category.name}`,
       },
-      replyOptions: {
-        components: [helpSelectComponent],
-      },
+      replyOptions: ({ interaction }) => ({
+        components: [helpSelectComponent(interaction)],
+      }),
       pageLength: 10,
       getData: async ({ interaction }) => {
+        const guildCmds =
+          interaction.guildId === ENV.TEST_GUILD ? cmds.private : cmds.public;
         if (
           interaction.memberPermissions &&
           interaction.memberPermissions.has(PermissionFlagsBits.Administrator)
         )
-          return admin;
-        return member;
+          return guildCmds.admin;
+        return guildCmds.member;
       },
     });
   }) ?? [];

@@ -18,12 +18,16 @@ export class Paginator {
    * The embed data to use for the pagination embed.
    * The fields and footer are automatically set by the paginator.
    */
-  embedData: Omit<APIEmbed, 'fields' | 'footer'>;
+  embedData?:
+    | Omit<APIEmbed, 'fields' | 'footer'>
+    | ((props: PaginationProps) => Omit<APIEmbed, 'fields' | 'footer'>);
   /**
    * The reply to which the pagination embed and its controls are added.
    * If not specified, the reply is ephemeral by default.
    */
-  replyOptions: InteractionReplyOptions;
+  replyOptions?:
+    | InteractionReplyOptions
+    | ((props: PaginationProps) => InteractionReplyOptions);
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
   /** Asynchronous function to fetch the data for the paginator */
@@ -55,12 +59,12 @@ export class Paginator {
        * The embed data to use for the pagination embed.
        * The fields and footer are automatically set by the paginator.
        */
-      embedData: typeof Paginator.prototype.embedData;
+      embedData?: typeof Paginator.prototype.embedData;
       /**
        * The reply to which the pagination embed and its controls are added.
        * If not specified, the reply is ephemeral by default.
        */
-      replyOptions: typeof Paginator.prototype.replyOptions;
+      replyOptions?: typeof Paginator.prototype.replyOptions;
       /** The number of fields to display on a single page (max 25). */
       pageLength: typeof Paginator.prototype.pageLength;
       getData: typeof Paginator.prototype.getData;
@@ -87,14 +91,24 @@ export class Paginator {
 
     // Components can have at most 3 rows, because of the 5 component limit on embeds
     // (2 are already being used for back/next buttons and page selector)
-    if (replyOptions.components && replyOptions.components.length > 3) {
+    if (
+      replyOptions &&
+      typeof replyOptions !== 'function' &&
+      replyOptions.components &&
+      replyOptions.components.length > 3
+    ) {
       this.logger.error(`Paginator "${name}" has more than 3 components`);
       process.exit(1);
     }
 
     // The replyOptions can have at most 4 embeds, because of the 5 embed limit on replies
     // (1 is already being used for the pagination embed)
-    if (replyOptions.embeds && replyOptions.embeds.length > 4) {
+    if (
+      replyOptions &&
+      typeof replyOptions !== 'function' &&
+      replyOptions.embeds &&
+      replyOptions.embeds.length > 4
+    ) {
       this.logger.error(`Paginator "${name}" has more than 4 embeds`);
       process.exit(1);
     }
@@ -129,12 +143,12 @@ export class Paginator {
     const cacheKey = this.getCacheKey(props);
     if (this.cacheData && this.cachedData.has(cacheKey)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.formatPage(offset, this.cachedData.get(cacheKey)!);
+      return this.formatPage(offset, this.cachedData.get(cacheKey)!, props);
     }
 
     const data = await this.getData(props);
     if (this.cacheData) this.cachedData.set(cacheKey, data);
-    return this.formatPage(offset, data);
+    return this.formatPage(offset, data, props);
   }
 
   /**
@@ -145,18 +159,24 @@ export class Paginator {
    */
   protected formatPage(
     offset: number,
-    data: PaginationData
+    data: PaginationData,
+    props: PaginationProps
   ): InteractionReplyOptions {
     const fields = data.slice(offset, offset + this.pageLength);
     const currentPage = Math.floor(offset / this.pageLength) + 1;
     const pageCount = Math.ceil(data.length / this.pageLength);
 
-    const embed = new EmbedBuilder(this.embedData)
+    const embedData = this.embedData
+      ? typeof this.embedData === 'function'
+        ? this.embedData(props)
+        : this.embedData
+      : undefined;
+    const embed = new EmbedBuilder(embedData)
       .setFields(fields)
       .setFooter({
         text: `Page ${currentPage} / ${pageCount}`,
       })
-      .setColor(this.embedData.color ?? COLORS.embed);
+      .setColor(embedData?.color ?? COLORS.embed);
 
     // Back button
     const backId = createId(
@@ -203,17 +223,28 @@ export class Paginator {
         pageSelector
       );
 
+    const replyOptions = this.replyOptions
+      ? typeof this.replyOptions === 'function'
+        ? this.replyOptions(props)
+        : this.replyOptions
+      : undefined;
+
+    if (replyOptions?.components && replyOptions.components.length > 3)
+      throw new Error(`Paginator "${this.name}" has more than 3 components`);
+    if (replyOptions?.embeds && replyOptions.embeds.length > 4)
+      throw new Error(`Paginator "${this.name}" has more than 4 embeds`);
+
     return {
       ...this.replyOptions,
-      embeds: [embed, ...(this.replyOptions.embeds ?? [])],
+      embeds: [embed, ...(replyOptions?.embeds ?? [])],
       components: [
         buttons,
         // Only show page selection menu if there are multiple pages
         ...(pageCount > 1 ? [selectMenu] : []),
-        ...(this.replyOptions.components ?? []),
+        ...(replyOptions?.components ?? []),
       ],
       // Ephemeral by default
-      ephemeral: this.replyOptions.ephemeral ?? true,
+      ephemeral: replyOptions?.ephemeral ?? true,
     };
   }
 }

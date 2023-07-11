@@ -1,10 +1,16 @@
-import { ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
+import {
+  ActionRowBuilder,
+  BaseInteraction,
+  StringSelectMenuBuilder,
+} from 'discord.js';
 import { NAMESPACES } from '../constants';
 import { createId } from './interaction';
 import categories from '../commands';
 
 /** Select menu for the help embed */
-export const helpSelectComponent =
+export const helpSelectComponent = (
+  interaction: BaseInteraction
+): ActionRowBuilder<StringSelectMenuBuilder> =>
   new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
     new StringSelectMenuBuilder({
       custom_id: createId(NAMESPACES.help),
