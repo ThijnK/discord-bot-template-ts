@@ -1,6 +1,7 @@
 import {
   APIApplicationCommandOption,
   ApplicationCommandOptionType,
+  PermissionFlagsBits,
 } from 'discord.js';
 import categories from '../../commands';
 import { Command, PaginationData } from '../../types';
@@ -15,17 +16,23 @@ import { Paginator } from '../pagination';
  */
 const extractSubcommandsRecursive = (
   option: APIApplicationCommandOption,
-  name: string
+  name: string,
+  adminOnly = false
 ): PaginationData => {
   const result: PaginationData = [];
   if (option.type === ApplicationCommandOptionType.Subcommand)
     result.push({
       name: `/${name} ${option.name}`,
-      value: option.description,
+      value: `
+        ${option.description}
+        ${adminOnly ? '🛡️ _admin only_' : ''}
+      `,
     });
   else if (option.type === ApplicationCommandOptionType.SubcommandGroup)
     option.options?.forEach((sub) =>
-      result.push(...extractSubcommandsRecursive(sub, `${name} ${option.name}`))
+      result.push(
+        ...extractSubcommandsRecursive(sub, `${name} ${option.name}`, adminOnly)
+      )
     );
   return result;
 };
@@ -38,7 +45,11 @@ const extractSubcommandsRecursive = (
 const getCommands = (command: Command): PaginationData => {
   const result = command.meta.options
     .map((option) =>
-      extractSubcommandsRecursive(option.toJSON(), command.meta.name)
+      extractSubcommandsRecursive(
+        option.toJSON(),
+        command.meta.name,
+        command.options.adminOnly
+      )
     )
     .flat();
 
@@ -46,30 +57,47 @@ const getCommands = (command: Command): PaginationData => {
   if (result.length === 0)
     result.push({
       name: `/${command.meta.name}`,
-      value: command.meta.description,
+      value: `
+        ${command.meta.description}
+        ${command.options.adminOnly ? '🛡️ _admin only_' : ''}
+      `,
     });
   return result;
 };
 
 const helpPaginators: Paginator[] =
   categories?.map((category) => {
-    const items = category.commands.public.map((c) => getCommands(c)).flat();
+    const cmds = category.commands.public.sort((a, b) =>
+      a.meta.name.localeCompare(b.meta.name)
+    );
+    const member = cmds
+      .filter((c) => !c.options.adminOnly)
+      .map((c) => getCommands(c))
+      .flat();
+    const admin = cmds.map((c) => getCommands(c)).flat();
     const emoji = category.emoji ? `${category.emoji} ` : '';
 
     return new Paginator(category.name, {
       embedData: {
         title: `${emoji}${category.name} Commands`,
-        description: `Browse through ${
-          category.commands.public.length
-        } command${category.commands.public.length > 1 ? 's' : ''} in ${emoji}${
-          category.name
-        }`,
+        description:
+          category.description ??
+          `Browse through ${category.commands.public.length} command${
+            category.commands.public.length > 1 ? 's' : ''
+          } in ${emoji}${category.name}`,
       },
       replyOptions: {
         components: [helpSelectComponent],
       },
       pageLength: 10,
-      getData: async () => items,
+      getData: async ({ interaction }) => {
+        if (
+          interaction.memberPermissions &&
+          interaction.memberPermissions.has(PermissionFlagsBits.Administrator)
+        )
+          return admin;
+        return member;
+      },
     });
   }) ?? [];
 

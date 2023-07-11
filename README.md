@@ -175,7 +175,12 @@ There is built-in support for pagination of content using embeds. Currently, thi
 2. Add the paginator you created to the `paginators` array in the [`src/utils/paginators/index.ts`](./src/utils/paginators/index.ts) file
 3. Use the `paginationReply()` function from the utils to create an embed that can be used to navigate through the pages. Don't forget to await this function!
 
-The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
+### Help command pagination
+
+The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file.
+The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
+
+The help command only shows public commands, and hides private commands. It also hides `adminOnly` commands from users that are not administrators.
 
 ### Caching pagination data
 
