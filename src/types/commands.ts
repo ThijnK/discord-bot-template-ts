@@ -37,17 +37,19 @@ export interface Command {
   options: CommandOptions;
 }
 
+export interface CommandCategoryCommands {
+  public: Command[];
+  private: Command[];
+  all: Command[];
+}
+
 export interface CommandCategoryMetadata {
   name: string;
   description?: string;
   emoji?: string;
 }
 export interface CommandCategory extends CommandCategoryMetadata {
-  commands: {
-    public: Command[];
-    private: Command[];
-    all: Command[];
-  };
+  commands: CommandCategoryCommands;
 }
 /** Fields for each category page */
 export interface CommandCategoryPage extends CommandCategoryMetadata {

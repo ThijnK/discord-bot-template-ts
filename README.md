@@ -81,19 +81,24 @@ A command file should look something like this:
 
 ```ts
 import { SlashCommandBuilder } from 'discord.js';
-import { command } from '../../utils';
+import { command, reply } from '../../utils';
 
 const meta = new SlashCommandBuilder()
   .setName('example')
   .setDescription('Example command.');
 
 export default command({ meta }, async ({ interaction }) => {
-  await interaction.reply({
+  await reply(interaction, {
     ephemeral: true,
     content: 'Hello world!',
   });
 });
 ```
+
+### Help command
+
+A `/help` command is provided out of the box, that automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!).
+More information about this command can be found in the [Help menu](#help-menu) section.
 
 ### Command options
 
@@ -103,10 +108,6 @@ The first argument of the `command()` function takes an object containing at lea
 - `adminOnly`: whether the command should only be available to users with the `ADMINISTRATOR` permission (default: `false`)
 
 When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use, such as stats about the bot.
-
-### Help command
-
-A `/help` command is already provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!) and their descriptions, using the pagination functionality described in section [Pagination](#pagination). This will show _ALL_ of the (public) commands, including their subcommands, even if they're hidden away in subcommand groups, no matter how deeply nested they are.
 
 ### Subcommands
 
@@ -136,6 +137,14 @@ export default event('ready', ({ logger }, client) => {
   );
 });
 ```
+
+## Help menu
+
+A `/help` command is provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!).
+It uses the pagination functionality described in section [Pagination](#pagination).
+
+The command takes into account the options set on the commands, such as whether they are private (restricted to test guild) or admin-only, and only shows the commands that are applicable to the user using the command.
+If a command is private or admin-only, this will be shown in the help menu.
 
 ## Logging
 
@@ -172,15 +181,34 @@ If you want these replies to use embeds by default, this can be easily changed b
 There is built-in support for pagination of content using embeds. Currently, this is only used in the `/help` command, but you can create your own pagination by following these steps:
 
 1. Create a paginator in the [`src/utils/paginators.ts`](./src/utils/paginators) folder, using the constructor of the `Paginator` class defined in [`src/utils/pagination.ts`](./src/utils/pagination.ts)
-2. Use the `paginationEmbed()` function from the utils to create an embed that can be used to navigate through the pages
+2. Add the paginator you created to the `paginators` array in the [`src/utils/paginators/index.ts`](./src/utils/paginators/index.ts) file
+3. Use the `paginationReply()` function from the utils to create an embed that can be used to navigate through the pages. Don't forget to await this function!
 
-The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file. The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
+### Help command pagination
+
+The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file.
+The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
+
+### Caching pagination data
+
+The `Paginator` class takes a `getData()` function to fetch the data to paginate.
+It is passed a props object, whose type is defined in the [`src/types/pagination.ts`](./src/types/pagination.ts) file as `PaginationProps`.
+The props object currently contains the bot client and the interaction object, but you can add additional fields to it if you need to.
+
+To avoid having to fetch the data every time the page is changed, the `Paginator` class offers the option to cache the data by setting `cacheData` to `true` in the constructor.
+When you set this to `true`, you must also specify the `getCacheKey()` function in the constructor, which takes the props object and returns a string that is used as the key for the cache.
+The `getData()` function is then only called when the data is not yet cached, and the cached data is used otherwise.
+This allows you to cache the data for a specific user (and guild), for example, by using the user ID as the cache key.
+
+### Customizing pagination message
 
 The pagination uses embed fields to display the content, and thus the limit of items to show on a single page is 25 (the maximum number of fields allowed in an embed).
-You can customize the comopnents of the embed being sent using the `embedData` prop, except the fields and footer, since those are set by the pagination.
-Additionally, you can change the options of the reply message using the `replyOptions` prop.
+You can customize the components of the embed being sent using the optional `embedData` prop, except the fields and footer, since those are set by the pagination.
+Additionally, you can change the options of the reply message using the optional `replyOptions` prop.
 The pagination embed, the _next_ and _back_ buttons and the page selector will be added onto the given reply options to compose the final message.
 The reply is made ephemeral by default, so if you want it to not be ephemeral, you have to explicitly pass `ephemeral: false` to the `replyOptions`.
+
+_Note_: both the `embedData` and `replyOptions` props can either be the actual data, or a function that returns the data. The function is passed the props object, so you can use the props to determine the data to return.
 
 ## Interaction IDs
 
