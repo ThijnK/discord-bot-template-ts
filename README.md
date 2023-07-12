@@ -95,6 +95,11 @@ export default command({ meta }, async ({ interaction }) => {
 });
 ```
 
+### Help command
+
+A `/help` command is provided out of the box, that automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!).
+More information about this command can be found in the [Help menu](#help-menu) section.
+
 ### Command options
 
 The first argument of the `command()` function takes an object containing at least the `meta` object created using the `SlashCommandBuilder` from `discord.js`. There's some optional fields that can be passed into the object alongside the `meta` to further configure the command. The following optional fields are available:
@@ -103,10 +108,6 @@ The first argument of the `command()` function takes an object containing at lea
 - `adminOnly`: whether the command should only be available to users with the `ADMINISTRATOR` permission (default: `false`)
 
 When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use, such as stats about the bot.
-
-### Help command
-
-A `/help` command is already provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!) and their descriptions, using the pagination functionality described in section [Pagination](#pagination). This will show _ALL_ of the (public) commands, including their subcommands, even if they're hidden away in subcommand groups, no matter how deeply nested they are.
 
 ### Subcommands
 
@@ -136,6 +137,14 @@ export default event('ready', ({ logger }, client) => {
   );
 });
 ```
+
+## Help menu
+
+A `/help` command is provided in the [`src/commands/general/help.ts`](./src/commands/general/help.ts) file, which automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!).
+It uses the pagination functionality described in section [Pagination](#pagination).
+
+The command takes into account the options set on the commands, such as whether they are private (restricted to test guild) or admin-only, and only shows the commands that are applicable to the user using the command.
+If a command is private or admin-only, this will be shown in the help menu.
 
 ## Logging
 
@@ -179,9 +188,6 @@ There is built-in support for pagination of content using embeds. Currently, thi
 
 The pagination for the `/help` command uses a separate paginator for each category of commands, which are defined in the [`src/utils/paginators/help.ts`](./src/utils/paginators/help.ts) file.
 The pagination embed for a selected category is created in the [`src/events/interactionCreate/help.ts`](./src/events/interactionCreate/help.ts) file.
-
-The help command will show only the commands that are applicable to the user using the command. That is, in guilds other than the test guild (see the [Environment variables](#environment-variables) section), it will only show public commands, and in the test guild it will show all commands, including private commands.
-Additionally, if the member is an administrator, `adminOnly` commands as well.
 
 ### Caching pagination data
 
