@@ -67,7 +67,7 @@ const getCommands = (command: Command): PaginationData => {
         ${command.meta.description}
         ${command.options.adminOnly ? '🛡️ _admin only_' : ''}${
         command.options.private
-          ? `${command.options.adminOnly && '\n'}🔒 _private_`
+          ? `${command.options.adminOnly ? '\n' : ''}🔒 _private_`
           : ''
       }
       `,
@@ -116,9 +116,12 @@ const helpPaginators: Paginator[] =
             category.commands.public.length > 1 ? 's' : ''
           } in ${emoji}${category.name}`,
       },
-      replyOptions: ({ interaction }) => ({
-        components: [helpSelectComponent(interaction)],
-      }),
+      replyOptions: ({ interaction }) => {
+        const helpSelectMenu = helpSelectComponent(interaction);
+        return {
+          components: helpSelectMenu ? [helpSelectMenu] : [],
+        };
+      },
       pageLength: 10,
       getData: async ({ interaction }) => {
         const guildCmds =

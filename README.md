@@ -81,14 +81,14 @@ A command file should look something like this:
 
 ```ts
 import { SlashCommandBuilder } from 'discord.js';
-import { command } from '../../utils';
+import { command, reply } from '../../utils';
 
 const meta = new SlashCommandBuilder()
   .setName('example')
   .setDescription('Example command.');
 
 export default command({ meta }, async ({ interaction }) => {
-  await interaction.reply({
+  await reply(interaction, {
     ephemeral: true,
     content: 'Hello world!',
   });

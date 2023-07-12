@@ -1,5 +1,5 @@
 import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
-import { command, helpSelectComponent } from '../../utils';
+import { command, helpSelectComponent, reply } from '../../utils';
 import { COLORS } from '../../constants';
 
 const meta = new SlashCommandBuilder()
@@ -14,9 +14,20 @@ export default command({ meta }, async ({ interaction }) => {
     )
     .setColor(COLORS.embed);
 
-  return await interaction.reply({
+  const helpSelectMenu = helpSelectComponent(interaction);
+  if (!helpSelectMenu) {
+    embed.setDescription(
+      'There are no commands available for you to use in this server.'
+    );
+    return await reply(interaction, {
+      embeds: [embed],
+      ephemeral: true,
+    });
+  }
+
+  return await reply(interaction, {
     embeds: [embed],
-    components: [helpSelectComponent(interaction)],
+    components: [helpSelectMenu],
     ephemeral: true,
   });
 });
