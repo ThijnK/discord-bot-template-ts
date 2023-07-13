@@ -20,7 +20,7 @@ const filterCategories = (
   cmdType: keyof CommandCategoryCommands,
   isAdmin = false
 ) =>
-  categories.filter((c) =>
+  categories?.filter((c) =>
     c.commands[cmdType].some((cmd) => !cmd.options.adminOnly || isAdmin)
   );
 
