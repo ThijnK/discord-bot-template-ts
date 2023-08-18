@@ -173,10 +173,13 @@ export class Paginator {
       : undefined;
     const embed = new EmbedBuilder(embedData)
       .setFields(fields)
-      .setFooter({
-        text: `Page ${currentPage} / ${pageCount}`,
-      })
       .setColor(embedData?.color ?? COLORS.embed);
+
+    if (fields.length === 0) embed.setDescription('No results found!');
+    else
+      embed.setFooter({
+        text: `Page ${currentPage} / ${pageCount}`,
+      });
 
     // Back button
     const backId = createId(
