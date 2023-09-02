@@ -152,6 +152,15 @@ export class Paginator {
   }
 
   /**
+   * Invalidate the cache for the paginator at the cache key retrieved from the given props
+   */
+  public invalidateCache(props: PaginationProps) {
+    if (!this.cacheData) return;
+    const cacheKey = this.getCacheKey(props);
+    this.cachedData.delete(cacheKey);
+  }
+
+  /**
    * Format a page of the paginator at a given offset
    * @param offset The offset to get the page at
    * @param data The data to format
