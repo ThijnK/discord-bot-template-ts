@@ -8,9 +8,10 @@
     "start": "node .",
     "dev": "nodemon --config nodemon.json src/index.ts",
     "deploy": "cross-env IS_SCRIPT=true ts-node src/scripts/deploy",
-    "deploy-prod": "cross-env NODE_ENV=production npm run deploy",
+    "deploy:prod": "cross-env NODE_ENV=production npm run deploy",
     "clear": "cross-env IS_SCRIPT=true ts-node src/scripts/clear",
-    "format": "prettier --write ./src"
+    "format": "prettier --write ./src",
+    "format:check": "prettier --check ./src"
   },
   "keywords": [],
   "author": "",
