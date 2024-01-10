@@ -23,7 +23,7 @@ A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://di
 
 Some knowledge of TypeScript and Discord.js is recommended, and you'll need the following installed:
 
-- [Node.js](https://nodejs.org/en/) (v16.9.0 or higher)
+- [Node.js](https://nodejs.org/en/) (v16.11.0 or higher)
 - [npm](https://www.npmjs.com/) (should come with Node.js)
 
 You will need a Discord bot token, which you can get by creating a new application in the [Discord developer portal](https://discord.com/developers/applications) by following the steps outlined in the [Discord developer documentation](https://discord.com/developers/docs/getting-started).
