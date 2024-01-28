@@ -29,6 +29,8 @@ export type CommandOptions = {
    * When defined, this command will be on cooldown for the given number of seconds.
    *
    * On a per-user basis by default, which can be changed to guild-wide by setting the scope to `guild`.
+   *
+   * Server admins will automatically bypass the cooldown.
    * @default undefined
    *
    * @see `rateLimit` option for more fine-tuned control.
@@ -38,9 +40,8 @@ export type CommandOptions = {
     | {
         /**
          * The number of seconds this command will be on cooldown for.
-         * @default 5
          */
-        seconds?: number;
+        seconds: number;
         /**
          * The scope of the cooldown.
          * @default user
@@ -52,34 +53,6 @@ export type CommandOptions = {
          */
         scope?: 'user' | 'guild';
       };
-  /**
-   * When defined, this command will be rate limited on a per-user basis.
-   *
-   * On a per-user basis by default, which can be changed to guild-wide by setting the scope to `guild`.
-   * @default undefined
-   */
-  rateLimit?: {
-    /**
-     * The number of times this command can be used in the given time period.
-     * @default 1
-     */
-    times?: number;
-    /**
-     * The time period in seconds.
-     * @default 5
-     */
-    period?: number;
-    /**
-     * The scope of the rate limit.
-     * @default user
-     *
-     * @values
-     * `user` - The rate limit will be on a per-user basis.
-     *
-     * `guild` - The rate limit will be on a per-guild basis.
-     */
-    scope?: 'user' | 'guild';
-  };
 };
 export type CommandExec = (props: CommandProps) => Awaitable<unknown>;
 export type CommandMeta =
