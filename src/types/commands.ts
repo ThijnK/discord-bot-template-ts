@@ -26,14 +26,12 @@ export type CommandOptions = {
    */
   adminOnly?: boolean;
   /**
-   * When defined, this command will be on cooldown for the given number of seconds.
+   * When defined, this command will be on cooldown for the given number of seconds after being used.
    *
-   * On a per-user basis by default, which can be changed to guild-wide by setting the scope to `guild`.
+   * By default, it is on a per-user basis, but that can be changed to guild-wide by setting the scope to `guild`.
    *
    * Server admins will automatically bypass the cooldown.
    * @default undefined
-   *
-   * @see `rateLimit` option for more fine-tuned control.
    */
   cooldown?:
     | number
