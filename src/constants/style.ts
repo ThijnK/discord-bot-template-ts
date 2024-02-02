@@ -9,4 +9,5 @@ export const EMOJIS = {
   error: '❌',
   warn: '⚠️',
   deny: '🚫',
+  wait: '⏳',
 } as const;
