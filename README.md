@@ -16,6 +16,7 @@ A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://di
 - 📆 Event handlers
 - 📄 Built-in pagination
 - ❔ Automatic help command
+- ⏳ Command cooldowns
 - 🗞️ Fancy logging
 - 🆔 Easy handling of interaction IDs
 
@@ -106,6 +107,7 @@ The first argument of the `command()` function takes an object containing at lea
 
 - `private`: whether the command should be private to the test guild (default: `false`)
 - `adminOnly`: whether the command should only be available to users with the `ADMINISTRATOR` permission (default: `false`)
+- `cooldown`: the cooldown of the command, in seconds, or as an object with `seconds` and `scope` (user-specific or guild-wide) fields ([more info](#command-cooldowns))
 
 When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use, such as stats about the bot.
 
@@ -116,6 +118,30 @@ Subcommands are supported by the `SlashCommandBuilder` from `discord.js`, and ca
 Subcommands will be picked up automatically by the help command, however deep they are nested in subcommand groups.
 
 An example of the usage of subcommands can be found in the [`src/commands/general/info.ts`](./src/commands/general/info.ts) file.
+
+### Command cooldowns
+
+Command cooldowns can be set using the `cooldown` field in the command's [options](#command-options), as shown in the below snippet. This can be a number, representing the cooldown in seconds, or an object with `seconds` and `scope` fields. The `scope` field can be either `'user'` or `'guild'`, and determines whether the cooldown is user-specific or guild-wide. If the `scope` field is not provided, the cooldown will be user-specific by default.
+
+```ts
+export default command(
+  // This command has a cooldown of 30 seconds, and works on a per-user basis
+  { meta, cooldown: 30 }
+  // ...
+);
+
+export default command(
+  // This command has a cooldown of 60 seconds, and works on a guild-wide basis
+  { meta, cooldown: { seconds: 60, scope: 'guild' } }
+  // ...
+);
+```
+
+When a command is on cooldown, the bot will reply with a message indicating this, and the command will not be executed.
+Notably, server members with the admin permission automatically bypass the cooldown, but their command usage will still be recorded.
+That is, if the cooldown is guild-wide, an admin may use the command however often they want, but after an admin uses the command, it will still be on cooldown for non-admin members.
+
+The logic for command cooldowns is located in the [`src/events/interactionCreate/commands.ts`](./src/events/interactionCreate/commands.ts) file, in the `checkCooldown` function.
 
 ## Events
 
