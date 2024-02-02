@@ -19,6 +19,7 @@ export enum ReplyType {
   Error = 'error',
   Warn = 'warn',
   Deny = 'deny',
+  Wait = 'wait',
 }
 
 /**
@@ -94,3 +95,8 @@ reply.deny = <T extends DeferableInteraction>(
     | InteractionReplyOptions
     | string = 'You do not have permission to do that!'
 ) => reply(interaction, options, ReplyType.Deny);
+
+reply.wait = <T extends DeferableInteraction>(
+  interaction: T,
+  options: InteractionReplyOptions | string
+) => reply(interaction, options, ReplyType.Wait);

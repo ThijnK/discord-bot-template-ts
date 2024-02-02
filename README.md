@@ -171,6 +171,7 @@ The function takes the interaction to reply to, the options for the reply (meani
 - `error`: send an error reply, which is prepended with an error emoji
 - `warn`: send a warning reply, which is prepended with a warning emoji
 - `deny`: send a reply that denies the interaction, which is prepended with a deny emoji
+- `wait`: send a reply that indicates a waiting state, which is prepended with an hourglass emoji
 
 Similar to the `log()` function (see the [Logging](#logging) section), the `reply()` function provides easy-to-use sub-functions for each type, so currently `reply.error()`, `reply.warn()` and `reply.deny()`.
 
