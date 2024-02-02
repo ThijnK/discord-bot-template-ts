@@ -64,13 +64,13 @@ const getCommands = (command: Command): PaginationData => {
     result.push({
       name: `/${command.meta.name}`,
       value: `
-        ${command.meta.description}
-        ${command.options.adminOnly ? '🛡️ _admin only_' : ''}${
+      ${command.meta.description}
+      ${command.options.adminOnly ? '🛡️ _admin only_' : ''}${
         command.options.private
           ? `${command.options.adminOnly ? '\n' : ''}🔒 _private_`
           : ''
       }
-      `,
+    `,
     });
   return result;
 };
