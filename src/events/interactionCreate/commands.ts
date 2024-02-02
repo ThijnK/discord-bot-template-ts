@@ -37,7 +37,7 @@ export default event('interactionCreate', async ({ client }, interaction) => {
 
   // Check the cooldown for the command, if enabled
   const cooldownError = checkCooldown(cooldown, interaction, isAdmin);
-  if (cooldownError) return reply.deny(interaction, cooldownError);
+  if (cooldownError) return reply.wait(interaction, cooldownError);
 
   await command.exec({
     client,
