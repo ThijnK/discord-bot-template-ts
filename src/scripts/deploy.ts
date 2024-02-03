@@ -8,6 +8,8 @@ const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
 const logger = new Logger('deploy');
 
 async function main() {
+  if (!ENV.TEST_GUILD)
+    throw new Error('Missing environment variable: TEST_GUILD');
   const currentUser = (await rest.get(Routes.user())) as APIUser;
 
   // In development, all commands are deployed to the test guild.

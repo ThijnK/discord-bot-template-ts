@@ -17,12 +17,12 @@ export const ENV = {
     process.env.BOT_TOKEN ??
     '',
   /** ID of the Discord guild to use for testing */
-  TEST_GUILD: process.env.TEST_GUILD ?? '',
+  TEST_GUILD: process.env.TEST_GUILD ?? null,
 } as const;
 
 // Check to make sure no environment variables are missing
 for (const [key, value] of Object.entries(ENV)) {
-  if (value === undefined || value === null || value === '') {
+  if (value === undefined || value === '') {
     log.error('env', `Missing environment variable: ${key}`);
     process.exit(1);
   }
