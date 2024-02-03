@@ -1,14 +1,11 @@
-import { ClientEvents, Awaitable, Client } from 'discord.js';
-import { Logger } from '../utils';
+import { ClientEvents, Awaitable } from 'discord.js';
+import { BaseContext } from './context';
 
-export interface EventProps {
-  client: Client;
-  logger: Logger;
-}
+export interface EventContext extends BaseContext {}
 
 export type EventKeys = keyof ClientEvents;
 export type EventExec<T extends EventKeys> = (
-  props: EventProps,
+  ctx: EventContext,
   ...args: ClientEvents[T]
 ) => Awaitable<unknown>;
 export interface Event<T extends EventKeys> {

@@ -17,8 +17,8 @@ A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://di
 - 📄 Built-in pagination
 - ❔ Automatic help command
 - ⏳ Command cooldowns
-- 🗞️ Fancy logging
-- 🆔 Easy handling of interaction IDs
+- 🆔 Interaction ID handling
+- 🗞️ Custom logging
 
 ## Prerequisites
 
@@ -33,8 +33,8 @@ You will need a Discord bot token, which you can get by creating a new applicati
 
 To get started, create a new repository from this template, as explained in the [GitHub docs](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template).
 
-Add the required environment variables (see section [Environment variables](#environment-variables)).
-Then run the following commands to install the dependencies and start the bot:
+Set the required environment variables (see section [Environment variables](#environment-variables)).
+Then run the following commands to install the dependencies and start the bot (in development mode):
 
 ```sh
 npm i
@@ -68,7 +68,7 @@ Currently, this includes the following:
 The `EMOJIS` constant is already used to add emoji's to the reply messages created through the `reply()` function (see the [Interaction replies](#interaction-replies) section).
 The `COLORS` constant is only being used to give the same color to every embed the bot sends out, namely `COLORS.embed`. The `warn` and `error` colors are not being used anywhere, but are provided as examples.
 
-You are free to change these constants, or add new ones and new fields to the existing ones, to customize the bot to your liking.
+You are, of course, free to change these constants, or add new ones and new fields to the existing ones, to customize the bot to your liking.
 
 ## Commands
 
@@ -76,7 +76,10 @@ Commands are located in the [`src/commands`](./src/commands) folder. The [index.
 
 Commands are grouped into _categories_, each of which has its own folder. The `index.ts` file in each folder exports the commands in that category and provides some metadata about the category, which includes at least the name of the category, and optionally a description and emoji.
 
-Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and an `exec` function, which is called when the command is executed. This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself. Note that errors thrown in the `exec` function will be caught and logged automatically, so you don't have to worry about catching them yourself. Do, however, make sure that you await asynchronous functions, such that errors thrown inside such functions will be caught as well!
+Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and an `exec` function, which is invoked when the command is executed. This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself. Note that errors thrown in the `exec` function will be caught and logged automatically, so you don't have to worry about catching them yourself. Do, however, make sure that you await asynchronous functions, such that errors thrown inside such functions will be caught as well!
+
+You can add additional fields to the command context by modifying the `CommandContext` type in the [`src/types/commands.ts`](./src/types/commands.ts) file.
+Note that the main reason for propagating objects like the client and logger through a context like this is to (1) avoid having to import them in every file, and (2), which is actually more important, to not actually run the bot when running the deploy script, which would inevitably be the case if you were to import the client in every command file because those command files are imported in the deploy script.
 
 A command file should look something like this:
 
@@ -109,7 +112,7 @@ The first argument of the `command()` function takes an object containing at lea
 - `adminOnly`: whether the command should only be available to users with the `ADMINISTRATOR` permission (default: `false`)
 - `cooldown`: the cooldown of the command, in seconds, or as an object with `seconds` and `scope` (user-specific or guild-wide) fields ([more info](#command-cooldowns))
 
-When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use, such as stats about the bot.
+When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use.
 
 ### Subcommands
 
@@ -219,11 +222,11 @@ The pagination embed for a selected category is created in the [`src/events/inte
 ### Caching pagination data
 
 The `Paginator` class takes a `getData()` function to fetch the data to paginate.
-It is passed a props object, whose type is defined in the [`src/types/pagination.ts`](./src/types/pagination.ts) file as `PaginationProps`.
-The props object currently contains the bot client and the interaction object, but you can add additional fields to it if you need to.
+It is passed a context object, whose type is defined in the [`src/types/pagination.ts`](./src/types/pagination.ts) file as `PaginationContext`, which extends the `BaseContext` defined in [`src/types/context.ts`](./src/types/context.ts).
+The context object currently contains the bot client, the interaction and a logger, but you can add additional fields to it if you need to.
 
 To avoid having to fetch the data every time the page is changed, the `Paginator` class offers the option to cache the data by setting `cacheData` to `true` in the constructor.
-When you set this to `true`, you must also specify the `getCacheKey()` function in the constructor, which takes the props object and returns a string that is used as the key for the cache.
+When you set this to `true`, you must also specify the `getCacheKey()` function in the constructor, which takes the context object and returns a string that is used as the key for the cache.
 The `getData()` function is then only called when the data is not yet cached, and the cached data is used otherwise.
 This allows you to cache the data for a specific user (and guild), for example, by using the user ID as the cache key.
 
@@ -235,7 +238,7 @@ Additionally, you can change the options of the reply message using the optional
 The pagination embed, the _next_ and _back_ buttons and the page selector will be added onto the given reply options to compose the final message.
 The reply is made ephemeral by default, so if you want it to not be ephemeral, you have to explicitly pass `ephemeral: false` to the `replyOptions`.
 
-_Note_: both the `embedData` and `replyOptions` props can either be the actual data, or a function that returns the data. The function is passed the props object, so you can use the props to determine the data to return.
+_Note_: both the `embedData` and `replyOptions` props can either be the actual data, or a function that returns the data. The function is passed the context object, so you can use the context to determine the data to return (e.g. make it user-specific).
 
 ## Interaction IDs
 

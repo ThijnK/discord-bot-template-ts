@@ -3,7 +3,7 @@ import { Paginator } from '../pagination';
 import helpPaginators from './help';
 import { createId, parseId } from '../interaction';
 import { NAMESPACES } from '../../constants';
-import { PaginationProps } from '../../types';
+import { PaginationContext } from '../../types';
 
 // Add new paginators here
 const paginators: Paginator[] = [...helpPaginators /*, otherPaginator */];
@@ -19,7 +19,7 @@ const paginatorMap = new Map<string, Paginator>(
  */
 export async function generatePage(
   interactionId: string,
-  props: PaginationProps
+  ctx: PaginationContext
 ): Promise<InteractionReplyOptions> {
   // Extract metadata from interactionId
   const [_namespace, paginatorName, offsetString] = parseId(interactionId);
@@ -36,7 +36,7 @@ export async function generatePage(
   }
   if (isNaN(offset)) offset = 0;
 
-  return paginator.getPage(offset, props);
+  return paginator.getPage(offset, ctx);
 }
 
 /**
@@ -44,7 +44,7 @@ export async function generatePage(
  * @param paginatorName The name of the paginator to generate the reply for
  * @returns The generated reply options
  */
-export function paginationReply(paginatorName: string, props: PaginationProps) {
+export function paginationReply(paginatorName: string, ctx: PaginationContext) {
   const id = createId(NAMESPACES.pagination, paginatorName);
-  return generatePage(id, props);
+  return generatePage(id, ctx);
 }

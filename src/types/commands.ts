@@ -1,17 +1,14 @@
 import {
   Awaitable,
-  Client,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   APIEmbedField,
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { Logger } from '../utils';
+import { BaseContext } from './context';
 
-export interface CommandProps {
+export interface CommandContext extends BaseContext {
   interaction: ChatInputCommandInteraction;
-  client: Client;
-  logger: Logger;
 }
 
 export type CommandOptions = {
@@ -52,7 +49,7 @@ export type CommandOptions = {
         scope?: 'user' | 'guild';
       };
 };
-export type CommandExec = (props: CommandProps) => Awaitable<unknown>;
+export type CommandExec = (ctx: CommandContext) => Awaitable<unknown>;
 export type CommandMeta =
   | SlashCommandBuilder
   | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>

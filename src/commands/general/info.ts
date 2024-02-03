@@ -5,7 +5,7 @@ import {
 } from 'discord.js';
 import { command, formatDate, reply } from '../../utils';
 import { COLORS } from '../../constants';
-import { CommandProps } from '../../types';
+import { CommandContext } from '../../types';
 
 const server = new SlashCommandSubcommandBuilder()
   .setName('server')
@@ -32,20 +32,20 @@ const meta = new SlashCommandBuilder()
   .addSubcommand(bot)
   .addSubcommand(user);
 
-export default command({ meta }, async ({ interaction, ...props }) => {
+export default command({ meta }, async ({ interaction, ...ctx }) => {
   await interaction.deferReply({ ephemeral: true });
 
   switch (interaction.options.getSubcommand()) {
     case 'server':
-      return await getServerInfo({ interaction, ...props });
+      return await getServerInfo({ interaction, ...ctx });
     case 'bot':
-      return await getBotInfo({ interaction, ...props });
+      return await getBotInfo({ interaction, ...ctx });
     case 'user':
-      return await getUserInfo({ interaction, ...props });
+      return await getUserInfo({ interaction, ...ctx });
   }
 });
 
-const getServerInfo = async ({ interaction }: CommandProps) => {
+const getServerInfo = async ({ interaction }: CommandContext) => {
   const owner = await interaction.guild?.fetchOwner();
   const channels = await interaction.guild?.channels.fetch();
 
@@ -92,7 +92,7 @@ const getServerInfo = async ({ interaction }: CommandProps) => {
   await reply(interaction, { embeds: [embed] });
 };
 
-const getBotInfo = async ({ interaction }: CommandProps) => {
+const getBotInfo = async ({ interaction }: CommandContext) => {
   const embed = new EmbedBuilder()
     .setTitle('Bot Info')
     .setDescription(`Info about ***${interaction.client.user?.username}***`)
@@ -119,7 +119,7 @@ const getBotInfo = async ({ interaction }: CommandProps) => {
   await reply(interaction, { embeds: [embed] });
 };
 
-const getUserInfo = async ({ interaction }: CommandProps) => {
+const getUserInfo = async ({ interaction }: CommandContext) => {
   const user = interaction.options.getUser('user', true);
   const member = await interaction.guild?.members.fetch(user.id);
   if (!member) reply.error(interaction, { content: 'User not found' });

@@ -1,7 +1,7 @@
 import { createId, event, generatePage, parseId } from '../../utils';
 import { NAMESPACES } from '../../constants';
 
-export default event('interactionCreate', async ({ client }, interaction) => {
+export default event('interactionCreate', async (ctx, interaction) => {
   if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
   const [namespace, paginatorName] = parseId(interaction.customId);
   if (namespace !== NAMESPACES.pagination) return;
@@ -16,9 +16,6 @@ export default event('interactionCreate', async ({ client }, interaction) => {
     );
 
   return await interaction.editReply(
-    await generatePage(interactionId, {
-      client,
-      interaction,
-    })
+    await generatePage(interactionId, { ...ctx, interaction })
   );
 });

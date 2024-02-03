@@ -1,8 +1,8 @@
-import { APIEmbedField, BaseInteraction, Client } from 'discord.js';
+import { APIEmbedField, BaseInteraction } from 'discord.js';
+import { BaseContext } from './context';
 
 export type PaginationData = APIEmbedField[];
 
-export interface PaginationProps {
-  client: Client;
+export interface PaginationContext extends BaseContext {
   interaction: BaseInteraction;
 }

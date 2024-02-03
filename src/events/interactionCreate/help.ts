@@ -1,7 +1,7 @@
 import { event, paginationReply, parseId } from '../../utils';
 import { NAMESPACES } from '../../constants';
 
-export default event('interactionCreate', async ({ client }, interaction) => {
+export default event('interactionCreate', async (ctx, interaction) => {
   if (!interaction.isStringSelectMenu()) return;
   const [namespace] = parseId(interaction.customId);
   if (namespace !== NAMESPACES.help) return;
@@ -9,7 +9,7 @@ export default event('interactionCreate', async ({ client }, interaction) => {
   await interaction.deferUpdate();
   return await interaction.editReply(
     await paginationReply(interaction.values[0], {
-      client,
+      ...ctx,
       interaction,
     })
   );

@@ -10,7 +10,7 @@ import {
 import { createId } from './interaction';
 import { COLORS, NAMESPACES } from '../constants';
 import { Logger } from './logger';
-import { PaginationProps, PaginationData } from '../types';
+import { PaginationContext, PaginationData } from '../types';
 
 export class Paginator {
   name: string;
@@ -20,18 +20,18 @@ export class Paginator {
    */
   embedData?:
     | Omit<APIEmbed, 'fields' | 'footer'>
-    | ((props: PaginationProps) => Omit<APIEmbed, 'fields' | 'footer'>);
+    | ((ctx: PaginationContext) => Omit<APIEmbed, 'fields' | 'footer'>);
   /**
    * The reply to which the pagination embed and its controls are added.
    * If not specified, the reply is ephemeral by default.
    */
   replyOptions?:
     | InteractionReplyOptions
-    | ((props: PaginationProps) => InteractionReplyOptions);
+    | ((ctx: PaginationContext) => InteractionReplyOptions);
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
   /** Asynchronous function to fetch the data for the paginator */
-  getData: (props: PaginationProps) => Promise<PaginationData>;
+  getData: (ctx: PaginationContext) => Promise<PaginationData>;
 
   // #region Cache
   /** Whether or not to cache the fetched data */
@@ -39,7 +39,7 @@ export class Paginator {
   /** The cached data */
   protected cachedData: Map<string, PaginationData> = new Map();
   /** Function to get the cache key for the paginator */
-  getCacheKey: (props: PaginationProps) => string;
+  getCacheKey: (ctx: PaginationContext) => string;
   // #endregion
 
   private logger: Logger;
@@ -71,10 +71,10 @@ export class Paginator {
       /** Whether or not to cache the fetched data */
       cacheData?: boolean;
       /**
-       * Function to get the cache key for the paginator based on the given props.
-       * This can be used to make the cache key unique to the user or guild.
+       * Function to get the cache key for the paginator based on the given context.
+       * This can be used to make the cache key unique to the user and/or guild.
        * @example
-       * (props) => `${props.userId}-${props.guildId}`
+       * (ctx) => `${ctx.interaction.user.id}-${ctx.interaction.guildId}`
        */
       getCacheKey?: typeof Paginator.prototype.getCacheKey;
     }
@@ -137,26 +137,26 @@ export class Paginator {
    */
   public async getPage(
     offset: number,
-    props: PaginationProps
+    ctx: PaginationContext
   ): Promise<InteractionReplyOptions> {
     // If caching is enabled, try to get the data from the cache and fetch otherwise
-    const cacheKey = this.getCacheKey(props);
+    const cacheKey = this.getCacheKey(ctx);
     if (this.cacheData && this.cachedData.has(cacheKey)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.formatPage(offset, this.cachedData.get(cacheKey)!, props);
+      return this.formatPage(offset, this.cachedData.get(cacheKey)!, ctx);
     }
 
-    const data = await this.getData(props);
+    const data = await this.getData(ctx);
     if (this.cacheData) this.cachedData.set(cacheKey, data);
-    return this.formatPage(offset, data, props);
+    return this.formatPage(offset, data, ctx);
   }
 
   /**
-   * Invalidate the cache for the paginator at the cache key retrieved from the given props
+   * Invalidate the cache for the paginator at the cache key retrieved from the given context
    */
-  public invalidateCache(props: PaginationProps) {
+  public invalidateCache(ctx: PaginationContext) {
     if (!this.cacheData) return;
-    const cacheKey = this.getCacheKey(props);
+    const cacheKey = this.getCacheKey(ctx);
     this.cachedData.delete(cacheKey);
   }
 
@@ -169,7 +169,7 @@ export class Paginator {
   protected formatPage(
     offset: number,
     data: PaginationData,
-    props: PaginationProps
+    ctx: PaginationContext
   ): InteractionReplyOptions {
     const fields = data.slice(offset, offset + this.pageLength);
     const currentPage = Math.floor(offset / this.pageLength) + 1;
@@ -177,7 +177,7 @@ export class Paginator {
 
     const embedData = this.embedData
       ? typeof this.embedData === 'function'
-        ? this.embedData(props)
+        ? this.embedData(ctx)
         : this.embedData
       : undefined;
     const embed = new EmbedBuilder(embedData)
@@ -237,7 +237,7 @@ export class Paginator {
 
     const replyOptions = this.replyOptions
       ? typeof this.replyOptions === 'function'
-        ? this.replyOptions(props)
+        ? this.replyOptions(ctx)
         : this.replyOptions
       : undefined;
 
