@@ -6,11 +6,17 @@ import {
 import { EMOJIS } from '../constants';
 import { log } from './logger';
 
-interface DeferableInteraction extends BaseInteraction {
+export interface DeferableInteraction extends BaseInteraction {
   deferred: boolean;
   replied: boolean;
   reply: (options: InteractionReplyOptions) => Promise<unknown>;
   editReply: (options: InteractionEditReplyOptions) => Promise<unknown>;
+}
+
+export function instanceOfDeferableInteraction(
+  object: any
+): object is DeferableInteraction {
+  return object && 'deferred' in object;
 }
 
 export enum ReplyType {
