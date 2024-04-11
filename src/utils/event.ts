@@ -13,9 +13,12 @@ export function event<T extends EventKeys>(
   };
 }
 
+// Distributed event type
+type DistributedEvent<T extends EventKeys> = T extends any ? Event<T> : never;
+
 export function registerEvents<T extends EventKeys>(
   client: Client,
-  events: Event<T>[]
+  events: DistributedEvent<T>[]
 ): void {
   for (const event of events)
     client.on(event.id, async (...args) => {
