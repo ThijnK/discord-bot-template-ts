@@ -1,7 +1,7 @@
 import { Event, EventExec, EventKeys } from '../types';
 import { Client } from 'discord.js';
 import { Logger } from './logger';
-import { reply, instanceOfDeferableInteraction } from './replies';
+import { reply } from './replies';
 
 export function event<T extends EventKeys>(
   id: T,
@@ -13,13 +13,7 @@ export function event<T extends EventKeys>(
   };
 }
 
-// Distributed event type
-type DistributedEvent<T extends EventKeys> = T extends any ? Event<T> : never;
-
-export function registerEvents<T extends EventKeys>(
-  client: Client,
-  events: DistributedEvent<T>[]
-): void {
+export function registerEvents(client: Client, events: Event<any>[]): void {
   for (const event of events)
     client.on(event.id, async (...args) => {
       const logger = new Logger(event.id);
@@ -30,11 +24,7 @@ export function registerEvents<T extends EventKeys>(
       } catch (error) {
         logger.error(error);
         // If the error is thrown in an interaction, reply to it
-        if (
-          event.id === 'interactionCreate' &&
-          instanceOfDeferableInteraction(args[0])
-        )
-          reply.error(args[0]);
+        if (event.id === 'interactionCreate') reply.error(args[0]);
       }
     });
 }

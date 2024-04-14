@@ -13,12 +13,6 @@ export interface DeferableInteraction extends BaseInteraction {
   editReply: (options: InteractionEditReplyOptions) => Promise<unknown>;
 }
 
-export function instanceOfDeferableInteraction(
-  object: any
-): object is DeferableInteraction {
-  return object && 'deferred' in object;
-}
-
 export enum ReplyType {
   Default = 'default',
   Success = 'success',
