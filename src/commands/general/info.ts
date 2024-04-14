@@ -53,7 +53,7 @@ const getServerInfo = async ({ interaction }: CommandContext) => {
     .setTitle('Server Info')
     .setDescription(`Info about ***${interaction.guild?.name}***`)
     .setColor(COLORS.embed)
-    .setThumbnail(interaction.guild?.iconURL() ?? '')
+    .setThumbnail(interaction.guild?.iconURL() ?? null)
     .setFields([
       {
         name: 'Guild ID',
@@ -97,7 +97,7 @@ const getBotInfo = async ({ interaction }: CommandContext) => {
     .setTitle('Bot Info')
     .setDescription(`Info about ***${interaction.client.user?.username}***`)
     .setColor(COLORS.embed)
-    .setThumbnail(interaction.client.user?.avatarURL() ?? '')
+    .setThumbnail(interaction.client.user?.avatarURL() ?? null)
     .setFields([
       {
         name: 'Bot ID',
