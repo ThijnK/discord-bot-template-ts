@@ -17,6 +17,7 @@ A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://di
 - 📄 Built-in pagination
 - ❔ Automatic help command
 - ⏳ Command cooldowns
+- 🚗 Support for autocomplete
 - 🆔 Interaction ID handling
 - 🗞️ Custom logging
 
@@ -129,14 +130,12 @@ Command cooldowns can be set using the `cooldown` field in the command's [option
 ```ts
 export default command(
   // This command has a cooldown of 30 seconds, and works on a per-user basis
-  { meta, cooldown: 30 }
-  // ...
+  { meta, cooldown: 30 /* ... */ }
 );
 
 export default command(
   // This command has a cooldown of 60 seconds, and works on a guild-wide basis
-  { meta, cooldown: { seconds: 60, scope: 'guild' } }
-  // ...
+  { meta, cooldown: { seconds: 60, scope: 'guild' } /* ... */ }
 );
 ```
 
@@ -145,6 +144,52 @@ Notably, server members with the admin permission automatically bypass the coold
 That is, if the cooldown is guild-wide, an admin may use the command however often they want, but after an admin uses the command, it will still be on cooldown for non-admin members.
 
 The logic for command cooldowns is located in the [`src/events/interactionCreate/commands.ts`](./src/events/interactionCreate/commands.ts) file, in the `checkCooldown` function.
+
+### Autocomplete
+
+Support for autocomplete options, as described in [this](https://discordjs.guide/slash-commands/autocomplete.html) discordjs guide, is provided in the template.
+You can simply enable autocomplete for a command option by using [`setAutocomplete(true)`](https://discord.js.org/docs/packages/builders/1.8.1/SlashCommandStringOption:Class#setAutocomplete) on a `SlashCommandStringOption`.
+You have to provide the autcompletion yourself (see the guide linked above), in an event handler specified under the `autocomplete` field in the argument of the `command()` function.
+
+For instance:
+
+```ts
+const meta = new SlashCommandBuilder()
+  .setName('example')
+  .setDescription('Example command.')
+  .addStringOption((option) =>
+    option
+      .setName('example-option')
+      .setDescription('Example option.')
+      .setRequired(true)
+      .setAutocomplete(true)
+  );
+
+export default command({
+  meta,
+  exec: () => {
+    // ...
+  },
+  autocomplete: async ({ interaction }) => {
+    const focusedValue = interaction.options.getFocused();
+    const choices = [
+      'Popular Topics: Threads',
+      'Sharding: Getting started',
+      'Library: Voice Connections',
+      'Interactions: Replying to slash commands',
+      'Popular Topics: Embed preview',
+    ];
+    const filtered = choices.filter((choice) =>
+      choice.toLowerCase().startsWith(focusedValue.toLowerCase())
+    );
+    await interaction.respond(
+      filtered.map((choice) => ({ name: choice, value: choice }))
+    );
+  },
+});
+```
+
+The logic to delegate autocomplete interactions to their respective event handlers is located in the [`src/events/interactionCreate/commands.ts`](./src/events/interactionCreate/commands.ts) file.
 
 ## Events
 
