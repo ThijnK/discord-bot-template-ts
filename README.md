@@ -92,11 +92,14 @@ const meta = new SlashCommandBuilder()
   .setName('example')
   .setDescription('Example command.');
 
-export default command({ meta }, async ({ interaction }) => {
-  await reply(interaction, {
-    ephemeral: true,
-    content: 'Hello world!',
-  });
+export default command({
+  meta,
+  exec: async ({ interaction }) => {
+    await reply(interaction, {
+      ephemeral: true,
+      content: 'Hello world!',
+    });
+  },
 });
 ```
 
