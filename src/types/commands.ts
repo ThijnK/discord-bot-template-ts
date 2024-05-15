@@ -4,11 +4,16 @@ import {
   SlashCommandBuilder,
   APIEmbedField,
   SlashCommandSubcommandsOnlyBuilder,
+  AutocompleteInteraction,
 } from 'discord.js';
 import { BaseContext } from './context';
 
 export interface CommandContext extends BaseContext {
   interaction: ChatInputCommandInteraction;
+}
+
+export interface AutocompleteContext extends BaseContext {
+  interaction: AutocompleteInteraction;
 }
 
 export type CommandOptions = {
@@ -50,6 +55,9 @@ export type CommandOptions = {
       };
 };
 export type CommandExec = (ctx: CommandContext) => Awaitable<unknown>;
+export type CommandAutcomplete = (
+  ctx: AutocompleteContext
+) => Awaitable<unknown>;
 export type CommandMeta =
   | SlashCommandBuilder
   | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
@@ -57,6 +65,7 @@ export type CommandMeta =
 export interface Command {
   meta: CommandMeta;
   exec: CommandExec;
+  autocomplete?: CommandAutcomplete;
   options: CommandOptions;
 }
 

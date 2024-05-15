@@ -17,33 +17,50 @@ const commands = new Map<string, Command>(
 const cooldowns = new Map<string, Map<string, number>>();
 
 export default event('interactionCreate', async ({ client }, interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+  if (interaction.isChatInputCommand()) {
+    const logger = new Logger(`/${interaction.commandName}`);
+    const command = commands.get(interaction.commandName);
 
-  const logger = new Logger(`/${interaction.commandName}`);
-  const command = commands.get(interaction.commandName);
+    if (!command) {
+      logger.error(`Command ${interaction.commandName} not found.`);
+      return reply.error(interaction, 'Command not found.');
+    }
 
-  if (!command) {
-    logger.error('Command not found.');
-    return reply.error(interaction, 'Command not found.');
+    const { adminOnly, cooldown } = command.options;
+    const isAdmin = (interaction.member as GuildMember).permissions.has(
+      PermissionFlagsBits.Administrator
+    );
+
+    // If the command is marked as adminOnly, check if the user is an admin
+    if (adminOnly && !isAdmin) return reply.deny(interaction);
+
+    // Check the cooldown for the command, if enabled
+    const cooldownError = checkCooldown(cooldown, interaction, isAdmin);
+    if (cooldownError) return reply.wait(interaction, cooldownError);
+
+    await command.exec({
+      client,
+      interaction,
+      logger,
+    });
+  } else if (interaction.isAutocomplete()) {
+    const logger = new Logger(`/${interaction.commandName}`);
+    const command = commands.get(interaction.commandName);
+
+    if (!command)
+      return logger.error(`Command ${interaction.commandName} not found.`);
+
+    if (!command.autocomplete)
+      return logger.error(
+        `Missing autocomplete handler for ${interaction.commandName}.`
+      );
+
+    await command.autocomplete({
+      client,
+      interaction,
+      logger,
+    });
   }
-
-  const { adminOnly, cooldown } = command.options;
-  const isAdmin = (interaction.member as GuildMember).permissions.has(
-    PermissionFlagsBits.Administrator
-  );
-
-  // If the command is marked as adminOnly, check if the user is an admin
-  if (adminOnly && !isAdmin) return reply.deny(interaction);
-
-  // Check the cooldown for the command, if enabled
-  const cooldownError = checkCooldown(cooldown, interaction, isAdmin);
-  if (cooldownError) return reply.wait(interaction, cooldownError);
-
-  await command.exec({
-    client,
-    interaction,
-    logger,
-  });
 });
 
 const checkCooldown = (

@@ -1,5 +1,6 @@
 import {
   Command,
+  CommandAutcomplete,
   CommandCategory,
   CommandCategoryCommands,
   CommandCategoryMetadata,
@@ -10,11 +11,13 @@ import {
 
 export function command(
   { meta, ...options }: { meta: CommandMeta } & CommandOptions,
-  exec: CommandExec
+  exec: CommandExec,
+  autocomplete?: CommandAutcomplete
 ): Command {
   return {
     meta,
     exec,
+    autocomplete,
     options,
   };
 }
