@@ -32,17 +32,20 @@ const meta = new SlashCommandBuilder()
   .addSubcommand(bot)
   .addSubcommand(user);
 
-export default command({ meta }, async ({ interaction, ...ctx }) => {
-  await interaction.deferReply({ ephemeral: true });
+export default command({
+  meta,
+  exec: async ({ interaction, ...ctx }) => {
+    await interaction.deferReply({ ephemeral: true });
 
-  switch (interaction.options.getSubcommand()) {
-    case 'server':
-      return await getServerInfo({ interaction, ...ctx });
-    case 'bot':
-      return await getBotInfo({ interaction, ...ctx });
-    case 'user':
-      return await getUserInfo({ interaction, ...ctx });
-  }
+    switch (interaction.options.getSubcommand()) {
+      case 'server':
+        return await getServerInfo({ interaction, ...ctx });
+      case 'bot':
+        return await getBotInfo({ interaction, ...ctx });
+      case 'user':
+        return await getUserInfo({ interaction, ...ctx });
+    }
+  },
 });
 
 const getServerInfo = async ({ interaction }: CommandContext) => {

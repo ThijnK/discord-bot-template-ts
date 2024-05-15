@@ -9,11 +9,16 @@ import {
   CommandOptions,
 } from '../types';
 
-export function command(
-  { meta, ...options }: { meta: CommandMeta } & CommandOptions,
-  exec: CommandExec,
-  autocomplete?: CommandAutocomplete
-): Command {
+export function command({
+  meta,
+  exec,
+  autocomplete,
+  ...options
+}: {
+  meta: CommandMeta;
+  exec: CommandExec;
+  autocomplete?: CommandAutocomplete;
+} & CommandOptions): Command {
   return {
     meta,
     exec,

@@ -13,14 +13,15 @@ const meta = new SlashCommandBuilder()
       .setRequired(false)
   );
 
-export default command(
-  { meta, private: true },
-  async ({ client, interaction }) => {
+export default command({
+  meta,
+  private: true,
+  exec: async ({ client, interaction }) => {
     const message = interaction.options.getString('message');
 
     await reply(interaction, {
       ephemeral: true,
       content: `${message ?? 'Pong!'} (${client.ws.ping}ms)`,
     });
-  }
-);
+  },
+});
