@@ -23,7 +23,7 @@ export default event('interactionCreate', async ({ client }, interaction) => {
 
     if (!command) {
       logger.error(`Command ${interaction.commandName} not found.`);
-      return reply.error(interaction, 'Command not found.');
+      return await reply.error(interaction, 'Command not found.');
     }
 
     const { adminOnly, cooldown } = command.options;
@@ -32,11 +32,11 @@ export default event('interactionCreate', async ({ client }, interaction) => {
     );
 
     // If the command is marked as adminOnly, check if the user is an admin
-    if (adminOnly && !isAdmin) return reply.deny(interaction);
+    if (adminOnly && !isAdmin) return await reply.deny(interaction);
 
     // Check the cooldown for the command, if enabled
     const cooldownError = checkCooldown(cooldown, interaction, isAdmin);
-    if (cooldownError) return reply.wait(interaction, cooldownError);
+    if (cooldownError) return await reply.wait(interaction, cooldownError);
 
     await command.exec({
       client,
