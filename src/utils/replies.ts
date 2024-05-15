@@ -56,6 +56,8 @@ export const reply = <T extends DeferableInteraction>(
   options: InteractionReplyOptions | string,
   type: ReplyType = ReplyType.Default
 ) => {
+  if (!interaction.reply || !interaction.editReply)
+    return Promise.reject('Invalid interaction');
   if (
     !options ||
     (typeof options === 'object' &&
