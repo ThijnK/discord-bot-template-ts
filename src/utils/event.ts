@@ -24,7 +24,8 @@ export function registerEvents(client: Client, events: Event<any>[]): void {
       } catch (error) {
         logger.error(error);
         // If the error is thrown in an interaction, reply to it
-        if (event.id === 'interactionCreate') reply.error(args[0]);
+        if (event.id === 'interactionCreate')
+          reply.error(args[0]).catch(console.error);
       }
     });
 }
