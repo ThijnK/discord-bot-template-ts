@@ -55,7 +55,7 @@ export type CommandOptions = {
       };
 };
 export type CommandExec = (ctx: CommandContext) => Awaitable<unknown>;
-export type CommandAutcomplete = (
+export type CommandAutocomplete = (
   ctx: AutocompleteContext
 ) => Awaitable<unknown>;
 export type CommandMeta =
@@ -65,7 +65,7 @@ export type CommandMeta =
 export interface Command {
   meta: CommandMeta;
   exec: CommandExec;
-  autocomplete?: CommandAutcomplete;
+  autocomplete?: CommandAutocomplete;
   options: CommandOptions;
 }
 
