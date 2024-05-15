@@ -4,7 +4,6 @@ import {
   BaseInteraction,
 } from 'discord.js';
 import { EMOJIS } from '../constants';
-import { log } from './logger';
 
 export interface DeferableInteraction extends BaseInteraction {
   deferred: boolean;
@@ -64,10 +63,9 @@ export const reply = <T extends DeferableInteraction>(
       !options.embeds &&
       !options.files)
   )
-    return log.error('reply', 'Cannot send an empty message');
+    return Promise.reject('Cannot send an empty message');
 
-  if (interaction.replied)
-    return log.error('reply', 'Interaction already replied');
+  if (interaction.replied) return Promise.reject('Interaction already replied');
 
   const alteredOptions = getOptions(options, type);
   if (interaction.deferred) return interaction.editReply(alteredOptions);
