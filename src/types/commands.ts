@@ -5,6 +5,7 @@ import {
   APIEmbedField,
   SlashCommandSubcommandsOnlyBuilder,
   AutocompleteInteraction,
+  SlashCommandOptionsOnlyBuilder,
 } from 'discord.js';
 import { BaseContext } from './context';
 
@@ -61,7 +62,8 @@ export type CommandAutocomplete = (
 export type CommandMeta =
   | SlashCommandBuilder
   | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
-  | SlashCommandSubcommandsOnlyBuilder;
+  | SlashCommandSubcommandsOnlyBuilder
+  | SlashCommandOptionsOnlyBuilder;
 export interface Command {
   meta: CommandMeta;
   exec: CommandExec;
