@@ -1,3 +1,4 @@
+import process from "node:process";
 import {
   APIEmbed,
   ActionRowBuilder,
@@ -6,11 +7,11 @@ import {
   EmbedBuilder,
   InteractionReplyOptions,
   StringSelectMenuBuilder,
-} from 'discord.js';
-import { createId } from './interaction';
-import { COLORS, NAMESPACES } from '../constants';
-import { Logger } from './logger';
-import { PaginationContext, PaginationData } from '../types';
+} from "discord.js";
+import { createId } from "./interaction.ts";
+import { COLORS, NAMESPACES } from "utils";
+import { Logger } from "./logger.ts";
+import { PaginationContext, PaginationData } from "types";
 
 export class Paginator {
   name: string;
@@ -19,8 +20,8 @@ export class Paginator {
    * The fields and footer are automatically set by the paginator.
    */
   embedData?:
-    | Omit<APIEmbed, 'fields' | 'footer'>
-    | ((ctx: PaginationContext) => Omit<APIEmbed, 'fields' | 'footer'>);
+    | Omit<APIEmbed, "fields" | "footer">
+    | ((ctx: PaginationContext) => Omit<APIEmbed, "fields" | "footer">);
   /**
    * The reply to which the pagination embed and its controls are added.
    * If not specified, the reply is ephemeral by default.
@@ -31,7 +32,7 @@ export class Paginator {
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
   /** Asynchronous function to fetch the data for the paginator */
-  getData: (ctx: PaginationContext) => Promise<PaginationData>;
+  getData: (ctx: PaginationContext) => PaginationData | Promise<PaginationData>;
 
   // #region Cache
   /** Whether or not to cache the fetched data */
@@ -93,7 +94,7 @@ export class Paginator {
     // (2 are already being used for back/next buttons and page selector)
     if (
       replyOptions &&
-      typeof replyOptions !== 'function' &&
+      typeof replyOptions !== "function" &&
       replyOptions.components &&
       replyOptions.components.length > 3
     ) {
@@ -105,7 +106,7 @@ export class Paginator {
     // (1 is already being used for the pagination embed)
     if (
       replyOptions &&
-      typeof replyOptions !== 'function' &&
+      typeof replyOptions !== "function" &&
       replyOptions.embeds &&
       replyOptions.embeds.length > 4
     ) {
@@ -176,7 +177,7 @@ export class Paginator {
     const pageCount = Math.ceil(data.length / this.pageLength);
 
     const embedData = this.embedData
-      ? typeof this.embedData === 'function'
+      ? typeof this.embedData === "function"
         ? this.embedData(ctx)
         : this.embedData
       : undefined;
@@ -184,7 +185,7 @@ export class Paginator {
       .setFields(fields)
       .setColor(embedData?.color ?? COLORS.embed);
 
-    if (fields.length === 0) embed.setDescription('No results found!');
+    if (fields.length === 0) embed.setDescription("No results found!");
     else
       embed.setFooter({
         text: `Page ${currentPage} / ${pageCount}`,
@@ -198,7 +199,7 @@ export class Paginator {
     );
     const backButton = new ButtonBuilder()
       .setCustomId(backId)
-      .setLabel('Back')
+      .setLabel("Back")
       .setStyle(ButtonStyle.Primary)
       .setDisabled(offset <= 0);
 
@@ -210,14 +211,14 @@ export class Paginator {
     );
     const nextButton = new ButtonBuilder()
       .setCustomId(nextId)
-      .setLabel('Next')
+      .setLabel("Next")
       .setStyle(ButtonStyle.Primary)
       .setDisabled(currentPage >= pageCount);
 
     const selectId = createId(NAMESPACES.pagination, this.name);
     const pageSelector = new StringSelectMenuBuilder()
       .setCustomId(selectId)
-      .setPlaceholder('Select a page...')
+      .setPlaceholder("Select a page...")
       .setMaxValues(1)
       .setOptions(
         Array.from(Array(pageCount).keys()).map((i) => ({
@@ -236,7 +237,7 @@ export class Paginator {
       );
 
     const replyOptions = this.replyOptions
-      ? typeof this.replyOptions === 'function'
+      ? typeof this.replyOptions === "function"
         ? this.replyOptions(ctx)
         : this.replyOptions
       : undefined;

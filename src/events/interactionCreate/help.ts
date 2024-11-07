@@ -1,7 +1,6 @@
-import { event, paginationReply, parseId } from '../../utils';
-import { NAMESPACES } from '../../constants';
+import { event, paginationReply, parseId, NAMESPACES } from "utils";
 
-export default event('interactionCreate', async (ctx, interaction) => {
+export default event("interactionCreate", async (ctx, interaction) => {
   if (!interaction.isStringSelectMenu()) return;
   const [namespace] = parseId(interaction.customId);
   if (namespace !== NAMESPACES.help) return;

@@ -1,9 +1,9 @@
-import { InteractionReplyOptions } from 'discord.js';
-import { Paginator } from '../pagination';
-import helpPaginators from './help';
-import { createId, parseId } from '../interaction';
-import { NAMESPACES } from '../../constants';
-import { PaginationContext } from '../../types';
+import { InteractionReplyOptions } from "discord.js";
+import { Paginator } from "../pagination.ts";
+import helpPaginators from "./help.ts";
+import { createId, parseId } from "../interaction.ts";
+import { NAMESPACES } from "utils";
+import { PaginationContext } from "types";
 
 // Add new paginators here
 const paginators: Paginator[] = [...helpPaginators /*, otherPaginator */];
@@ -17,7 +17,7 @@ const paginatorMap = new Map<string, Paginator>(
  * @param interactionId The interactionId to generate the page for
  * @returns The generated embed
  */
-export async function generatePage(
+export function generatePage(
   interactionId: string,
   ctx: PaginationContext
 ): Promise<InteractionReplyOptions> {
@@ -29,8 +29,8 @@ export async function generatePage(
 
   let offset = parseInt(offsetString);
   // Page selected from select menu
-  if (offsetString && offsetString.startsWith('select-')) {
-    let targetPage = parseInt(offsetString.split('-')[1]);
+  if (offsetString && offsetString.startsWith("select-")) {
+    let targetPage = parseInt(offsetString.split("-")[1]);
     if (isNaN(targetPage)) targetPage = 0;
     offset = targetPage * paginator.pageLength;
   }

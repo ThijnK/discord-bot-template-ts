@@ -6,8 +6,8 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
   AutocompleteInteraction,
   SlashCommandOptionsOnlyBuilder,
-} from 'discord.js';
-import { BaseContext } from './context';
+} from "discord.js";
+import { BaseContext } from "./context.ts";
 
 export interface CommandContext extends BaseContext {
   interaction: ChatInputCommandInteraction;
@@ -52,7 +52,7 @@ export type CommandOptions = {
          *
          * `guild` - The cooldown will be on a per-guild basis.
          */
-        scope?: 'user' | 'guild';
+        scope?: "user" | "guild";
       };
 };
 export type CommandExec = (ctx: CommandContext) => Awaitable<unknown>;
@@ -61,7 +61,7 @@ export type CommandAutocomplete = (
 ) => Awaitable<unknown>;
 export type CommandMeta =
   | SlashCommandBuilder
-  | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
+  | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
   | SlashCommandSubcommandsOnlyBuilder
   | SlashCommandOptionsOnlyBuilder;
 export interface Command {

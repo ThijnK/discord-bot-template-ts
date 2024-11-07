@@ -7,7 +7,7 @@ import {
   CommandExec,
   CommandMeta,
   CommandOptions,
-} from '../types';
+} from "types";
 
 export function command({
   meta,

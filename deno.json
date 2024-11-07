@@ -1,0 +1,34 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --env-file --allow-net --allow-read src/index.ts",
+    "check": "deno check src/index.ts",
+    "lint": "deno lint --fix",
+    "fmt": "deno fmt",
+    "fmt:check": "deno fmt --check",
+    "deploy": "deno run --env-file --allow-net --allow-read src/scripts/deploy.ts",
+    "clear": "deno run --env-file --allow-net --allow-read src/scripts/clear.ts"
+  },
+  "lint": {
+    "include": ["src/"],
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "include": ["src/"]
+  },
+  "exclude": ["node_modules/", "dist/"],
+  "imports": {
+    "env": "./src/env.ts",
+    "client": "./src/client/index.ts",
+    "commands": "./src/commands/index.ts",
+    "types": "./src/types/index.ts",
+    "utils": "./src/utils/index.ts",
+    "discord.js": "npm:discord.js@^14.16.3"
+  },
+  "nodeModulesDir": "auto"
+}

@@ -2,10 +2,10 @@ import {
   CommandInteraction,
   GuildMember,
   PermissionFlagsBits,
-} from 'discord.js';
-import categories from '../../commands';
-import { Command, CommandOptions } from '../../types';
-import { event, Logger, reply } from '../../utils';
+} from "discord.js";
+import categories from "commands";
+import { Command, CommandOptions } from "types";
+import { event, Logger, reply } from "utils";
 
 const commands = new Map<string, Command>(
   categories
@@ -16,14 +16,14 @@ const commands = new Map<string, Command>(
 
 const cooldowns = new Map<string, Map<string, number>>();
 
-export default event('interactionCreate', async ({ client }, interaction) => {
+export default event("interactionCreate", async ({ client }, interaction) => {
   if (interaction.isChatInputCommand()) {
     const logger = new Logger(`/${interaction.commandName}`);
     const command = commands.get(interaction.commandName);
 
     if (!command) {
       logger.error(`Command ${interaction.commandName} not found.`);
-      return await reply.error(interaction, 'Command not found.');
+      return await reply.error(interaction, "Command not found.");
     }
 
     const { adminOnly, cooldown } = command.options;
@@ -64,14 +64,14 @@ export default event('interactionCreate', async ({ client }, interaction) => {
 });
 
 const checkCooldown = (
-  cooldown: CommandOptions['cooldown'],
+  cooldown: CommandOptions["cooldown"],
   interaction: CommandInteraction,
   isAdmin: boolean
 ) => {
   if (!cooldown) return null;
 
-  const seconds = typeof cooldown === 'number' ? cooldown : cooldown.seconds;
-  const scope = typeof cooldown === 'number' ? 'user' : cooldown.scope;
+  const seconds = typeof cooldown === "number" ? cooldown : cooldown.seconds;
+  const scope = typeof cooldown === "number" ? "user" : cooldown.scope;
 
   if (!interaction.guildId) return null;
 
@@ -80,7 +80,7 @@ const checkCooldown = (
     cooldowns.get(interaction.commandName) ?? new Map<string, number>();
   const timestamp =
     timestamps.get(
-      scope === 'user' ? interaction.user.id : interaction.guildId
+      scope === "user" ? interaction.user.id : interaction.guildId
     ) ?? 0;
   const cooldownEnd = timestamp + seconds * 1000;
 
@@ -88,7 +88,7 @@ const checkCooldown = (
     return `Command will be available <t:${Math.floor(cooldownEnd / 1000)}:R>.`;
 
   timestamps.set(
-    scope === 'user' ? interaction.user.id : interaction.guildId,
+    scope === "user" ? interaction.user.id : interaction.guildId,
     now
   );
 

@@ -2,17 +2,17 @@ import {
   APIApplicationCommandOption,
   ApplicationCommandOptionType,
   PermissionFlagsBits,
-} from 'discord.js';
-import categories from '../../commands';
+} from "discord.js";
+import categories from "commands";
 import {
   Command,
   CommandCategoryCommands,
   CommandOptions,
   PaginationData,
-} from '../../types';
-import { helpSelectComponent } from '../help';
-import { Paginator } from '../pagination';
-import { ENV } from '../../env';
+} from "types";
+import { helpSelectComponent } from "../help.ts";
+import { Paginator } from "../pagination.ts";
+import ENV from "env";
 
 /**
  * Extracts subcommands from a command option recursively
@@ -31,8 +31,8 @@ const extractSubcommandsRecursive = (
       name: `/${name} ${option.name}`,
       value: `
       ${option.description}
-      ${cmdOpts.adminOnly ? '🛡️ _admin only_' : ''}${
-        cmdOpts.private ? `${cmdOpts.adminOnly ? '\n' : ''}🔒 _private_` : ''
+      ${cmdOpts.adminOnly ? "🛡️ _admin only_" : ""}${
+        cmdOpts.private ? `${cmdOpts.adminOnly ? "\n" : ""}🔒 _private_` : ""
       }
       `,
     });
@@ -65,10 +65,10 @@ const getCommands = (command: Command): PaginationData => {
       name: `/${command.meta.name}`,
       value: `
       ${command.meta.description}
-      ${command.options.adminOnly ? '🛡️ _admin only_' : ''}${
+      ${command.options.adminOnly ? "🛡️ _admin only_" : ""}${
         command.options.private
-          ? `${command.options.adminOnly ? '\n' : ''}🔒 _private_`
-          : ''
+          ? `${command.options.adminOnly ? "\n" : ""}🔒 _private_`
+          : ""
       }
     `,
     });
@@ -97,15 +97,15 @@ const helpPaginators: Paginator[] =
     // Separate commands into different categories depending on the guild and member that the command is used in/by
     const cmds = {
       private: {
-        member: filterCommands(category.commands, 'all'),
-        admin: filterCommands(category.commands, 'all', true),
+        member: filterCommands(category.commands, "all"),
+        admin: filterCommands(category.commands, "all", true),
       },
       public: {
-        member: filterCommands(category.commands, 'public'),
-        admin: filterCommands(category.commands, 'public', true),
+        member: filterCommands(category.commands, "public"),
+        admin: filterCommands(category.commands, "public", true),
       },
     };
-    const emoji = category.emoji ? `${category.emoji} ` : '';
+    const emoji = category.emoji ? `${category.emoji} ` : "";
 
     return new Paginator(category.name, {
       embedData: {
@@ -113,7 +113,7 @@ const helpPaginators: Paginator[] =
         description:
           category.description ??
           `Browse through ${category.commands.public.length} command${
-            category.commands.public.length > 1 ? 's' : ''
+            category.commands.public.length > 1 ? "s" : ""
           } in ${emoji}${category.name}`,
       },
       replyOptions: ({ interaction }) => {
@@ -123,7 +123,7 @@ const helpPaginators: Paginator[] =
         };
       },
       pageLength: 10,
-      getData: async ({ interaction }) => {
+      getData: ({ interaction }) => {
         const guildCmds =
           interaction.guildId === ENV.TEST_GUILD ? cmds.private : cmds.public;
         if (

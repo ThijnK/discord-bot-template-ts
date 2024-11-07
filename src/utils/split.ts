@@ -1,5 +1,5 @@
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
-import { COLORS } from '../constants';
+import { CommandInteraction, EmbedBuilder } from "discord.js";
+import { COLORS } from "utils";
 
 /** The maximum character length of an embed to send */
 const MAX_EMBED_LENGTH = 2048 as const;
@@ -19,8 +19,10 @@ export async function splitSend(
   title: string,
   msg: string
 ) {
-  if (!interaction.channel) throw new Error('No channel found');
-  if (interaction.replied) throw new Error('Interaction already replied');
+  if (!interaction.channel) throw new Error("No channel found");
+  if (!interaction.channel.isSendable())
+    throw new Error("Channel is not sendable");
+  if (interaction.replied) throw new Error("Interaction already replied");
   if (!interaction.deferred) await interaction.deferReply();
 
   // Split the input into multiple embed descriptions

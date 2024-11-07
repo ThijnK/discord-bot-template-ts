@@ -2,8 +2,8 @@ import {
   InteractionReplyOptions,
   InteractionEditReplyOptions,
   BaseInteraction,
-} from 'discord.js';
-import { EMOJIS } from '../constants';
+} from "discord.js";
+import { EMOJIS } from "utils";
 
 export interface DeferableInteraction extends BaseInteraction {
   deferred: boolean;
@@ -13,12 +13,12 @@ export interface DeferableInteraction extends BaseInteraction {
 }
 
 export enum ReplyType {
-  Default = 'default',
-  Success = 'success',
-  Error = 'error',
-  Warn = 'warn',
-  Deny = 'deny',
-  Wait = 'wait',
+  Default = "default",
+  Success = "success",
+  Error = "error",
+  Warn = "warn",
+  Deny = "deny",
+  Wait = "wait",
 }
 
 /**
@@ -31,11 +31,11 @@ const getOptions = (
   options: InteractionReplyOptions | string,
   type: ReplyType
 ): InteractionReplyOptions => {
-  if (typeof options === 'string')
+  if (typeof options === "string")
     return getOptions({ content: options }, type);
 
   const { content, ephemeral } = options;
-  const emoji = type === ReplyType.Default ? '' : EMOJIS[type];
+  const emoji = type === ReplyType.Default ? "" : EMOJIS[type];
 
   return {
     ...options,
@@ -57,17 +57,17 @@ export const reply = <T extends DeferableInteraction>(
   type: ReplyType = ReplyType.Default
 ) => {
   if (!interaction.reply || !interaction.editReply)
-    return Promise.reject('Invalid interaction');
+    return Promise.reject("Invalid interaction");
   if (
     !options ||
-    (typeof options === 'object' &&
+    (typeof options === "object" &&
       !options.content &&
       !options.embeds &&
       !options.files)
   )
-    return Promise.reject('Cannot send an empty message');
+    return Promise.reject("Cannot send an empty message");
 
-  if (interaction.replied) return Promise.reject('Interaction already replied');
+  if (interaction.replied) return Promise.reject("Interaction already replied");
 
   const alteredOptions = getOptions(options, type);
   if (interaction.deferred) return interaction.editReply(alteredOptions);
@@ -81,7 +81,7 @@ reply.success = <T extends DeferableInteraction>(
 
 reply.error = <T extends DeferableInteraction>(
   interaction: T,
-  options: InteractionReplyOptions | string = 'Oops. Something went wrong!'
+  options: InteractionReplyOptions | string = "Oops. Something went wrong!"
 ) => reply(interaction, options, ReplyType.Error);
 
 reply.warn = <T extends DeferableInteraction>(
@@ -93,7 +93,7 @@ reply.deny = <T extends DeferableInteraction>(
   interaction: T,
   options:
     | InteractionReplyOptions
-    | string = 'You do not have permission to do that!'
+    | string = "You do not have permission to do that!"
 ) => reply(interaction, options, ReplyType.Deny);
 
 reply.wait = <T extends DeferableInteraction>(

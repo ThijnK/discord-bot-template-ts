@@ -1,14 +1,13 @@
-import 'dotenv/config';
-import { REST, Routes, APIUser } from 'discord.js';
-import { ENV } from '../env';
-import { Logger } from '../utils';
+import { REST, Routes, APIUser } from "discord.js";
+import ENV from "env";
+import { Logger } from "utils";
 
-const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
-const logger = new Logger('clear');
+const rest = new REST({ version: "10" }).setToken(ENV.BOT_TOKEN);
+const logger = new Logger("clear");
 
 async function main() {
   if (!ENV.TEST_GUILD)
-    throw new Error('Missing environment variable: TEST_GUILD');
+    throw new Error("Missing environment variable: TEST_GUILD");
   const currentUser = (await rest.get(Routes.user())) as APIUser;
 
   await rest.put(Routes.applicationCommands(currentUser.id), { body: [] });

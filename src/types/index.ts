@@ -1,3 +1,3 @@
-export * from './events';
-export * from './commands';
-export * from './pagination';
+export * from "./events.ts";
+export * from "./commands.ts";
+export * from "./pagination.ts";

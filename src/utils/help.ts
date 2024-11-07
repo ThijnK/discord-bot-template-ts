@@ -3,12 +3,12 @@ import {
   BaseInteraction,
   PermissionFlagsBits,
   StringSelectMenuBuilder,
-} from 'discord.js';
-import { NAMESPACES } from '../constants';
-import { createId } from './interaction';
-import categories from '../commands';
-import { ENV } from '../env';
-import { CommandCategoryCommands } from '../types';
+} from "discord.js";
+import { NAMESPACES } from "utils";
+import { createId } from "./interaction.ts";
+import categories from "commands";
+import ENV from "env";
+import { CommandCategoryCommands } from "types";
 
 /**
  * Filters categories to exclude ones that do not contain commands relevant to the user
@@ -27,12 +27,12 @@ const filterCategories = (
 /** Pre-filtered command categories */
 const cats = {
   private: {
-    member: filterCategories('all'),
-    admin: filterCategories('all', true),
+    member: filterCategories("all"),
+    admin: filterCategories("all", true),
   },
   public: {
-    member: filterCategories('public'),
-    admin: filterCategories('public', true),
+    member: filterCategories("public"),
+    admin: filterCategories("public", true),
   },
 };
 
@@ -47,15 +47,15 @@ export const helpSelectComponent = (
   const guildCats =
     interaction.guildId === ENV.TEST_GUILD ? cats.private : cats.public;
 
-  if (guildCats[isAdmin ? 'admin' : 'member'].length === 0) return null;
+  if (guildCats[isAdmin ? "admin" : "member"].length === 0) return null;
 
   return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
     new StringSelectMenuBuilder()
       .setCustomId(createId(NAMESPACES.help))
-      .setPlaceholder('Select a category...')
+      .setPlaceholder("Select a category...")
       .setMaxValues(1)
       .addOptions(
-        guildCats[isAdmin ? 'admin' : 'member'].map(
+        guildCats[isAdmin ? "admin" : "member"].map(
           ({ name, description, emoji }) => ({
             label: name,
             description,
