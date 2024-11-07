@@ -143,7 +143,6 @@ export class Paginator {
     // If caching is enabled, try to get the data from the cache and fetch otherwise
     const cacheKey = this.getCacheKey(ctx);
     if (this.cacheData && this.cachedData.has(cacheKey)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.formatPage(offset, this.cachedData.get(cacheKey)!, ctx);
     }
 
@@ -232,8 +231,8 @@ export class Paginator {
       backButton,
       nextButton,
     );
-    const selectMenu = new ActionRowBuilder<StringSelectMenuBuilder>()
-      .addComponents(
+    const selectMenu =
+      new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
         pageSelector,
       );
 
