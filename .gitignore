@@ -1,4 +1,5 @@
 .env
+.prettierrc.json
 
 /.vs/
 /.vscode/

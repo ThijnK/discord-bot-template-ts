@@ -1,15 +1,15 @@
-import { InteractionReplyOptions } from "discord.js";
-import { Paginator } from "../pagination.ts";
-import helpPaginators from "./help.ts";
-import { createId, parseId } from "../interaction.ts";
-import { NAMESPACES } from "utils";
-import { PaginationContext } from "types";
+import { InteractionReplyOptions } from 'discord.js';
+import { Paginator } from '../pagination.ts';
+import helpPaginators from './help.ts';
+import { createId, parseId } from '../interaction.ts';
+import { NAMESPACES } from 'utils';
+import { PaginationContext } from 'types';
 
 // Add new paginators here
 const paginators: Paginator[] = [...helpPaginators /*, otherPaginator */];
 
 const paginatorMap = new Map<string, Paginator>(
-  paginators.map((p) => [p.name, p])
+  paginators.map((p) => [p.name, p]),
 );
 
 /**
@@ -19,7 +19,7 @@ const paginatorMap = new Map<string, Paginator>(
  */
 export function generatePage(
   interactionId: string,
-  ctx: PaginationContext
+  ctx: PaginationContext,
 ): Promise<InteractionReplyOptions> {
   // Extract metadata from interactionId
   const [_namespace, paginatorName, offsetString] = parseId(interactionId);
@@ -29,8 +29,8 @@ export function generatePage(
 
   let offset = parseInt(offsetString);
   // Page selected from select menu
-  if (offsetString && offsetString.startsWith("select-")) {
-    let targetPage = parseInt(offsetString.split("-")[1]);
+  if (offsetString && offsetString.startsWith('select-')) {
+    let targetPage = parseInt(offsetString.split('-')[1]);
     if (isNaN(targetPage)) targetPage = 0;
     offset = targetPage * paginator.pageLength;
   }
