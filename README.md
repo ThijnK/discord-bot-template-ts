@@ -396,7 +396,7 @@ This template uses the Deno built-in code formatter to automatically format the 
 A command, `deno task fmt`, is provided to run the Deno formatter on all files in the `src` folder and immediately fix any issues.
 You can also use the Deno extension, with some [VS Code settings](https://stackoverflow.com/questions/66207931/how-to-format-on-save-with-the-deno-vscode-extension) to automatically format the code on save.
 
-If you prefer to use [Prettier](https://prettier.io/), you may include a `.prettierrc.json` file in the root of the project.
+If you prefer to use [Prettier](https://prettier.io/), you may include a `.prettierrc` file in the root of the project.
 The file will be ignored by git.
 To achieve the same formatting as the current settings in [deno.json](./deno.json), you can use the following configuration:
 
