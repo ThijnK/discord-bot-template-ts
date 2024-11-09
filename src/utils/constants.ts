@@ -11,3 +11,8 @@ export const EMOJIS = {
   deny: '🚫',
   wait: '⏳',
 } as const;
+
+export const NAMESPACES = {
+  pagination: 'pagination',
+  help: 'help',
+} as const;

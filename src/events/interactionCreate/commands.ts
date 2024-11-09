@@ -3,15 +3,15 @@ import {
   GuildMember,
   PermissionFlagsBits,
 } from 'discord.js';
-import categories from '../../commands';
-import { Command, CommandOptions } from '../../types';
-import { event, Logger, reply } from '../../utils';
+import categories from 'commands';
+import { Command, CommandOptions } from 'types';
+import { event, Logger, reply } from 'utils';
 
 const commands = new Map<string, Command>(
   categories
     .map(({ commands }) => commands.all)
     .flat()
-    .map((c) => [c.meta.name, c])
+    .map((c) => [c.meta.name, c]),
 );
 
 const cooldowns = new Map<string, Map<string, number>>();
@@ -28,7 +28,7 @@ export default event('interactionCreate', async ({ client }, interaction) => {
 
     const { adminOnly, cooldown } = command.options;
     const isAdmin = (interaction.member as GuildMember).permissions.has(
-      PermissionFlagsBits.Administrator
+      PermissionFlagsBits.Administrator,
     );
 
     // If the command is marked as adminOnly, check if the user is an admin
@@ -47,13 +47,15 @@ export default event('interactionCreate', async ({ client }, interaction) => {
     const logger = new Logger(`/${interaction.commandName}`);
     const command = commands.get(interaction.commandName);
 
-    if (!command)
+    if (!command) {
       return logger.error(`Command ${interaction.commandName} not found.`);
+    }
 
-    if (!command.autocomplete)
+    if (!command.autocomplete) {
       return logger.error(
-        `Missing autocomplete handler for ${interaction.commandName}.`
+        `Missing autocomplete handler for ${interaction.commandName}.`,
       );
+    }
 
     await command.autocomplete({
       client,
@@ -66,7 +68,7 @@ export default event('interactionCreate', async ({ client }, interaction) => {
 const checkCooldown = (
   cooldown: CommandOptions['cooldown'],
   interaction: CommandInteraction,
-  isAdmin: boolean
+  isAdmin: boolean,
 ) => {
   if (!cooldown) return null;
 
@@ -76,20 +78,20 @@ const checkCooldown = (
   if (!interaction.guildId) return null;
 
   const now = Date.now();
-  const timestamps =
-    cooldowns.get(interaction.commandName) ?? new Map<string, number>();
-  const timestamp =
-    timestamps.get(
-      scope === 'user' ? interaction.user.id : interaction.guildId
-    ) ?? 0;
+  const timestamps = cooldowns.get(interaction.commandName) ??
+    new Map<string, number>();
+  const timestamp = timestamps.get(
+    scope === 'user' ? interaction.user.id : interaction.guildId,
+  ) ?? 0;
   const cooldownEnd = timestamp + seconds * 1000;
 
-  if (now < cooldownEnd && !isAdmin)
+  if (now < cooldownEnd && !isAdmin) {
     return `Command will be available <t:${Math.floor(cooldownEnd / 1000)}:R>.`;
+  }
 
   timestamps.set(
     scope === 'user' ? interaction.user.id : interaction.guildId,
-    now
+    now,
   );
 
   cooldowns.set(interaction.commandName, timestamps);

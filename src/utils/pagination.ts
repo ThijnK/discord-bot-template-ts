@@ -1,16 +1,17 @@
+import process from 'node:process';
 import {
-  APIEmbed,
   ActionRowBuilder,
+  APIEmbed,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
   InteractionReplyOptions,
   StringSelectMenuBuilder,
 } from 'discord.js';
-import { createId } from './interaction';
-import { COLORS, NAMESPACES } from '../constants';
-import { Logger } from './logger';
-import { PaginationContext, PaginationData } from '../types';
+import { createId } from './interaction.ts';
+import { COLORS, NAMESPACES } from 'utils';
+import { Logger } from './logger.ts';
+import { PaginationContext, PaginationData } from 'types';
 
 export class Paginator {
   name: string;
@@ -31,7 +32,7 @@ export class Paginator {
   /** The number of fields to display on a single page (max 25). */
   pageLength: number;
   /** Asynchronous function to fetch the data for the paginator */
-  getData: (ctx: PaginationContext) => Promise<PaginationData>;
+  getData: (ctx: PaginationContext) => PaginationData | Promise<PaginationData>;
 
   // #region Cache
   /** Whether or not to cache the fetched data */
@@ -77,14 +78,14 @@ export class Paginator {
        * (ctx) => `${ctx.interaction.user.id}-${ctx.interaction.guildId}`
        */
       getCacheKey?: typeof Paginator.prototype.getCacheKey;
-    }
+    },
   ) {
     this.logger = new Logger(`paginators/${name}`);
 
     // Page length can be at most 25 due to limit of 25 fields per embed
     if (pageLength > 25) {
       this.logger.error(
-        `Paginator "${name}" has a page length greater than 25`
+        `Paginator "${name}" has a page length greater than 25`,
       );
       process.exit(1);
     }
@@ -116,7 +117,7 @@ export class Paginator {
     // If caching is enabled, the cache key function must be specified
     if (cacheData && !getCacheKey) {
       this.logger.error(
-        `Paginator "${name}" has caching enabled but no cache key function specified`
+        `Paginator "${name}" has caching enabled but no cache key function specified`,
       );
       process.exit(1);
     }
@@ -137,12 +138,11 @@ export class Paginator {
    */
   public async getPage(
     offset: number,
-    ctx: PaginationContext
+    ctx: PaginationContext,
   ): Promise<InteractionReplyOptions> {
     // If caching is enabled, try to get the data from the cache and fetch otherwise
     const cacheKey = this.getCacheKey(ctx);
     if (this.cacheData && this.cachedData.has(cacheKey)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.formatPage(offset, this.cachedData.get(cacheKey)!, ctx);
     }
 
@@ -169,7 +169,7 @@ export class Paginator {
   protected formatPage(
     offset: number,
     data: PaginationData,
-    ctx: PaginationContext
+    ctx: PaginationContext,
   ): InteractionReplyOptions {
     const fields = data.slice(offset, offset + this.pageLength);
     const currentPage = Math.floor(offset / this.pageLength) + 1;
@@ -185,16 +185,17 @@ export class Paginator {
       .setColor(embedData?.color ?? COLORS.embed);
 
     if (fields.length === 0) embed.setDescription('No results found!');
-    else
+    else {
       embed.setFooter({
         text: `Page ${currentPage} / ${pageCount}`,
       });
+    }
 
     // Back button
     const backId = createId(
       NAMESPACES.pagination,
       this.name,
-      offset - this.pageLength
+      offset - this.pageLength,
     );
     const backButton = new ButtonBuilder()
       .setCustomId(backId)
@@ -206,7 +207,7 @@ export class Paginator {
     const nextId = createId(
       NAMESPACES.pagination,
       this.name,
-      offset + this.pageLength
+      offset + this.pageLength,
     );
     const nextButton = new ButtonBuilder()
       .setCustomId(nextId)
@@ -223,16 +224,16 @@ export class Paginator {
         Array.from(Array(pageCount).keys()).map((i) => ({
           label: `Page ${i + 1}`,
           value: i.toString(),
-        }))
+        })),
       );
 
     const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
       backButton,
-      nextButton
+      nextButton,
     );
-    const selectMenu =
-      new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
-        pageSelector
+    const selectMenu = new ActionRowBuilder<StringSelectMenuBuilder>()
+      .addComponents(
+        pageSelector,
       );
 
     const replyOptions = this.replyOptions
@@ -241,10 +242,12 @@ export class Paginator {
         : this.replyOptions
       : undefined;
 
-    if (replyOptions?.components && replyOptions.components.length > 3)
+    if (replyOptions?.components && replyOptions.components.length > 3) {
       throw new Error(`Paginator "${this.name}" has more than 3 components`);
-    if (replyOptions?.embeds && replyOptions.embeds.length > 4)
+    }
+    if (replyOptions?.embeds && replyOptions.embeds.length > 4) {
       throw new Error(`Paginator "${this.name}" has more than 4 embeds`);
+    }
 
     return {
       ...this.replyOptions,

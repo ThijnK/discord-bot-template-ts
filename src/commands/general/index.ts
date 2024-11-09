@@ -1,6 +1,6 @@
-import { category } from '../../utils';
-import help from './help';
-import info from './info';
+import { category } from 'utils';
+import help from './help.ts';
+import info from './info.ts';
 
 export default category(
   {
@@ -8,5 +8,5 @@ export default category(
     description: 'General bot commands.',
     emoji: '📖',
   },
-  [help, info]
+  [help, info],
 );

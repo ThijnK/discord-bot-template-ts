@@ -1,4 +1,4 @@
-import debug from './debug';
-import general from './general';
+import debug from './debug/index.ts';
+import general from './general/index.ts';
 
 export default [debug, general];

@@ -74,11 +74,11 @@ export class Logger {
 export const log = (
   category: string,
   message: unknown,
-  type: LogType = LogType.Default
+  type: LogType = LogType.Default,
 ) =>
   console.log(
     getTextColor(type),
-    `[${type}] ${category.toLowerCase()} - ${message}`
+    `[${type}] ${category.toLowerCase()} - ${message}`,
   );
 
 log.error = (category: string, message: unknown) =>

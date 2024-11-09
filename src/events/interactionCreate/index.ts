@@ -1,6 +1,6 @@
-import commands from './commands';
-import help from './help';
-import pagination from './pagination';
+import commands from './commands.ts';
+import help from './help.ts';
+import pagination from './pagination.ts';
 
 const events = [commands, help, pagination];
 

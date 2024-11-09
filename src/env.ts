@@ -1,10 +1,10 @@
-import { log } from './utils';
+import process from 'node:process';
+import { log } from 'utils';
 
-const isDev =
-  process.env.NODE_ENV !== 'production' &&
+const isDev = process.env.NODE_ENV !== 'production' &&
   process.env.NODE_ENV !== 'PRODUCTION';
 
-export const ENV = {
+const ENV = {
   /** Whether or not the app is running in the development environment */
   DEV: isDev,
   /**
@@ -12,8 +12,7 @@ export const ENV = {
    *
    * If `DEV` is true, the `TEST_TOKEN` environment variable will be used instead (if it exists, otherwise `BOT_TOKEN` will still be used).
    */
-  BOT_TOKEN:
-    (isDev ? process.env.TEST_TOKEN : process.env.BOT_TOKEN) ??
+  BOT_TOKEN: (isDev ? process.env.TEST_TOKEN : process.env.BOT_TOKEN) ??
     process.env.BOT_TOKEN ??
     '',
   /** ID of the Discord guild to use for testing */
@@ -27,3 +26,5 @@ for (const [key, value] of Object.entries(ENV)) {
     process.exit(1);
   }
 }
+
+export default ENV;

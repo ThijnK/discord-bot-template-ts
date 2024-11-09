@@ -1,5 +1,5 @@
-import ready from './ready';
-import interactionCreate from './interactionCreate';
+import ready from './ready.ts';
+import interactionCreate from './interactionCreate/index.ts';
 
 const events = [...interactionCreate, ready];
 

@@ -1,25 +1,32 @@
 import { InteractionReplyOptions } from 'discord.js';
-import { Paginator } from '../pagination';
-import helpPaginators from './help';
-import { createId, parseId } from '../interaction';
-import { NAMESPACES } from '../../constants';
-import { PaginationContext } from '../../types';
+import { Paginator } from '../pagination.ts';
+import helpPaginators from './help.ts';
+import { createId, parseId } from '../interaction.ts';
+import { NAMESPACES } from 'utils';
+import { PaginationContext } from 'types';
 
 // Add new paginators here
-const paginators: Paginator[] = [...helpPaginators /*, otherPaginator */];
+// If they need to be initialized, add them to the initPaginators function
+const paginators: Paginator[] = [];
 
 const paginatorMap = new Map<string, Paginator>(
-  paginators.map((p) => [p.name, p])
+  paginators.map((p) => [p.name, p]),
 );
+
+export function initPaginators() {
+  for (const paginator of helpPaginators()) {
+    paginatorMap.set(paginator.name, paginator);
+  }
+}
 
 /**
  * Generate the embed for a specific page of a paginator
  * @param interactionId The interactionId to generate the page for
  * @returns The generated embed
  */
-export async function generatePage(
+export function generatePage(
   interactionId: string,
-  ctx: PaginationContext
+  ctx: PaginationContext,
 ): Promise<InteractionReplyOptions> {
   // Extract metadata from interactionId
   const [_namespace, paginatorName, offsetString] = parseId(interactionId);

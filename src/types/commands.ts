@@ -1,13 +1,13 @@
 import {
+  APIEmbedField,
+  AutocompleteInteraction,
   Awaitable,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
-  APIEmbedField,
-  SlashCommandSubcommandsOnlyBuilder,
-  AutocompleteInteraction,
   SlashCommandOptionsOnlyBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { BaseContext } from './context';
+import { BaseContext } from './context.ts';
 
 export interface CommandContext extends BaseContext {
   interaction: ChatInputCommandInteraction;
@@ -39,25 +39,25 @@ export type CommandOptions = {
   cooldown?:
     | number
     | {
-        /**
-         * The number of seconds this command will be on cooldown for.
-         */
-        seconds: number;
-        /**
-         * The scope of the cooldown.
-         * @default user
-         *
-         * @values
-         * `user` - The cooldown will be on a per-user basis.
-         *
-         * `guild` - The cooldown will be on a per-guild basis.
-         */
-        scope?: 'user' | 'guild';
-      };
+      /**
+       * The number of seconds this command will be on cooldown for.
+       */
+      seconds: number;
+      /**
+       * The scope of the cooldown.
+       * @default user
+       *
+       * @values
+       * `user` - The cooldown will be on a per-user basis.
+       *
+       * `guild` - The cooldown will be on a per-guild basis.
+       */
+      scope?: 'user' | 'guild';
+    };
 };
 export type CommandExec = (ctx: CommandContext) => Awaitable<unknown>;
 export type CommandAutocomplete = (
-  ctx: AutocompleteContext
+  ctx: AutocompleteContext,
 ) => Awaitable<unknown>;
 export type CommandMeta =
   | SlashCommandBuilder

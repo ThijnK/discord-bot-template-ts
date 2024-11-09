@@ -1,5 +1,4 @@
-import { event, paginationReply, parseId } from '../../utils';
-import { NAMESPACES } from '../../constants';
+import { event, NAMESPACES, paginationReply, parseId } from 'utils';
 
 export default event('interactionCreate', async (ctx, interaction) => {
   if (!interaction.isStringSelectMenu()) return;
@@ -11,6 +10,6 @@ export default event('interactionCreate', async (ctx, interaction) => {
     await paginationReply(interaction.values[0], {
       ...ctx,
       interaction,
-    })
+    }),
   );
 });

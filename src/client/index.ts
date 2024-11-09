@@ -1,6 +1,7 @@
+import process from 'node:process';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { log } from '../utils';
-import { ENV } from '../env';
+import { log } from 'utils';
+import ENV from 'env';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],

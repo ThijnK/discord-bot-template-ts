@@ -1,5 +1,4 @@
-import { createId, event, generatePage, parseId } from '../../utils';
-import { NAMESPACES } from '../../constants';
+import { createId, event, generatePage, NAMESPACES, parseId } from 'utils';
 
 export default event('interactionCreate', async (ctx, interaction) => {
   if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
@@ -8,14 +7,15 @@ export default event('interactionCreate', async (ctx, interaction) => {
 
   await interaction.deferUpdate();
   let interactionId = interaction.customId;
-  if (interaction.isStringSelectMenu())
+  if (interaction.isStringSelectMenu()) {
     interactionId = createId(
       namespace,
       paginatorName,
-      `select-${interaction.values[0]}`
+      `select-${interaction.values[0]}`,
     );
+  }
 
   return await interaction.editReply(
-    await generatePage(interactionId, { ...ctx, interaction })
+    await generatePage(interactionId, { ...ctx, interaction }),
   );
 });

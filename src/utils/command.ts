@@ -7,7 +7,7 @@ import {
   CommandExec,
   CommandMeta,
   CommandOptions,
-} from '../types';
+} from 'types';
 
 export function command({
   meta,
@@ -29,7 +29,7 @@ export function command({
 
 export function category(
   metadata: CommandCategoryMetadata,
-  commands: Command[]
+  commands: Command[],
 ): CommandCategory {
   return {
     ...metadata,
@@ -49,7 +49,7 @@ export function category(
  */
 export function extractMeta(
   categories: CommandCategory[],
-  type: keyof CommandCategoryCommands
+  type: keyof CommandCategoryCommands,
 ) {
   return categories.flatMap(({ commands }) =>
     commands[type].map(({ meta }) => meta)

@@ -3,9 +3,8 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
 } from 'discord.js';
-import { command, formatDate, reply } from '../../utils';
-import { COLORS } from '../../constants';
-import { CommandContext } from '../../types';
+import { COLORS, command, formatDate, reply } from 'utils';
+import { CommandContext } from 'types';
 
 const server = new SlashCommandSubcommandBuilder()
   .setName('server')
@@ -145,8 +144,9 @@ const getUserInfo = async ({ interaction }: CommandContext) => {
       },
       {
         name: 'Joined',
-        value:
-          member && member.joinedAt ? formatDate(member.joinedAt) : 'Unknown',
+        value: member && member.joinedAt
+          ? formatDate(member.joinedAt)
+          : 'Unknown',
         inline: true,
       },
     ]);

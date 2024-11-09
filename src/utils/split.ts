@@ -1,5 +1,5 @@
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
-import { COLORS } from '../constants';
+import { COLORS } from 'utils';
 
 /** The maximum character length of an embed to send */
 const MAX_EMBED_LENGTH = 2048 as const;
@@ -17,9 +17,12 @@ export async function splitSend(
   input: string[],
   seperator: string,
   title: string,
-  msg: string
+  msg: string,
 ) {
   if (!interaction.channel) throw new Error('No channel found');
+  if (!interaction.channel.isSendable()) {
+    throw new Error('Channel is not sendable');
+  }
   if (interaction.replied) throw new Error('Interaction already replied');
   if (!interaction.deferred) await interaction.deferReply();
 
@@ -46,7 +49,7 @@ export async function splitSend(
       .setTitle(
         `${title} ${
           descriptions.length > 1 ? `(${i + 1}/${descriptions.length})` : ``
-        }`
+        }`,
       )
       .setDescription(description);
     messageEmbeds[index].push(embed);
@@ -60,6 +63,7 @@ export async function splitSend(
         .send({ embeds: messageEmbeds[i] })
         .catch(console.log);
     }
-  } else
+  } else {
     await interaction.editReply({ embeds: messageEmbeds[0], content: msg });
+  }
 }
