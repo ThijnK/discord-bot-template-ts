@@ -223,6 +223,55 @@ It uses the pagination functionality described in section [Pagination](#paginati
 The command takes into account the options set on the commands, such as whether they are private (restricted to test guild) or admin-only, and only shows the commands that are applicable to the user using the command.
 If a command is private or admin-only, this will be shown in the help menu.
 
+## Bot status
+
+There are two options to set the bot's activity and status:
+1. Set the desired activity and status in the `presence` object inside the `Client` constructor in the [`src/client/index.ts`](./src/client/index.ts) file:
+```ts
+import { Client, ActivityType } from 'discord.js';
+
+const client = new Client({
+  // ...
+  presence: {
+    activities: [
+      {
+        name: 'your commands',
+        type: ActivityType.Listening,
+      },
+    ],
+    status: 'online', // online, idle, dnd, invisible
+  },
+});
+```
+2. Set the desired activity and status through the `client.user.setActivity()` and `client.user.setStatus()` methods wherever you want in your code:
+```ts
+client.user.setActivity('your commands', { type: 'LISTENING' });
+client.user.setStatus('online');
+```
+
+Generally, if you want to set the activity and status once on startup, you should use the first option, but if you want to change the activity and status dynamically, you should use the second option.
+Remember that the client object is included in the context of every event handler, including commands, so you can easily change the activity and status when a command is executed.
+For example, for the `/ping` command in the [`src/commands/debug/ping.ts`](./src/commands/debug/ping.ts) file:
+```ts
+import { SlashCommandBuilder, ActivityType } from 'discord.js';
+
+// ...
+
+export default command({
+  meta,
+  private: true,
+  exec: async ({ client, interaction }) => {
+    // ...
+
+    client.user?.setActivity(`Pinging ${interaction.user.username}`, {
+      type: ActivityType.Custom,
+    });
+
+    // ...
+  },
+});
+```
+
 ## Logging
 
 The [`src/utils/log.ts`](./src/utils/log.ts) file exports a `Logger` class, which can be used to log messages to the console. It is instantiated with a `category` string, which is used to prefix the log messages. The file also exports a `log()` function, with additional functions, such as `log.system()`, for every type of log message.
