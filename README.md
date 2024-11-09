@@ -245,7 +245,7 @@ const client = new Client({
 ```
 2. Set the desired activity and status through the `client.user.setActivity()` and `client.user.setStatus()` methods wherever you want in your code:
 ```ts
-client.user.setActivity('your commands', { type: 'LISTENING' });
+client.user.setActivity('your commands', { type: ActivityType.Listening });
 client.user.setStatus('online');
 ```
 
@@ -271,6 +271,7 @@ export default command({
   },
 });
 ```
+This example will set the bot's activity to "Pinging {username}" when the `/ping` command is executed.
 
 ## Logging
 
