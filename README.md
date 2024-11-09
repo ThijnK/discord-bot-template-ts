@@ -59,7 +59,7 @@ If no `TEST_TOKEN` is provided, the `BOT_TOKEN` will be used for development as 
 
 ## Styling
 
-To ensure consistent styling throughout the bot's embeds and messages, some constants are provided in the [`src/constants/style.ts`](./src/constants/style.ts) file.
+To ensure consistent styling throughout the bot's embeds and messages, some constants are provided in the [`src/utils/constants.ts`](./src/utils/constants.ts) file.
 Currently, this includes the following:
 
 - `COLORS`: a list of colors, which can be used to provide a color to an embed, or really anything else
@@ -85,7 +85,7 @@ A command file should look something like this:
 
 ```ts
 import { SlashCommandBuilder } from 'discord.js';
-import { command, reply } from '../../utils';
+import { command, reply } from 'utils';
 
 const meta = new SlashCommandBuilder()
   .setName('example')
@@ -205,7 +205,7 @@ Each event handler consists of the event name and a listener function, which is 
 An event handler file should look something like this:
 
 ```ts
-import { event } from '../utils';
+import { event } from 'utils';
 
 export default event('ready', ({ logger }, client) => {
   logger.system(
@@ -336,7 +336,7 @@ For example, the following snippet initializes a database connection using the `
 
 ```ts
 import admin from 'firebase-admin';
-import { ENV } from '../env';
+import ENV from 'env';
 
 const serviceAccount = JSON.parse(ENV.FIREBASE_SDK);
 
@@ -358,7 +358,7 @@ Create an `index.ts` file in this folder, and add the following snippet to run a
 
 ```ts
 import express from 'express';
-import { log } from '../utils';
+import { log } from 'utils';
 
 const app = express();
 
@@ -416,7 +416,7 @@ The linter used is also the Deno built-in linter, which can be run using the `de
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-Try to make sure the code is formatted correctly, as specified in the [Code style](#code-style) section. A GitHub Action will automatically check this for you when you open a pull request. You can make sure that everything is formatted correctly by running the `npm run format` command.
+Try to make sure the code is formatted correctly, as specified in the [Code style](#code-style) section. A GitHub Action will automatically check this for you when you open a pull request. You can make sure that everything is formatted correctly by running the `deno task fmt` command.
 
 Please make sure to use [semantic commit messages](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) to keep the commit history clean and readable.
 
