@@ -1,13 +1,13 @@
 # Discord bot template
 
-[![discord.js](https://img.shields.io/github/package-json/dependency-version/ThijnK/discord-bot-template-ts/discord.js)](https://discord.js.org/)
+[![discord.js](https://img.shields.io/badge/discord.js-%5E14.16.3-blue)](https://discord.js.org/)
 [![Stars](https://img.shields.io/github/stars/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/stargazers)
 [![Contributors](https://img.shields.io/github/contributors/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/graphs/contributors)
 [![GitHub release](https://img.shields.io/github/v/release/ThijnK/discord-bot-template-ts?label=version)](https://github.com/ThijnK/discord-bot-template-ts/releases)
-[![Build](https://img.shields.io/github/actions/workflow/status/ThijnK/discord-bot-template-ts/build.yml)](https://github.com/ThijnK/discord-bot-template-ts/actions)
+[![Checks](https://img.shields.io/github/actions/workflow/status/ThijnK/discord-bot-template-ts/check.yml?label=checks)](https://github.com/ThijnK/discord-bot-template-ts/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://discord.js.org/) library.
+A _TypeScript_ template for a **Discord bot**, now powered by **Deno**!
 
 ## Features
 
@@ -25,8 +25,7 @@ A _TypeScript_ template for a **Discord bot**, using the [discord.js](https://di
 
 Some knowledge of TypeScript and Discord.js is recommended, and you'll need the following installed:
 
-- [Node.js](https://nodejs.org/en/) (v16.11.0 or higher)
-- [npm](https://www.npmjs.com/) (should come with Node.js)
+- [Deno](https://deno.com/) (v2.0 or higher)
 
 You will need a Discord bot token, which you can get by creating a new application in the [Discord developer portal](https://discord.com/developers/applications) by following the steps outlined in the [Discord developer documentation](https://discord.com/developers/docs/getting-started).
 
@@ -38,8 +37,8 @@ Set the required environment variables (see section [Environment variables](#env
 Then run the following commands to install the dependencies and start the bot (in development mode):
 
 ```sh
-npm i
-npm run dev
+deno install
+deno task dev
 ```
 
 ## Environment variables
@@ -133,12 +132,12 @@ Command cooldowns can be set using the `cooldown` field in the command's [option
 ```ts
 export default command(
   // This command has a cooldown of 30 seconds, and works on a per-user basis
-  { meta, cooldown: 30 /* ... */ }
+  { meta, cooldown: 30 /* ... */ },
 );
 
 export default command(
   // This command has a cooldown of 60 seconds, and works on a guild-wide basis
-  { meta, cooldown: { seconds: 60, scope: 'guild' } /* ... */ }
+  { meta, cooldown: { seconds: 60, scope: 'guild' } /* ... */ },
 );
 ```
 
@@ -165,7 +164,7 @@ const meta = new SlashCommandBuilder()
       .setName('example-option')
       .setDescription('Example option.')
       .setRequired(true)
-      .setAutocomplete(true)
+      .setAutocomplete(true),
   );
 
 export default command({
@@ -183,10 +182,10 @@ export default command({
       'Popular Topics: Embed preview',
     ];
     const filtered = choices.filter((choice) =>
-      choice.toLowerCase().startsWith(focusedValue.toLowerCase())
+      choice.toLowerCase().startsWith(focusedValue.toLowerCase()),
     );
     await interaction.respond(
-      filtered.map((choice) => ({ name: choice, value: choice }))
+      filtered.map((choice) => ({ name: choice, value: choice })),
     );
   },
 });
@@ -210,7 +209,7 @@ import { event } from '../utils';
 
 export default event('ready', ({ logger }, client) => {
   logger.system(
-    `\x1b[4m${client.user.tag}\x1b[0m\x1b[36m is up and ready to go!`
+    `\x1b[4m${client.user.tag}\x1b[0m\x1b[36m is up and ready to go!`,
   );
 });
 ```
@@ -350,7 +349,7 @@ admin.initializeApp({
 export const db = admin.database();
 ```
 
-Don't forget to add the `FIREBASE_SDK` and `DB_URL` environment variables to your `.env` and `env.ts` files if you use the above snippet. You'll also have to install the `firebase-admin` package using `npm i firebase-admin`.
+Don't forget to add the `FIREBASE_SDK` and `DB_URL` environment variables to your `.env` and `env.ts` files if you use the above snippet. You'll also have to install the `firebase-admin` package using `deno add firebase-admin`.
 
 ## Server
 
@@ -393,13 +392,25 @@ src
 
 ## Code style
 
-This template uses the [Prettier](https://prettier.io/) code formatter to automatically format the code.
-A command, `npm run format`, is provided to run Prettier on all files in the `src` folder and immediately fix any issues.
-You can also use the Prettier extension for your editor of choice to automatically format the code on save.
+This template uses the Deno built-in code formatter to automatically format the code.
+A command, `deno task fmt`, is provided to run the Deno formatter on all files in the `src` folder and immediately fix any issues.
+You can also use the Deno extension, with some [VS Code settings](https://stackoverflow.com/questions/66207931/how-to-format-on-save-with-the-deno-vscode-extension) to automatically format the code on save.
 
-A [`.prettierrc.json`](./.prettierrc.json) config file is provided to configure Prettier.
+If you prefer to use [Prettier](https://prettier.io/), you may include a `.prettierrc.json` file in the root of the project.
+The file will be ignored by git.
+To achieve the same formatting as the current settings in [deno.json](./deno.json), you can use the following configuration:
 
-The project also uses [ESLint](https://eslint.org/) to lint the code, a config for which is included in the [`.eslintrc.json`](./.eslintrc.json) file.
+```json
+{
+  "endOfLine": "auto",
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all"
+}
+```
+
+The linter used is also the Deno built-in linter, which can be run using the `deno task lint` command (which is really just `deno lint --fix`).
 
 ## Contributing
 
