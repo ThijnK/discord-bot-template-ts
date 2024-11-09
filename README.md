@@ -113,6 +113,7 @@ The first argument of the `command()` function takes an object containing at lea
 
 - `private`: whether the command should be private to the test guild (default: `false`)
 - `adminOnly`: whether the command should only be available to users with the `ADMINISTRATOR` permission (default: `false`)
+- `guildOnly`: whether the command should only be available in guilds and not in DMs (default: `false`)
 - `cooldown`: the cooldown of the command, in seconds, or as an object with `seconds` and `scope` (user-specific or guild-wide) fields ([more info](#command-cooldowns))
 
 When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use.

@@ -26,13 +26,27 @@ export default event('interactionCreate', async ({ client }, interaction) => {
       return await reply.error(interaction, 'Command not found.');
     }
 
-    const { adminOnly, cooldown } = command.options;
-    const isAdmin = (interaction.member as GuildMember).permissions.has(
-      PermissionFlagsBits.Administrator,
-    );
+    const { adminOnly, guildOnly, cooldown } = command.options;
+    if (guildOnly && !interaction.inGuild()) {
+      return await reply.deny(
+        interaction,
+        'This command is only available in servers!',
+      );
+    }
+
+    const isAdmin = interaction.member instanceof GuildMember
+      ? interaction.member.permissions.has(
+        PermissionFlagsBits.Administrator,
+      )
+      : false;
 
     // If the command is marked as adminOnly, check if the user is an admin
-    if (adminOnly && !isAdmin) return await reply.deny(interaction);
+    if (adminOnly && !isAdmin) {
+      return await reply.deny(
+        interaction,
+        'You do not have permission to use this command!',
+      );
+    }
 
     // Check the cooldown for the command, if enabled
     const cooldownError = checkCooldown(cooldown, interaction, isAdmin);

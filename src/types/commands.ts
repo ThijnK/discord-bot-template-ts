@@ -29,6 +29,11 @@ export type CommandOptions = {
    */
   adminOnly?: boolean;
   /**
+   * When set to `true`, this command will only work when used within a guild (i.e., not in DMs).
+   * @default false
+   */
+  guildOnly?: boolean;
+  /**
    * When defined, this command will be on cooldown for the given number of seconds after being used.
    *
    * By default, it is on a per-user basis, but that can be changed to guild-wide by setting the scope to `guild`.
@@ -40,7 +45,7 @@ export type CommandOptions = {
     | number
     | {
       /**
-       * The number of seconds this command will be on cooldown for.
+       * The number of seconds this command will be on cooldown for after being used.
        */
       seconds: number;
       /**
