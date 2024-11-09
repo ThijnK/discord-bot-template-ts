@@ -40,7 +40,7 @@ const extractSubcommandsRecursive = (
     option.options?.forEach((sub) =>
       result.push(
         ...extractSubcommandsRecursive(sub, `${name} ${option.name}`, cmdOpts),
-      ),
+      )
     );
   }
   return result;
@@ -57,7 +57,7 @@ const getCommands = (command: Command): PaginationData => {
       option.toJSON(),
       command.meta.name,
       command.options,
-    ),
+    )
   );
 
   // If no subcommands are found, this command is a standalone command
@@ -112,8 +112,7 @@ const helpPaginators = () =>
     return new Paginator(category.name, {
       embedData: {
         title: `${emoji}${category.name} Commands`,
-        description:
-          category.description ??
+        description: category.description ??
           `Browse through ${category.commands.public.length} command${
             category.commands.public.length > 1 ? 's' : ''
           } in ${emoji}${category.name}`,
@@ -126,8 +125,9 @@ const helpPaginators = () =>
       },
       pageLength: 10,
       getData: ({ interaction }) => {
-        const guildCmds =
-          interaction.guildId === ENV.TEST_GUILD ? cmds.private : cmds.public;
+        const guildCmds = interaction.guildId === ENV.TEST_GUILD
+          ? cmds.private
+          : cmds.public;
         if (
           interaction.memberPermissions &&
           interaction.memberPermissions.has(PermissionFlagsBits.Administrator)

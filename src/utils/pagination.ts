@@ -231,8 +231,8 @@ export class Paginator {
       backButton,
       nextButton,
     );
-    const selectMenu =
-      new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+    const selectMenu = new ActionRowBuilder<StringSelectMenuBuilder>()
+      .addComponents(
         pageSelector,
       );
 

@@ -21,7 +21,7 @@ const filterCategories = (
   isAdmin = false,
 ) =>
   categories?.filter((c) =>
-    c.commands[cmdType].some((cmd) => !cmd.options.adminOnly || isAdmin),
+    c.commands[cmdType].some((cmd) => !cmd.options.adminOnly || isAdmin)
   );
 
 /** Cached filtered command categories */
@@ -40,11 +40,12 @@ const getCategories = (
   scope: 'private' | 'public',
   access: 'admin' | 'member',
 ) => {
-  if (!cats[scope][access])
+  if (!cats[scope][access]) {
     cats[scope][access] = filterCategories(
       scope === 'private' ? 'all' : 'public',
       access === 'admin',
     );
+  }
   return cats[scope][access];
 };
 
@@ -52,8 +53,7 @@ const getCategories = (
 export const helpSelectComponent = (
   interaction: BaseInteraction,
 ): ActionRowBuilder<StringSelectMenuBuilder> | null => {
-  const isAdmin =
-    interaction.memberPermissions &&
+  const isAdmin = interaction.memberPermissions &&
     interaction.memberPermissions.has(PermissionFlagsBits.Administrator);
 
   // Categories specific to this guild (test guild or not)

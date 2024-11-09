@@ -78,12 +78,11 @@ const checkCooldown = (
   if (!interaction.guildId) return null;
 
   const now = Date.now();
-  const timestamps =
-    cooldowns.get(interaction.commandName) ?? new Map<string, number>();
-  const timestamp =
-    timestamps.get(
-      scope === 'user' ? interaction.user.id : interaction.guildId,
-    ) ?? 0;
+  const timestamps = cooldowns.get(interaction.commandName) ??
+    new Map<string, number>();
+  const timestamp = timestamps.get(
+    scope === 'user' ? interaction.user.id : interaction.guildId,
+  ) ?? 0;
   const cooldownEnd = timestamp + seconds * 1000;
 
   if (now < cooldownEnd && !isAdmin) {

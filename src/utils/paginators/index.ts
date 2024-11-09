@@ -14,8 +14,9 @@ const paginatorMap = new Map<string, Paginator>(
 );
 
 export function initPaginators() {
-  for (const paginator of helpPaginators())
+  for (const paginator of helpPaginators()) {
     paginatorMap.set(paginator.name, paginator);
+  }
 }
 
 /**
