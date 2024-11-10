@@ -4,7 +4,7 @@ import {
   PermissionFlagsBits,
   StringSelectMenuBuilder,
 } from 'discord.js';
-import { NAMESPACES } from 'utils';
+import { Namespace } from 'utils';
 import { createId } from './interaction.ts';
 import categories from 'commands';
 import ENV from 'env';
@@ -65,7 +65,7 @@ export const helpSelectComponent = (
 
   return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
     new StringSelectMenuBuilder()
-      .setCustomId(createId(NAMESPACES.help))
+      .setCustomId(createId(Namespace.Help))
       .setPlaceholder('Select a category...')
       .setMaxValues(1)
       .addOptions(

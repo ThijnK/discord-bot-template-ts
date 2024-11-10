@@ -1,9 +1,9 @@
-import { event, NAMESPACES, paginationReply, parseId } from 'utils';
+import { event, Namespace, paginationReply, parseId } from 'utils';
 
 export default event('interactionCreate', async (ctx, interaction) => {
   if (!interaction.isStringSelectMenu()) return;
   const [namespace] = parseId(interaction.customId);
-  if (namespace !== NAMESPACES.help) return;
+  if (namespace !== Namespace.Help) return;
 
   await interaction.deferUpdate();
   return await interaction.editReply(

@@ -59,7 +59,7 @@ If no `TEST_TOKEN` is provided, the `BOT_TOKEN` will be used for development as 
 
 ## Styling
 
-To ensure consistent styling throughout the bot's embeds and messages, some constants are provided in the [`src/utils/constants.ts`](./src/utils/constants.ts) file.
+To ensure consistent styling throughout the bot's embeds and messages, some definitions are provided in the [`src/utils/style.ts`](./src/utils/style.ts) file.
 Currently, this includes the following:
 
 - `COLORS`: a list of colors, which can be used to provide a color to an embed, or really anything else
@@ -68,7 +68,7 @@ Currently, this includes the following:
 The `EMOJIS` constant is already used to add emoji's to the reply messages created through the `reply()` function (see the [Interaction replies](#interaction-replies) section).
 The `COLORS` constant is only being used to give the same color to every embed the bot sends out, namely `COLORS.embed`. The `warn` and `error` colors are not being used anywhere, but are provided as examples.
 
-You are, of course, free to change these constants, or add new ones and new fields to the existing ones, to customize the bot to your liking.
+You are, of course, free to change these, or add new ones and new fields to the existing ones, to customize the bot to your liking.
 
 ## Commands
 
@@ -343,33 +343,41 @@ _Note_: both the `embedData` and `replyOptions` props can either be the actual d
 Discord interaction IDs are used to identify interactions, such as slash commands, buttons, and select menus.
 This allows the bot to differentiate between multiple interactions of the same type.
 For example, if you have a slash command that sends a message with a button, and you click that button, the bot needs to know which button was clicked.
-This is done by using the interaction ID.
-In this template, **namespaces** are used as the primary identifier of an interaction, and additional arguments, separated by `;`, can be used to pass specific data along.
-The currently available namespaces can be found in the [`src/constants/namespaces.ts`](./src/constants/namespaces.ts) file.
-The general structure of an interaction ID is thus as follows:
+This is done by setting a custom ID on that button.
+
+This template uses a concept of *namespaces* to distinguish between different interactions.
+By using a string that separates different pieces of data using `;`, we can create a custom interaction ID that can be parsed to retrieve the namespace and custom arguments.
+The namespace is an enum that identifies the type of interaction, while the arguments are a list of strings that provide additional data (e.g. the name of the paginator and the current offset).
+Thus, the general structure of a custom interaction ID under the hood will be as follows:
 
 ```
 <namespace>;<arg1>;<arg2>;<...>
 ```
 
 The namespaces can be used to filter out other interactions in the `interactionCreate` event handler, and the arguments can be used to pass specific data along with the interaction.
-For example, the pagination (see the [Pagination](#pagination) section) uses the `pagination` namespace, and passes the paginator name and current offset as arguments.
+For example, the pagination (see the [Pagination](#pagination) section) uses the `Pagination` namespace, and passes the paginator name and current offset as arguments.
 The event handler for the pagination buttons can then filter out other interactions by checking the namespace, and use the arguments to determine which paginator to use and what the current offset is.
 In particular, it looks something like this:
 
 ```ts
+import { Namespace, parseId } from 'utils';
+
+// ...
+
 if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
 const [namespace] = parseId(interaction.customId);
-if (namespace !== NAMESPACES.pagination) return;
+if (namespace !== Namespace.Pagination) return;
 ```
 
 The first line filters out other types of interactions, such as slash commands, and the second line parses the interaction ID to retrieve the namespace, which is then used to check that the interaction is indeed a pagination interaction.
-Notice the use of the `NAMESPACES` object to make sure we always use the correct string identifier for each namespace and allow for easy renaming of namespaces.
+Notice the use of the `Namespace` object to make sure we always use a valid namespace.
 
-To facilitate the easy usage of this configuration of interaction IDs, there are two utility functions available in the [`src/utils/interaction.ts`](./src/utils/interaction.ts) file:
+There are two utility functions available in the [`src/utils/interaction.ts`](./src/utils/interaction.ts) file:
 
 - `createId()`: create an interaction ID from a namespace and a list of arguments
 - `parseId()`: parse an interaction ID into a namespace and a list of arguments
+
+If you want to add new namespaces, you can simply add them to the `Namespace` enum in the [`src/utils/interaction.ts`](./src/utils/interaction.ts) file.
 
 ## Other utility functions
 

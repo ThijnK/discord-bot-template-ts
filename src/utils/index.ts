@@ -9,4 +9,4 @@ export * from './paginators/index.ts';
 export * from './pagination.ts';
 export * from './split.ts';
 export * from './date.ts';
-export * from './constants.ts';
+export * from './style.ts';

@@ -9,7 +9,7 @@ import {
   StringSelectMenuBuilder,
 } from 'discord.js';
 import { createId } from './interaction.ts';
-import { COLORS, NAMESPACES } from 'utils';
+import { COLORS, Namespace } from 'utils';
 import { Logger } from './logger.ts';
 import { PaginationContext, PaginationData } from 'types';
 
@@ -193,7 +193,7 @@ export class Paginator {
 
     // Back button
     const backId = createId(
-      NAMESPACES.pagination,
+      Namespace.Pagination,
       this.name,
       offset - this.pageLength,
     );
@@ -205,7 +205,7 @@ export class Paginator {
 
     // Next button
     const nextId = createId(
-      NAMESPACES.pagination,
+      Namespace.Pagination,
       this.name,
       offset + this.pageLength,
     );
@@ -215,7 +215,7 @@ export class Paginator {
       .setStyle(ButtonStyle.Primary)
       .setDisabled(currentPage >= pageCount);
 
-    const selectId = createId(NAMESPACES.pagination, this.name);
+    const selectId = createId(Namespace.Pagination, this.name);
     const pageSelector = new StringSelectMenuBuilder()
       .setCustomId(selectId)
       .setPlaceholder('Select a page...')

@@ -1,9 +1,9 @@
-import { createId, event, generatePage, NAMESPACES, parseId } from 'utils';
+import { createId, event, generatePage, Namespace, parseId } from 'utils';
 
 export default event('interactionCreate', async (ctx, interaction) => {
   if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
   const [namespace, paginatorName] = parseId(interaction.customId);
-  if (namespace !== NAMESPACES.pagination) return;
+  if (namespace !== Namespace.Pagination) return;
 
   await interaction.deferUpdate();
   let interactionId = interaction.customId;

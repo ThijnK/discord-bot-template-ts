@@ -2,7 +2,7 @@ import { InteractionReplyOptions } from 'discord.js';
 import { Paginator } from '../pagination.ts';
 import helpPaginators from './help.ts';
 import { createId, parseId } from '../interaction.ts';
-import { NAMESPACES } from 'utils';
+import { Namespace } from 'utils';
 import { PaginationContext } from 'types';
 
 // Add new paginators here
@@ -52,6 +52,6 @@ export function generatePage(
  * @returns The generated reply options
  */
 export function paginationReply(paginatorName: string, ctx: PaginationContext) {
-  const id = createId(NAMESPACES.pagination, paginatorName);
+  const id = createId(Namespace.Pagination, paginatorName);
   return generatePage(id, ctx);
 }
