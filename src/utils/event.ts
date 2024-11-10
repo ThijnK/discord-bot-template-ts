@@ -1,7 +1,6 @@
 import { Event, EventExec, EventKeys } from 'types';
 import { Client } from 'discord.js';
-import { Logger } from './logger.ts';
-import { reply } from './replies.ts';
+import { Logger, reply } from 'utils';
 
 export function event<T extends EventKeys>(
   id: T,

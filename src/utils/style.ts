@@ -10,4 +10,7 @@ export const EMOJIS = {
   warn: '⚠️',
   deny: '🚫',
   wait: '⏳',
+  debug: '🐛',
+  system: '🖥️',
+  info: '🗞️',
 } as const;

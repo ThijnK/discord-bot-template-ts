@@ -1,12 +1,12 @@
 {
   "tasks": {
-    "dev": "deno run --watch --env-file --allow-env --allow-net --allow-read src/index.ts",
+    "dev": "deno run --watch --env-file --allow-env --allow-net --allow-read --allow-write src/index.ts",
     "check": "deno check src/index.ts",
     "lint": "deno lint --fix",
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
-    "deploy": "deno run --env-file --allow-env --allow-net --allow-read src/scripts/deploy.ts",
-    "clear": "deno run --env-file --allow-env --allow-net --allow-read src/scripts/clear.ts"
+    "deploy": "deno run --env-file --allow-env --allow-net --allow-read --allow-write src/scripts/deploy.ts",
+    "clear": "deno run --env-file --allow-env --allow-net --allow-read --allow-write src/scripts/clear.ts"
   },
   "lint": {
     "include": ["src/"],

@@ -12,14 +12,14 @@ A _TypeScript_ template for a **Discord bot**, now powered by **Deno**!
 ## Features
 
 - 🟦 TypeScript
-- 📢 Slash commands
+- 💬 Slash commands
 - 📆 Event handlers
 - 📄 Built-in pagination
 - ❔ Automatic help command
 - ⏳ Command cooldowns
 - 🚗 Support for autocomplete
 - 🆔 Interaction ID handling
-- 🗞️ Custom logging
+- 🗞️ Advanced logging
 
 ## Prerequisites
 
@@ -275,10 +275,12 @@ This example will set the bot's activity to "Pinging {username}" when the `/ping
 
 ## Logging
 
-The [`src/utils/log.ts`](./src/utils/log.ts) file exports a `Logger` class, which can be used to log messages to the console. It is instantiated with a `category` string, which is used to prefix the log messages. The file also exports a `log()` function, with additional functions, such as `log.system()`, for every type of log message.
+The [`src/utils/log.ts`](./src/utils/log.ts) file exports a `Logger` class, which can be used to log messages to the _console_, to a _file_, to a Discord _webhook_, or all of the above.
+It is instantiated with a `category` string, which is used to prefix the log messages.
+The file also exports a `log()` function, with additional functions, such as `log.system()`, for every type of log message, which can be used to directly log messages without having to instantiate a `Logger` object.
 
-The `Logger` class is used in the contexts of events and commands to automatically prefix every logged message in specific commands or events with the corresponding command or event name. Anywhere else, you can easily use the `log()` function, or any sub-function, to log messages. This takes the category as the first argument, and the message as the second argument.
-
+The different types of log messages are color-coded when printed to the console, and can be used to easily distinguish between important and less important messages.
+A separate method is provided for each log type, e.g. `log.error()`, `log.warn()`, etc. (or, in the case of the `Logger` class, `logger.error()`, `logger.warn()`, etc.).
 The following log message types are currently supported:
 
 - `default`: default log message (white text)
@@ -286,6 +288,50 @@ The following log message types are currently supported:
 - `warn`: warning messages (yellow text)
 - `debug`: debug messages (gray text)
 - `system`: system messages, such as startup messages (cyan text)
+
+The `Logger` class is used in the contexts of events and commands to automatically prefix every logged message in specific commands or events with the corresponding command or event name.
+By default, a `Logger` instance will only print log messages to the console.
+If you want a specific `Logger` instance to write to a file or Discord webhook (i.e. send the log messages to a Discord channel), then you can provide a config object to the constructor:
+
+```ts
+type LoggerConfig = {
+  /**
+   * Whether to log messages to the console.
+   * @default true
+   */
+  console?: boolean;
+  /**
+   * Whether to log messages to a file.
+   *
+   * If it does not yet exist, a file will be created in the `/logs` directory, with the ISO formatted date in the name (so `<YY-MM-DD>.log`).
+   * Optionally, you may overwrite the file name by providing a string.
+   * @default false
+   */
+  file?: boolean | string;
+  /**
+   * Discord webhook to log messages to (i.e. send messages to a Discord channel).
+   *
+   * The webhook must be a Discord webhook.
+   * If is not set (i.e. `undefined`), which is the default, messages will not be logged to a webhook.
+   * @default undefined
+   * @example 'https://discord.com/api/webhooks/...'
+   * @see https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
+   */
+  webhook?: string;
+  /**
+   * Log types to ignore when logging to the webhook.
+   *
+   * If not set (i.e. `undefined`), which is the default, all log types will be logged to the webhook.
+   * @default undefined
+   */
+  webhookIgnore?: LogType[];
+};
+```
+
+The webhook option is particularly useful, as it allows you to send logs to a Discord channel (even one which the bot itself does not have access to), where you can easily view them and set up alerts for certain log messages.
+The messages sent to the webhook are formatted nicely using Discord's markdown and emojis.
+If you want to send only specific types of log messages to the webhook, you can provide a list of types to ignore in the `webhookIgnore` field of the config object.
+You can customize the message sent to the webhook by editing the code in the `Logger.log()` method in the [`src/utils/logger.ts`](./src/utils/logger.ts) file.
 
 ## Interaction replies
 
