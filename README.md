@@ -328,6 +328,7 @@ type LoggerConfig = {
 };
 ```
 
+To adjust the existing `Logger` instances in the code, just search for `new Logger` and add the desired configuration object as the second argument.
 The webhook option is particularly useful, as it allows you to send logs to a Discord channel (even one which the bot itself does not have access to), where you can easily view them and set up alerts for certain log messages.
 The messages sent to the webhook are formatted nicely using Discord's markdown and emojis.
 If you want to send only specific types of log messages to the webhook, you can provide a list of types to ignore in the `webhookIgnore` field of the config object.
