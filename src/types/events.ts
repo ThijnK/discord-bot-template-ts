@@ -1,5 +1,5 @@
 import { Awaitable, ClientEvents } from 'discord.js';
-import { BaseContext } from './context.ts';
+import { BaseContext } from 'types';
 
 export interface EventContext extends BaseContext {}
 

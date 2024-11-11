@@ -1,9 +1,7 @@
 import { InteractionReplyOptions } from 'discord.js';
-import { Paginator } from '../pagination.ts';
-import helpPaginators from './help.ts';
-import { createId, parseId } from '../interaction.ts';
-import { Namespace } from 'utils';
 import { PaginationContext } from 'types';
+import { createId, Namespace, Paginator, parseId } from 'utils';
+import helpPaginators from './help.ts';
 
 // Add new paginators here
 // If they need to be initialized, add them to the initPaginators function

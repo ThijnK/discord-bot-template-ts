@@ -4,8 +4,7 @@ import {
   PermissionFlagsBits,
   StringSelectMenuBuilder,
 } from 'discord.js';
-import { Namespace } from 'utils';
-import { createId } from './interaction.ts';
+import { createId, Namespace } from 'utils';
 import categories from 'commands';
 import ENV from 'env';
 import { CommandCategory, CommandCategoryCommands } from 'types';

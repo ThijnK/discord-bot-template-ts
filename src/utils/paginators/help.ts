@@ -10,8 +10,7 @@ import {
   CommandOptions,
   PaginationData,
 } from 'types';
-import { helpSelectComponent } from '../help.ts';
-import { Paginator } from '../pagination.ts';
+import { helpSelectComponent, Paginator } from 'utils';
 import ENV from 'env';
 
 /**

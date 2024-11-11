@@ -8,9 +8,7 @@ import {
   InteractionReplyOptions,
   StringSelectMenuBuilder,
 } from 'discord.js';
-import { createId } from './interaction.ts';
-import { COLORS, Namespace } from 'utils';
-import { Logger } from './logger.ts';
+import { COLORS, createId, Logger, Namespace } from 'utils';
 import { PaginationContext, PaginationData } from 'types';
 
 export class Paginator {
