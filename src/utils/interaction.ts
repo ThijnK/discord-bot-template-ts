@@ -6,13 +6,6 @@ export enum Namespace {
   Help = 'help',
 }
 
-function toNamespace(value: string): Namespace {
-  if (value in Namespace) {
-    return Namespace[value as keyof typeof Namespace];
-  }
-  throw new Error(`Invalid Namespace: ${value}`);
-}
-
 /**
  * Creates a custom id from a namespace and list of arguments, separated by `;`.
  * @param namespace The namespace of the interaction.
@@ -39,7 +32,7 @@ export function createId(namespace: Namespace, ...args: unknown[]): string {
  * // args = ['root']
  * ```
  */
-export function parseId(id: string): [namespace: Namespace, ...args: string[]] {
+export function parseId(id: string): [namespace: string, ...args: string[]] {
   const [namespace, ...args] = id.split(';');
-  return [toNamespace(namespace), ...args];
+  return [namespace, ...args];
 }
