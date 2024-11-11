@@ -4,6 +4,7 @@
 export enum Namespace {
   Pagination = 'pagination',
   Help = 'help',
+  Confirmation = 'confirmation',
 }
 
 /**
