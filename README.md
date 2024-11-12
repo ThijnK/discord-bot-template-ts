@@ -20,6 +20,7 @@ A _TypeScript_ template for a **Discord bot**, now powered by **Deno**!
 - 🚗 Support for autocomplete
 - 🆔 Interaction ID handling
 - 🗞️ Advanced logging
+- ✅ Action confirmations
 
 ## Prerequisites
 
@@ -425,6 +426,31 @@ There are two utility functions available in the [`src/utils/interaction.ts`](./
 - `parseId()`: parse an interaction ID into a namespace and a list of arguments
 
 If you want to add new namespaces, you can simply add them to the `Namespace` enum in the [`src/utils/interaction.ts`](./src/utils/interaction.ts) file.
+
+## Action confirmations
+
+A common occurrence in Discord bots is the need to confirm an action, such as deleting a message or banning a user.
+This template provides a simple way to set up such a confirmation for any action.
+![Default confirmation embed](images/confirmation.png)
+
+To set up a confirmation flow, follow these steps:
+1. Create a new file in the [`src/utils/confirmations`](./src/utils/confirmations) directory
+2. Export a function that receives a boolean indicating whether the action was confirmed or not, as well as the interaction and event context
+  - Use the `confirmation()` function to type check the function signature and make sure it adheres to the expected format
+  - An example is provided in the [`src/utils/confirmations/example.ts`](./src/utils/confirmations/example.ts) file
+3. Import the function in the [`src/utils/confirmations/index.ts`](./src/utils/confirmations/index.ts) file
+4. Add the function to the `confirmationHandlers` object, using the name you want to use to trigger the confirmation flow
+5. Use the `confirmationResponse()` function wherever you want to create an interaction reply options object (i.e. a message) that contains an embed alongside the `Cancel` and `Confirm` buttons
+  - The first argument is the name of the confirmation handler to use (i.e. the key which your confirmation function is stored under in the `confirmationHandlers` object)
+  - The second argument is optional and can contain your own reply options, allowing you to customize the message.
+  By default, the `confirmationResponse()` function adds an embed with the title "Confirmation" and a description that asks the user to confirm the action, but this will be overwritten if you provide your own embed object.
+  - The third argument can contain additional (short) arguments, which will be passed through the flow using custom IDs on the buttons (see the [Interaction IDs](#interaction-ids) section).
+  These arguments will be passed along to your confirmation function, so you can use them to pass data like a user id or message id.
+
+Essentially, this setup allows you to skip the step of setting up your own event handler for the confirmation buttons.
+Such an event handler is provided in the [`src/events/interactionCreate/confirmation.ts`](./src/events/interactionCreate/confirmation.ts) file, which will automatically call the confirmation function you set up with the boolean value of the button clicked, as well as the interaction and event context.
+
+The `/confirm` command implements an example of this setup, which simply sends the default confirmation embed and edits the message to show the result of the confirmation flow.
 
 ## Other utility functions
 
