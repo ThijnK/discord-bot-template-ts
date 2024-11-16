@@ -28,6 +28,9 @@ Some knowledge of TypeScript and Discord.js is recommended, and you'll need the 
 
 - [Deno](https://deno.com/) (v2.0 or higher)
 
+If you are unaware, Deno is an alternative to Node.js, and is used in this template to run the bot.
+If you want to know more about Deno and how it compares to Node.js, you can read the [Deno documentation](https://deno.land/manual).
+
 You will need a Discord bot token, which you can get by creating a new application in the [Discord developer portal](https://discord.com/developers/applications) by following the steps outlined in the [Discord developer documentation](https://discord.com/developers/docs/getting-started).
 
 ## Getting started
@@ -63,24 +66,30 @@ If no `TEST_TOKEN` is provided, the `BOT_TOKEN` will be used for development as 
 To ensure consistent styling throughout the bot's embeds and messages, some definitions are provided in the [`src/utils/style.ts`](./src/utils/style.ts) file.
 Currently, this includes the following:
 
-- `COLORS`: a list of colors, which can be used to provide a color to an embed, or really anything else
-- `EMOJIS`: a list of emojis, which can be used to add emoji's to messages
+- `COLORS`: common colors used for specific purposes (e.g. to make sure embeds always have the same color)
+- `EMOJIS`: common emojis for specific purposes (e.g. to indicate success or error)
 
-The `EMOJIS` constant is already used to add emoji's to the reply messages created through the `reply()` function (see the [Interaction replies](#interaction-replies) section).
+The `EMOJIS` constant is currently being used to add emojis to the reply messages created through the `reply()` function (see the [Interaction replies](#interaction-replies) section), as well as some of the log messages sent to Discord wehbooks (if enabled; see the [Logging](#logging) section).
 The `COLORS` constant is only being used to give the same color to every embed the bot sends out, namely `COLORS.embed`. The `warn` and `error` colors are not being used anywhere, but are provided as examples.
 
 You are, of course, free to change these, or add new ones and new fields to the existing ones, to customize the bot to your liking.
 
 ## Commands
 
-Commands are located in the [`src/commands`](./src/commands) folder. The [index.ts](./src/commands/index.ts) file exports all command categories, which is used to register them in the [`src/events/interactionCreate/commands.ts`](./src/events/interactionCreate/commands.ts) file.
+Commands are located in the [`src/commands`](./src/commands) folder.
 
-Commands are grouped into _categories_, each of which has its own folder. The `index.ts` file in each folder exports the commands in that category and provides some metadata about the category, which includes at least the name of the category, and optionally a description and emoji.
+Commands are grouped into _categories_, each of which has its own folder.
+The `index.ts` file in each folder exports the commands in that category and provides some metadata about the category, which includes at least the name of the category, and optionally a description and emoji (which will be used for example in the `/help` commmand).
+The [index.ts](./src/commands/index.ts) file imports the categories from the various folders and exports them as a single array, which is used to register them in the [`src/events/interactionCreate/commands.ts`](./src/events/interactionCreate/commands.ts) file.
 
-Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and an `exec` function, which is invoked when the command is executed. This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself. Note that errors thrown in the `exec` function will be caught and logged automatically, so you don't have to worry about catching them yourself. Do, however, make sure that you await asynchronous functions, such that errors thrown inside such functions will be caught as well!
+Each command gets its own file, and consists of a `meta` object, built using a `SlashCommandBuilder` from `discord.js`, and an `exec` function, which is invoked when the command is executed.
+This `exec` function is passed a context containing the bot client, a Logger instance (instantiated with the command name; see the [Logging](#logging) section), and the interaction itself.
+Note that errors thrown in the `exec` function will be caught and logged automatically, so you don't have to worry about catching them yourself (unless you want to customize the message shown to the user upon an error, for which the default is imply "Oops. Something went wrong!").
+_Do, however, make sure that you await asynchronous functions, such that errors thrown inside such functions will be caught as well!_
 
-You can add additional fields to the command context by modifying the `CommandContext` type in the [`src/types/commands.ts`](./src/types/commands.ts) file.
-Note that the main reason for propagating objects like the client and logger through a context like this is to (1) avoid having to import them in every file, and (2), which is actually more important, to not actually run the bot when running the deploy script, which would inevitably be the case if you were to import the client in every command file because those command files are imported in the deploy script.
+You can add additional fields to the command context by modifying the `CommandContext` type in the [`src/types/commands.ts`](./src/types/commands.ts) file and adding the new fields to the call to `command.exec(...)` call in the [`src/events/interactionCreate/command.ts`](./src/events/interactionCreate/command.ts) file.
+You may ask yourself why you would propagate a context like this through the event and command executions.
+The reason, essentially, is to avoid having to import the client and logger in every file, but you are free to import them in every file if you prefer.
 
 A command file should look something like this:
 
@@ -105,31 +114,38 @@ export default command({
 
 ### Help command
 
-A `/help` command is provided out of the box, that automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!).
+A `/help` command which automatically generates an embed that allows for navigating through all of the commands (and their subcommands and subcommand groups!) is provided out of the box.
 More information about this command can be found in the [Help menu](#help-menu) section.
 
 ### Command options
 
-The first argument of the `command()` function takes an object containing at least the `meta` object created using the `SlashCommandBuilder` from `discord.js`. There's some optional fields that can be passed into the object alongside the `meta` to further configure the command. The following optional fields are available:
+The `command()` function takes an object containing at least the `meta` object created using the `SlashCommandBuilder` from `discord.js` and the `exec` function responsible for executing the command.
+There's some optional fields that can be passed into the object to further configure the command.
+The following optional fields are available:
 
 - `private`: whether the command should be private to the test guild (default: `false`)
 - `adminOnly`: whether the command should only be available to users with the `ADMINISTRATOR` permission (default: `false`)
 - `guildOnly`: whether the command should only be available in guilds and not in DMs (default: `false`)
-- `cooldown`: the cooldown of the command, in seconds, or as an object with `seconds` and `scope` (user-specific or guild-wide) fields ([more info](#command-cooldowns))
+- `cooldown`: the cooldown of the command, in seconds, or as an object with `seconds` and `scope` (user-specific or guild-wide) fields (see the [Command cooldowns](#command-cooldowns) section)
 
 When a command is _private_, it will only be registered in the test guild, never in any other servers. This could be useful for commands that you, as the bot creator, want to use, but do not want others to use.
 
 ### Subcommands
 
-Subcommands are supported by the `SlashCommandBuilder` from `discord.js`, and can be added to a command by calling the `addSubcommand()` or `addSubcommandGroup()` methods on the `SlashCommandBuilder` object. The `addSubcommand()` method takes a `SlashCommandSubcommandBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, and the `addSubcommandGroup()` method takes a `SlashCommandSubcommandGroupBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, but with the addition of the `addSubcommand()` method.
+Subcommands are supported by the `SlashCommandBuilder` from `discord.js`, and can be added to a command by calling the `addSubcommand()` or `addSubcommandGroup()` methods on the `SlashCommandBuilder` object.
+The `addSubcommand()` method takes a `SlashCommandSubcommandBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, and the `addSubcommandGroup()` method takes a `SlashCommandSubcommandGroupBuilder` object, which is created in the same way as the `SlashCommandBuilder` object, but with the addition of the `addSubcommand()` method.
 
-Subcommands will be picked up automatically by the help command, however deep they are nested in subcommand groups.
-
+Determining which subcommand was used is done by using `interaction.options.getSubcommand()` and `interaction.options.getSubcommandGroup()`, which return the name of the subcommand or subcommand group, respectively.
 An example of the usage of subcommands can be found in the [`src/commands/general/info.ts`](./src/commands/general/info.ts) file.
+
+Remember, subcommands will be picked up automatically by the help command, however deep they are nested in subcommand groups!
 
 ### Command cooldowns
 
-Command cooldowns can be set using the `cooldown` field in the command's [options](#command-options), as shown in the below snippet. This can be a number, representing the cooldown in seconds, or an object with `seconds` and `scope` fields. The `scope` field can be either `'user'` or `'guild'`, and determines whether the cooldown is user-specific or guild-wide. If the `scope` field is not provided, the cooldown will be user-specific by default.
+Command cooldowns can be set using the `cooldown` field in the command's [options](#command-options), as shown in the below snippet.
+This can be a number, representing the cooldown in seconds, or an object with `seconds` and `scope` fields.
+The `scope` field can be either `'user'` or `'guild'`, and determines whether the cooldown is user-specific or guild-wide.
+If the `scope` field is not provided, the cooldown will be user-specific by default.
 
 ```ts
 export default command(
@@ -151,9 +167,9 @@ The logic for command cooldowns is located in the [`src/events/interactionCreate
 
 ### Autocomplete
 
-Support for autocomplete options, as described in [this](https://discordjs.guide/slash-commands/autocomplete.html) discordjs guide, is provided in the template.
+Support for autocomplete, as described in [this](https://discordjs.guide/slash-commands/autocomplete.html) `discord.js` guide, is provided in the template.
 You can simply enable autocomplete for a command option by using [`setAutocomplete(true)`](https://discord.js.org/docs/packages/builders/1.8.1/SlashCommandStringOption:Class#setAutocomplete) on a `SlashCommandStringOption`.
-You have to provide the autcompletion yourself (see the guide linked above), in an event handler specified under the `autocomplete` field in the argument of the `command()` function.
+You have to provide the autcompletion yourself (see the guide linked above), in an event handler specified under the `autocomplete` field in the argument of the `command()` function (similar to how you would define the `exec` function).
 
 For instance:
 
@@ -197,12 +213,14 @@ The logic to delegate autocomplete interactions to their respective event handle
 
 ## Events
 
-Events are located in the [`src/events`](./src/events) folder. The [index.ts](./src/events/index.ts) file exports all event handlers, which is used to register them in the [`src/index.ts`](./src/index.ts) file, which in turn calls the `registerEvents` function from [`src/utils/event.ts`](./src/utils/event.ts).
+Events are located in the [`src/events`](./src/events) folder.
+The [index.ts](./src/events/index.ts) file exports all event handlers, which is used to register them in the [`src/index.ts`](./src/index.ts) file, which in turn calls the `registerEvents` function from [`src/utils/event.ts`](./src/utils/event.ts).
 
 All `interactionCreate` events are grouped together in the [`src/events/interactionCreate`](./src/events/interactionCreate) folder, and are exported in the corresponding [`index.ts`](./src/events/interactionCreate/index.ts) file.
 When adding new events, it is recommended to group them in a similar way.
 
-Each event handler consists of the event name and a listener function, which is called when the event is triggered. The listener function recieves a context with the bot client and a Logger instance (instantiated with the event name; see the [Logging](#logging) section), as well as a list of arguments specific to the event.
+Each event handler consists of the event name and a listener function, which is called when the event is triggered.
+The listener function recieves a context with the bot client and a Logger instance (instantiated with the event name; see the [Logging](#logging) section), as well as a list of arguments specific to the event.
 
 An event handler file should look something like this:
 
@@ -278,13 +296,13 @@ This example will set the bot's activity to "Pinging {username}" when the `/ping
 
 The [`src/utils/log.ts`](./src/utils/log.ts) file exports a `Logger` class, which can be used to log messages to the _console_, to a _file_, to a Discord _webhook_, or all of the above.
 It is instantiated with a `category` string, which is used to prefix the log messages.
-The file also exports a `log()` function, with additional functions, such as `log.system()`, for every type of log message, which can be used to directly log messages without having to instantiate a `Logger` object.
+The file also exports a `log()` function which can be used to directly log messages without having to instantiate a `Logger` object.
 
 The different types of log messages are color-coded when printed to the console, and can be used to easily distinguish between important and less important messages.
 A separate method is provided for each log type, e.g. `log.error()`, `log.warn()`, etc. (or, in the case of the `Logger` class, `logger.error()`, `logger.warn()`, etc.).
 The following log message types are currently supported:
 
-- `default`: default log message (white text)
+- `info`: default log message (white text)
 - `error`: error messages (red text)
 - `warn`: warning messages (yellow text)
 - `debug`: debug messages (gray text)
@@ -339,7 +357,9 @@ You can customize the message sent to the webhook by editing the code in the `Lo
 
 The [`src/utils/reply.ts`](./src/utils/reply.ts) file exports a `reply` class, which can be used to send replies to interactions, without having to worry about whether you should be using `interaction.reply()` or `interaction.editReply()`, as it automatically uses the correct method.
 
-The function takes the interaction to reply to, the options for the reply (meaning you can provide the same options as you would to `interaction.reply()` or `interaction.editReply()`), and optionally a reply type. The reply will be made ephemeral by default, but it can be overwritten by providing a value for it yourself in the options (second argument). The reply type can be one of the following:
+The function takes the interaction to reply to, the options for the reply (meaning you can provide the same options as you would to `interaction.reply()` or `interaction.editReply()`), and optionally a reply type.
+The reply will be made ephemeral by default, but it can be overwritten by providing a value for it yourself in the options (second argument).
+The reply type can be one of the following:
 
 - `default`: send a normal reply
 - `success`: send a success reply, which is prepended with a success emoji
@@ -348,16 +368,17 @@ The function takes the interaction to reply to, the options for the reply (meani
 - `deny`: send a reply that denies the interaction, which is prepended with a deny emoji
 - `wait`: send a reply that indicates a waiting state, which is prepended with an hourglass emoji
 
-Similar to the `log()` function (see the [Logging](#logging) section), the `reply()` function provides easy-to-use sub-functions for each type, so currently `reply.error()`, `reply.warn()` and `reply.deny()`.
+Similar to the `log()` function (see the [Logging](#logging) section), the `reply()` function provides easy-to-use sub-functions for each type, e.g. `reply.error()`, `reply.warn()` and `reply.deny()`.
 
-If you want these replies to use embeds by default, this can be easily changed by modifying the `getOptions()` function in the [`src/utils/reply.ts`](./src/utils/reply.ts) file.
+If you want these replies to use embeds by default (instead of simply sending a text message), this can be easily changed by modifying the `getOptions()` function in the [`src/utils/reply.ts`](./src/utils/reply.ts) file.
 
 ## Pagination
 
-There is built-in support for pagination of content using embeds. Currently, this is only used in the `/help` command, but you can create your own pagination by following these steps:
+There is built-in support for pagination of content using embeds.
+Currently, this is only used in the `/help` command, but you can create your own pagination by following these steps:
 
-1. Create a paginator in the [`src/utils/paginators.ts`](./src/utils/paginators) folder, using the constructor of the `Paginator` class defined in [`src/utils/pagination.ts`](./src/utils/pagination.ts)
-2. Add the paginator you created to the `paginators` array in the [`src/utils/paginators/index.ts`](./src/utils/paginators/index.ts) file
+1. Create a paginator in the [`src/utils/paginators.ts`](./src/utils/paginators) folder, using the constructor of the `Paginator` class defined in [`src/utils/pagination.ts`](./src/utils/pagination.ts).
+2. Add the paginator you created to the `paginators` array in the [`src/utils/paginators/index.ts`](./src/utils/paginators/index.ts) file.
 3. Use the `paginationReply()` function from the utils to create an embed that can be used to navigate through the pages. Don't forget to await this function!
 
 ### Help command pagination
@@ -434,14 +455,12 @@ This template provides a simple way to set up such a confirmation for any action
 ![Default confirmation embed](images/confirmation.png)
 
 To set up a confirmation flow, follow these steps:
-1. Create a new file in the [`src/utils/confirmations`](./src/utils/confirmations) directory
-2. Export a function that receives a boolean indicating whether the action was confirmed or not, as well as the interaction and event context
-  - Use the `confirmation()` function to type check the function signature and make sure it adheres to the expected format
-  - An example is provided in the [`src/utils/confirmations/example.ts`](./src/utils/confirmations/example.ts) file
-3. Import the function in the [`src/utils/confirmations/index.ts`](./src/utils/confirmations/index.ts) file
-4. Add the function to the `confirmationHandlers` object, using the name you want to use to trigger the confirmation flow
-5. Use the `confirmationResponse()` function wherever you want to create an interaction reply options object (i.e. a message) that contains an embed alongside the `Cancel` and `Confirm` buttons
-  - The first argument is the name of the confirmation handler to use (i.e. the key which your confirmation function is stored under in the `confirmationHandlers` object)
+1. Create a new file in the [`src/utils/confirmations`](./src/utils/confirmations) directory.
+2. Export a function to handle a confirmation, wrapped inside the `confirmation()` function (to type check the function signature you provide). The handler function receives a boolean indicating whether the action was confirmed or not, as well as the interaction and event context. An example is provided in the [`src/utils/confirmations/example.ts`](./src/utils/confirmations/example.ts) file.
+3. Import the function you created in the [`src/utils/confirmations/index.ts`](./src/utils/confirmations/index.ts) file.
+4. Add the function to the `confirmationHandlers` object, using the name you want to use to trigger the confirmation flow.
+5. Use the `confirmationResponse()` function wherever you want to create an interaction reply options object (i.e. a message) that contains an embed alongside the `Cancel` and `Confirm` buttons. This function takes three arguments:
+  - The first argument is the name of the confirmation handler to use (i.e. the key which your confirmation function is stored under in the `confirmationHandlers` object).
   - The second argument is optional and can contain your own reply options, allowing you to customize the message.
   By default, the `confirmationResponse()` function adds an embed with the title "Confirmation" and a description that asks the user to confirm the action, but this will be overwritten if you provide your own embed object.
   - The third argument can contain additional (short) arguments, which will be passed through the flow using custom IDs on the buttons (see the [Interaction IDs](#interaction-ids) section).
@@ -451,11 +470,12 @@ Essentially, this setup allows you to skip the step of setting up your own event
 Such an event handler is provided in the [`src/events/interactionCreate/confirmation.ts`](./src/events/interactionCreate/confirmation.ts) file, which will automatically call the confirmation function you set up with the boolean value of the button clicked, as well as the interaction and event context.
 
 The `/confirm` command implements an example of this setup, which simply sends the default confirmation embed and edits the message to show the result of the confirmation flow.
+(You can remove this command if you so desire.)
 
 ## Other utility functions
 
-- [`splitSend`](./src/utils/split.ts): split a a list of lines over multiple embeds, respecting Discord's embed description length limit
-- [`chunk`](./src/utils/chunk.ts): split an array into chunks of a given size (jagged array / matrix)
+- [`splitSend`](./src/utils/split.ts): split a a list of lines over multiple embeds, respecting Discord's embed description length limit.
+- [`chunk`](./src/utils/chunk.ts): split an array into chunks of a given size (jagged array / matrix).
 
 ## Database
 
@@ -481,7 +501,8 @@ admin.initializeApp({
 export const db = admin.database();
 ```
 
-Don't forget to add the `FIREBASE_SDK` and `DB_URL` environment variables to your `.env` and `env.ts` files if you use the above snippet. You'll also have to install the `firebase-admin` package using `deno add firebase-admin`.
+Don't forget to add the `FIREBASE_SDK` and `DB_URL` environment variables to your `.env` and `env.ts` files if you use the above snippet.
+You'll also have to install the `firebase-admin` package using `deno add firebase-admin`.
 
 ## Server
 
@@ -504,7 +525,7 @@ app.listen(process.env.PORT || 3000, () => {
 ```
 
 In this snippet, you can access the bot client by importing it from [`src/client/index.ts`](./src/client/index.ts).
-The process.env.PORT environment variable is usually provided by the hosting service, such as Heroku, and defaults to 3000 if not provided.
+The process.env.PORT environment variable is usually provided by the hosting service and defaults to 3000 if not provided.
 
 You can do whatever you want with this Express server, including adding routes, middleware, etc. (see the [Express documentation](https://expressjs.com/)).
 Folder structure is up to you, but you can use the following as a starting point:
