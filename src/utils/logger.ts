@@ -173,6 +173,8 @@ export const log = (
     Logger.formatMessage(category, message, type),
   );
 
+log.info = log;
+
 log.error = (category: string, message: unknown) =>
   log(category, message, LogType.Error);
 
