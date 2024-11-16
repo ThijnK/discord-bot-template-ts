@@ -7,13 +7,13 @@ const rest = new REST({ version: '10' }).setToken(ENV.BOT_TOKEN);
 const logger = new Logger('deploy');
 
 async function main() {
-  if (!ENV.TEST_GUILD) {
-    throw new Error('Missing environment variable: TEST_GUILD');
-  }
   const currentUser = (await rest.get(Routes.user())) as APIUser;
 
   // In development, all commands are deployed to the test guild.
   if (ENV.DEV) {
+    if (!ENV.TEST_GUILD) {
+      throw new Error('Missing environment variable: TEST_GUILD');
+    }
     await rest.put(
       Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD),
       {
@@ -21,17 +21,19 @@ async function main() {
       },
     );
   } // In production, public commmands are deployed globally, and private commands
-  // are deployed to the test guild.
+  // are deployed to the test guild (if provided).
   else {
     await rest.put(Routes.applicationCommands(currentUser.id), {
       body: extractMeta(categories, 'public'),
     });
-    await rest.put(
-      Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD),
-      {
-        body: extractMeta(categories, 'private'),
-      },
-    );
+    if (ENV.TEST_GUILD) {
+      await rest.put(
+        Routes.applicationGuildCommands(currentUser.id, ENV.TEST_GUILD),
+        {
+          body: extractMeta(categories, 'private'),
+        },
+      );
+    }
   }
 
   return currentUser;
