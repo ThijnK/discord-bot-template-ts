@@ -1,8 +1,7 @@
 # Discord bot template
 
-[![discord.js](https://img.shields.io/badge/discord.js-%5E14.16.3-blue)](https://discord.js.org/)
 [![Stars](https://img.shields.io/github/stars/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/stargazers)
-[![Contributors](https://img.shields.io/github/contributors/ThijnK/discord-bot-template-ts)](https://github.com/ThijnK/discord-bot-template-ts/graphs/contributors)
+[![discord.js](https://img.shields.io/badge/discord.js-%5E14.16.3-blue)](https://discord.js.org/)
 [![GitHub release](https://img.shields.io/github/v/release/ThijnK/discord-bot-template-ts?label=version)](https://github.com/ThijnK/discord-bot-template-ts/releases)
 [![Checks](https://img.shields.io/github/actions/workflow/status/ThijnK/discord-bot-template-ts/check.yml?label=checks)](https://github.com/ThijnK/discord-bot-template-ts/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
